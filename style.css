@@ -1,0 +1,337 @@
+:root {
+    /* Paleta Oscura y Minimalista (Dark Mode) */
+    --primary-color: #BB86FC; /* Púrpura vibrante para el acento */
+    --secondary-color: #03DAC6; /* Verde azulado para botones de acción */
+    --background-color: #121212; /* Fondo muy oscuro (casi negro) */
+    --card-background: #1F1F1F; /* Fondo de la tarjeta (ligeramente más claro) */
+    --text-color: #E0E0E0; /* Color de texto principal claro */
+    --light-text-color: #B0B0B0; /* Color de texto secundario/sutil */
+    --border-color: #333333; /* Borde oscuro y sutil */
+    --shadow-color: rgba(0, 0, 0, 0.5); /* Sombra adaptada al oscuro */
+}
+
+/* --- ESTILOS GENERALES Y LAYOUT --- */
+
+body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.card-container {
+    width: 100%;
+    max-width: 400px;
+    background-color: var(--card-background);
+    border-radius: 10px;
+    box-shadow: 0 5px 20px var(--shadow-color);
+    overflow: hidden;
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+/* --- ENCABEZADO Y PERFIL --- */
+
+.card-header {
+    background-image: url('images/logo_gorras.jpg'); 
+    background-size: cover; 
+    background-repeat: no-repeat;
+    background-position: center;
+    padding: 40px 20px;
+    height: 80px; 
+}
+
+.profile-info, .page-title-section {
+    padding: 30px 20px 20px;
+    background-color: transparent; 
+    border-top: 1px solid var(--border-color); 
+}
+
+.name {
+    font-size: 2.2em;
+    margin: 0 0 5px;
+    color: var(--text-color);
+    font-weight: 700;
+}
+
+.title {
+    font-size: 1.1em;
+    color: var(--light-text-color);
+    margin-top: 0;
+}
+
+/* --- BOTONES PRINCIPALES (INDEX.HTML) --- */
+
+.social-shop-links {
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    
+    gap: 15px; 
+    padding: 20px; 
+    background-color: var(--background-color); 
+    border-top: 1px solid var(--border-color); 
+    border-bottom: 1px solid var(--border-color);
+}
+
+.link-item {
+    /* **CAMBIOS CLAVE PARA EL ANCHO:** */
+    width: 95%; /* Incrementamos el ancho para que esté más cerca de los bordes del contenedor */
+    max-width: 350px; /* Incrementamos el ancho máximo en pantallas grandes */
+    
+    display: flex;
+    flex-direction: row; 
+    align-items: center;
+    justify-content: center; 
+    
+    padding: 15px 25px; 
+    text-decoration: none;
+    
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+}
+.link-item:hover {
+    background-color: var(--primary-color); 
+    color: var(--background-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.link-item i {
+    font-size: 1.5em; 
+    margin-right: 20px;
+    margin-bottom: 5px;
+}
+
+.link-item span {
+    font-size: 1em;
+    font-weight: 600;
+}
+
+/* --- QR CODE Y MODAL QR (INDEX.HTML) --- */
+
+.qr-code {
+    padding: 20px;
+    margin-top: 20px;
+    border-top: 1px solid var(--border-color);
+    cursor: pointer;
+}
+
+.qr-code img {
+    width: 100px;
+    height: 100px;
+    border: 3px solid var(--primary-color); 
+    border-radius: 5px;
+    box-shadow: 0 0 10px var(--primary-color);
+    margin-bottom: 10px;
+}
+
+/* Modal base para QR */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 100; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+}
+.modal-content {
+    margin: 10% auto;
+    padding: 20px;
+    max-width: 400px;
+    background-color: var(--card-background);
+    border-radius: 15px;
+    text-align: center;
+}
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 36px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.modal-qr {
+    width: 90%;
+    height: auto;
+}
+
+/* --- ESTILOS DEL CARRUSEL DE GORRAS (SERVICES.HTML) --- */
+
+.hats-carousel-container {
+    overflow-x: scroll; 
+    scroll-snap-type: x mandatory; 
+    display: flex; 
+    gap: 15px; 
+    padding-top: 10px;
+    padding-bottom: 20px;
+    background-color: var(--background-color);
+    margin-bottom: 20px;
+    
+    /* Centrado visual inicial */
+    padding-left: 10%; 
+    padding-right: 10%; 
+}
+
+.hats-carousel-container::-webkit-scrollbar {
+    display: none; 
+}
+
+.hat-item {
+    flex: 0 0 80%; 
+    max-width: 300px;
+    scroll-snap-align: center; 
+    
+    background-color: #282828; 
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.hat-item img {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background-color: #aaa;
+    border: 1px solid var(--primary-color);
+    /* ELIMINAMOS 'cursor: pointer;' */
+
+    transition: opacity 0.3s ease-in-out;
+}
+
+.hat-title {
+    color: var(--secondary-color);
+    font-size: 1.2em;
+    margin: 5px 0;
+}
+
+.hat-description {
+    color: var(--light-text-color);
+    font-size: 0.9em;
+    margin-bottom: 15px;
+}
+
+/* Botón de Compra Específico */
+.purchase-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--secondary-color); 
+    color: #121212;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.2s;
+    margin-top: 10px;
+}
+
+.purchase-button:hover {
+    background-color: #00FFD1;
+}
+
+/* --- Botón de Volver (SERVICES.HTML) --- */
+
+.back-button-container {
+    /* Mantenemos el padding horizontal para que haya espacio entre el botón y los bordes de la tarjeta */
+    padding: 20px; 
+    border-top: 1px solid var(--border-color);
+    
+    /* CENTRADO: Asegura que todo el contenido esté centrado si no ocupa el 100% */
+    display: flex; 
+    justify-content: center;
+}
+
+.back-button {
+    /* El botón debe ocupar el 100% del espacio de su contenedor (20px de padding por lado) */
+    width: 100%; 
+    max-width: 360px; /* Opcional: Establecer un ancho máximo si el contenedor principal es muy grande */
+    
+    display: flex;
+    align-items: center;
+    justify-content: center; /* **CAMBIO CLAVE:** Centra el ícono y el texto dentro del botón */
+    
+    padding: 15px;
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.back-button:hover {
+    background-color: var(--border-color);
+}
+
+.back-button i {
+    margin-right: 10px;
+}
+
+/* --- AJUSTES RESPONSIVOS FINALES --- */
+
+/* --- AJUSTES RESPONSIVOS FINALES (PARA MÓVILES) --- */
+
+@media (max-width: 640px) {
+    
+    /* 1. ESTILOS BASE DEL CUERPO (BODY) */
+    body {
+        /* Por defecto, centramos verticalmente (útil para index.html sin scroll) */
+        align-items: center; 
+        min-height: 100vh; 
+    }
+    
+    /* 2. EXCEPCIÓN PARA PÁGINAS LARGAS (services.html) */
+    .services-page {
+        /* En la página de preventas, el contenido debe empezar arriba para permitir el scroll */
+        align-items: flex-start; 
+        min-height: auto; /* Permite que el body se adapte a la altura del contenido total */
+    }
+    
+    /* 3. CONTENEDOR PRINCIPAL (card-container) */
+    .card-container {
+        /* CRÍTICO: Ocupa el 100% del ancho y elimina márgenes y bordes */
+        width: 100%;
+        max-width: 100%; 
+        margin: 0; 
+        box-shadow: none; 
+        border-radius: 0; 
+        padding-bottom: 0; 
+    }
+    
+    /* 4. AJUSTES ENLACES PRINCIPALES (index.html) */
+    .link-item {
+        /* Aseguramos que los botones sigan siendo anchos en móviles */
+        width: 95%; 
+        max-width: none; /* Quitamos el max-width de 350px para móviles */
+    }
+
+    /* 5. AJUSTES DE TEXTO */
+    .name {
+        font-size: 1.8em;
+    }
+    .title {
+        font-size: 1em;
+    }
+    
+    /* 6. CARRUSEL DE GORRAS (services.html) */
+    .hats-carousel-container {
+        /* Ajusta el padding para que el carrusel se vea mejor de borde a borde */
+        padding-left: 5%; 
+        padding-right: 5%; 
+    }
+}
