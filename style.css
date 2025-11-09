@@ -19,8 +19,8 @@ body {
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    background-color: var(--background-color);
-    color: var(--text-color);
+    background-color: whitesmoke;
+    color: black;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -29,7 +29,7 @@ body {
 .card-container {
     width: 100%;
     max-width: 400px;
-    background-color: var(--card-background);
+    background-color: whitesmoke;
     border-radius: 10px;
     box-shadow: 0 5px 20px var(--shadow-color);
     overflow: hidden;
@@ -37,7 +37,28 @@ body {
     padding-bottom: 20px;
 }
 
-/* --- ENCABEZADO Y PERFIL --- */
+/* ======================================= */
+/* HEADER Y NOMBRE               */
+/* ======================================= */
+
+.profile-header {
+    text-align: center;
+    padding: 30px 20px 20px 20px;
+    background-color: #282828;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.header-logo {
+    /* ** NUEVOS ESTILOS PARA EL LOGO ** */
+    width: auto; 
+    max-width: 90%; /* Para que no sea demasiado grande en pantallas amplias */
+    max-height: 120px; /* Limita la altura del logo */
+    margin: 0 auto 10px auto; /* Centra y añade margen inferior */
+    display: block; /* Necesario para que el margin auto funcione */
+}
+
+
+/* --- ENCABEZADO Y PERFIL de servicios --- */
 
 .card-header {
     background-image: url('images/logo_gorras.jpg'); 
@@ -51,19 +72,12 @@ body {
 .profile-info, .page-title-section {
     padding: 30px 20px 20px;
     background-color: transparent; 
-    border-top: 1px solid var(--border-color); 
 }
 
-.name {
-    font-size: 2.2em;
-    margin: 0 0 5px;
-    color: var(--text-color);
-    font-weight: 700;
-}
 
 .title {
     font-size: 1.1em;
-    color: var(--light-text-color);
+    color: lightslategray;
     margin-top: 0;
 }
 
@@ -118,53 +132,70 @@ body {
     font-weight: 600;
 }
 
-/* --- QR CODE Y MODAL QR (INDEX.HTML) --- */
+/*SECCION DE HORARIO DE PUESTO*/
 
-.qr-code {
-    padding: 20px;
-    margin-top: 20px;
-    border-top: 1px solid var(--border-color);
-    cursor: pointer;
+.business-hours-section {
+    padding: 10px 20px;
+    margin-top: 10px;
+    background-color: whitesmoke;
+    text-align: center;
 }
 
-.qr-code img {
-    width: 100px;
-    height: 100px;
-    border: 3px solid var(--primary-color); 
-    border-radius: 5px;
-    box-shadow: 0 0 10px var(--primary-color);
+.hours-title {
+    font-size: 1.8em;
+    color: black;
     margin-bottom: 10px;
 }
 
-/* Modal base para QR */
-.modal {
-    display: none; 
-    position: fixed; 
-    z-index: 100; 
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
+.hours-description {
+    font-size: 1em;
+    color: lightslategray;
+    margin-bottom: 20px;
 }
-.modal-content {
-    margin: 10% auto;
-    padding: 20px;
-    max-width: 400px;
-    background-color: var(--card-background);
-    border-radius: 15px;
-    text-align: center;
+
+.hours-list {
+    list-style: none; /* Elimina los puntos de la lista */
+    padding: 0;
+    margin: 0 auto 20px auto; /* Centra la lista y añade margen inferior */
+    max-width: 250px; /* Ancho máximo para que la lista no sea demasiado ancha */
+    text-align: left; /* Alinea el texto de la lista a la izquierda */
+    box-shadow: 0 5px 20px var(--shadow-color);
+
 }
-.close-button {
-    color: #aaa;
-    float: right;
-    font-size: 36px;
+
+.hours-list li {
+    background-color: var(--background-color);
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    display: flex; /* Para alinear día y horario */
+    justify-content: space-between; /* Día a la izquierda, horario a la derecha */
+    align-items: center;
+    color: var(--text-color);
+    font-size: 1.05em;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.hours-list li span {
     font-weight: bold;
-    cursor: pointer;
+    color: var(--secondary-color);
 }
-.modal-qr {
-    width: 90%;
-    height: auto;
+
+.appointment-info {
+    font-size: 0.9em;
+    color: var(--light-text-color);
+    font-style: italic;
+    margin-top: 20px;
+}
+
+/* --- Responsive para los horarios --- */
+@media (max-width: 640px) {
+    .hours-title {
+        font-size: 1.5em;
+    }
+    .hours-list {
+        max-width: 90%; /* Ajusta el ancho en móviles */
+    }
 }
 
 /* --- ESTILOS DEL CARRUSEL DE GORRAS (SERVICES.HTML) --- */
@@ -193,7 +224,7 @@ body {
     max-width: 300px;
     scroll-snap-align: center; 
     
-    background-color: #282828; 
+    background-color:rgb(206, 201, 201); 
     border-radius: 10px;
     padding: 15px;
     text-align: center;
@@ -210,18 +241,17 @@ body {
     background-color: #aaa;
     border: 1px solid var(--primary-color);
     /* ELIMINAMOS 'cursor: pointer;' */
-
     transition: opacity 0.3s ease-in-out;
 }
 
 .hat-title {
-    color: var(--secondary-color);
+    color: black;
     font-size: 1.2em;
     margin: 5px 0;
 }
 
 .hat-description {
-    color: var(--light-text-color);
+    color: black;
     font-size: 0.9em;
     margin-bottom: 15px;
 }
@@ -230,8 +260,8 @@ body {
 .purchase-button {
     display: inline-block;
     padding: 10px 20px;
-    background-color: var(--secondary-color); 
-    color: #121212;
+    background-color: var(--card-background); 
+    color: var(--text-color);
     text-decoration: none;
     border-radius: 5px;
     font-weight: bold;
@@ -239,16 +269,11 @@ body {
     margin-top: 10px;
 }
 
-.purchase-button:hover {
-    background-color: #00FFD1;
-}
-
 /* --- Botón de Volver (SERVICES.HTML) --- */
 
 .back-button-container {
     /* Mantenemos el padding horizontal para que haya espacio entre el botón y los bordes de la tarjeta */
     padding: 20px; 
-    border-top: 1px solid var(--border-color);
     
     /* CENTRADO: Asegura que todo el contenido esté centrado si no ocupa el 100% */
     display: flex; 
@@ -294,6 +319,10 @@ body {
         align-items: center; 
         min-height: 100vh; 
     }
+
+    .header-logo {
+        max-height: 100px; /* Opcional: un poco más pequeño en móviles, pero aún grande */
+    }
     
     /* 2. EXCEPCIÓN PARA PÁGINAS LARGAS (services.html) */
     .services-page {
@@ -321,9 +350,7 @@ body {
     }
 
     /* 5. AJUSTES DE TEXTO */
-    .name {
-        font-size: 1.8em;
-    }
+
     .title {
         font-size: 1em;
     }

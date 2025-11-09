@@ -1,30 +1,32 @@
-// --- Funciones para el Modal del Código QR (en index.html) ---
-
-function openQrModal() {
-    document.getElementById('qrModal').style.display = "block";
-}
-
-function closeQrModal() {
-    document.getElementById('qrModal').style.display = "none";
-}
-
 // =========================================================
 // === LÓGICA: CARRUSEL AUTOMÁTICO DE VISTAS DE GORRA ===
 // =========================================================
 
-// 1. Definir las imágenes por gorra (rutas de los archivos subidos)
-const hatVistas = [
-    'img/othani_gold1_f.png', 
-    'img/othani_gold2_f.png',
-    'img/othani_gold3_f.png'
-];
+// 1. Definir las imágenes por gorra (¡Asegúrate de que estas rutas sean correctas en tu carpeta 'img'!)
+const hatVistas = {
+    hatImage_1: [
+        'img/othani_gold1_f.png',  // Vista frontal 
+        'img/othani_gold2_f.png',    // Vista lateral
+        'img/othani_gold3_f.png'     // Vista trasera
+    ],
+    // *** DEBES AGREGAR IMÁGENES REALES PARA ESTAS GORRAS ***
+    hatImage_2: [
+        'img/gorra_clasica_frente.jpg', // Ejemplo: Reemplaza con tus archivos
+        'img/gorra_clasica_lado.jpg',
+        'img/gorra_clasica_atras.jpg'
+    ],
+    hatImage_3: [
+        'img/gorra_deportiva_frente.jpg', // Ejemplo: Reemplaza con tus archivos
+        'img/gorra_deportiva_lado.jpg',
+        'img/gorra_deportiva_atras.jpg'
+    ]
+};
 
 // 2. Definir el estado (índice actual de la imagen) para cada gorra
 const hatStates = {
     hatImage_1: 0,
     hatImage_2: 0,
     hatImage_3: 0,
-    // Añade más IDs de imágenes aquí si hay más gorras
 };
 
 // 3. Función para cambiar la vista de una gorra específica
@@ -32,13 +34,19 @@ function changeHatView(imageId) {
     const imgElement = document.getElementById(imageId);
     if (!imgElement) return;
 
-    // Incrementa el índice y reinicia si llega al final
+    // Obtener el array de vistas para esta gorra específica
+    const vistasEspecificas = hatVistas[imageId];
+    if (!vistasEspecificas || vistasEspecificas.length === 0) {
+        return;
+    }
+
+    // Incrementa el índice y reinicia si llega al final de las vistas de ESTA GORRA
     let currentIndex = hatStates[imageId];
-    currentIndex = (currentIndex + 1) % hatVistas.length;
+    currentIndex = (currentIndex + 1) % vistasEspecificas.length;
     hatStates[imageId] = currentIndex;
     
     // Cambia la fuente de la imagen
-    imgElement.src = hatVistas[currentIndex];
+    imgElement.src = vistasEspecificas[currentIndex];
 }
 
 // 4. Iniciar el ciclo para todas las gorras
@@ -48,20 +56,11 @@ function startHatCarousels() {
 
     imageIds.forEach(imageId => {
         // Ejecuta la función por primera vez, luego en el intervalo
-        changeHatView(imageId);
         setInterval(() => changeHatView(imageId), intervalTime);
     });
 }
 
-// --- Lógica para cerrar los Modales y Ejecución Inicial ---
-
-window.onclick = function(event) {
-    // Cierra el modal de QR (si está abierto y se hace clic fuera)
-    var qrModal = document.getElementById('qrModal');
-    if (qrModal && event.target == qrModal) {
-        closeQrModal();
-    }
-}
+// --- Ejecución Inicial ---
 
 // Llama a la función del carrusel solo cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', () => {

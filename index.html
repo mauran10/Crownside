@@ -10,39 +10,36 @@
 <body>
     <div class="card-container">
         <section class="profile-info">
-            <h2 class="name">CROWNSIDE</h2>
+            <img src="img/logo_crownside.png" alt="Logo de Crownside" class="header-logo">
             <p class="title">Gorras y Accesorios Exclusivos</p> </section>
 
         <section class="social-shop-links">
-            <a href="https://instagram.com/tuusuario" target="_blank" class="link-item instagram-btn" aria-label="Instagram">
-                <i class="fab fa-instagram"></i>
-                <span>Instagram</span>
-            </a>
+          <a href="https://www.instagram.com/crownside__" target="_blank" class="link-item">
+        <i class="fab fa-instagram"></i> 
+        <span>Instagram</span>
+    </a>
             
-            <a href="https://tiktok.com/@tuusuario" target="_blank" class="link-item tiktok-btn" aria-label="TikTok">
-                <i class="fab fa-tiktok"></i> 
-                <span>TikTok</span>
-            </a>
+         <a href="https://www.tiktok.com/@crownsidemx" target="_blank" class="link-item">
+        <i class="fab fa-tiktok"></i> 
+        <span>TikTok</span>
+    </a>
             
             <a href="services.html" class="link-item preventas-btn" aria-label="Preventas de Gorras">
                 <i class="fas fa-hat-cowboy"></i> <span>Preventas</span>
             </a>
         </section>
         
-        <div class="qr-code" onclick="openQrModal()">
-            <img src="images/qr_asca.png" id="qrImage" alt="Código QR para guardar contacto">
-            <p>Guarda mi contacto</p>
-        </div>
+       <section class="business-hours-section">
+            <h3 class="hours-title"> ¡Visitanos!</h3>
+            <p class="hours-description">Proximas fechas en donde estaremos:</p>
+            <ul class="hours-list">
+                <li>Domingos: <span>Cerrado</span></li>
+            </ul>
+            <p class="appointment-info">Buscas alguna pieza ¡Contáctanos!</p>
+        </section>
 
-        <div id="qrModal" class="modal">
-            <div class="modal-content">
-                <span class="close-button" onclick="closeQrModal()">&times;</span>
-                <img class="modal-qr" id="modalQrImage" src="images/qr_asca.png" alt="Código QR grande">
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
+    </div> 
     
-    </body>
+    <script src="script.js"></script> 
+</body>
 </html>
