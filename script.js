@@ -1,75 +1,14 @@
-// =======================================================
-// === 1. DATOS Y LÓGICA DE CARRUSEL AUTOMÁTICO (services.html) ===
-// =======================================================
-
-// 🛑 ¡CRÍTICO! DEFINE LA URL DE TU API EN VERCEL AQUÍ.
+/ 🛑 CRÍTICO: Define la URL base de tu API en Vercel.
+// Asegúrate de que esta URL sea la de tu proyecto desplegado.
 const API_BASE_URL = 'https://crownside.vercel.app'; 
 
-// 🚨 IMPORTANTE: DEFINE AQUÍ LAS VISTAS DE CADA GORRA 🚨
-// Las claves deben coincidir con las 'id_producto' que tienes en MongoDB.
-// Asegúrate de que las rutas de las imágenes sean correctas (ej: 'img/nombre_archivo.png').
-const hatViews = {
-    // Gorra 1: Edición 'El Contable'
-    'contable_01': [
-        'img/othani_gold1_f.png',    // Vista 1: Frente
-        'img/othani_gold2_f.png',    // Vista 2: Lado 
-        'img/othani_gold3_f.png'     // Vista 3: Atrás 
-    ],
-    // Gorra 2: Clásica 'Minimal'
-    'minimal_02': [
-        'img/minimal_b.png',         
-        'img/minimal_b_side.png',    
-        'img/minimal_b_back.png'     
-    ]
-    // AGREGA AQUÍ CADA GORRA ADICIONAL Y SUS VISTAS
-};
-
-// Objeto para llevar el seguimiento de la imagen actual (índice 0, 1, 2, etc.)
-const hatStates = {}; 
+// =================================================================
+// === UTILIDADES ===
+// =================================================================
 
 /**
- * Función que cambia la vista de una gorra específica cada cierto intervalo.
- */
-function changeHatView(productId) {
-    // El ID del elemento IMG en el catálogo será 'img-' + productId
-    const imgElement = document.getElementById(`img-${productId}`);
-    if (!imgElement) return;
-
-    const vistasEspecificas = hatViews[productId];
-    if (!vistasEspecificas || vistasEspecificas.length === 0) {
-        return;
-    }
-
-    if (hatStates[productId] === undefined) {
-        hatStates[productId] = 0;
-    }
-
-    let currentIndex = (hatStates[productId] + 1) % vistasEspecificas.length;
-    hatStates[productId] = currentIndex;
-    
-    // Cambia la fuente de la imagen
-    imgElement.src = vistasEspecificas[currentIndex];
-}
-
-/**
- * Inicia el carrusel automático para todas las gorras.
- */
-function startHatCarousels(productIds) {
-    const intervalTime = 2000; // Intervalo de 2 segundos (2000ms)
-
-    productIds.forEach(productId => {
-        // Inicia el carrusel para cada producto en la lista
-        setInterval(() => changeHatView(productId), intervalTime);
-    });
-}
-
-
-// =======================================================
-// === 2. LÓGICA DE CONEXIÓN Y DETALLES (producto.html) ===
-// =======================================================
-
-/**
- * Obtiene la ID del producto de la URL (Usado en producto.html).
+ * Obtiene el ID del producto de la URL (ej. de ?id=contable_01)
+ * @returns {string | null} El ID del producto o null si no se encuentra.
  */
 function getProductIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -77,308 +16,165 @@ function getProductIdFromUrl() {
 }
 
 /**
- * Carga los detalles de UN producto desde el servidor.
+ * Navega a la página de detalle del producto, pasando el ID como parámetro.
+ * @param {string} productId - El ID único del producto.
  */
-async function loadProductDetails() {
-    const productId = getProductIdFromUrl();
-    if (!productId) return;
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/products/${productId}`);
-        
-        if (!response.ok) {
-            document.getElementById('detailTitle').textContent = 'Producto no disponible';
-            document.getElementById('productDescription').textContent = 'El producto solicitado no existe.';
-            return;
-        }
-
-        const product = await response.json();
-        
-        // 🚨 ACTUALIZA LOS ELEMENTOS HTML DE PRODUCTO.HTML 🚨
-        document.getElementById('detailTitle').textContent = product.nombre; 
-        document.getElementById('productDescription').textContent = product.descripcion; 
-        
-        document.getElementById('productImage').src = product.imagenUrl;
-        document.getElementById('productImage').alt = product.nombre;
-
-        // Guarda la información para el botón de 'Agregar al Carrito'.
-        const cartButton = document.getElementById('addToCartButton');
-        if (cartButton) {
-            cartButton.dataset.id = product.id_producto;
-            cartButton.dataset.name = product.nombre;
-            // El precio es necesario para el carrito.
-            cartButton.dataset.price = product.precio; 
-        }
-
-    } catch (error) {
-        console.error('Error al conectar con el servidor:', error);
-        document.getElementById('detailTitle').textContent = 'Error de conexión';
-        document.getElementById('productDescription').textContent = 'No se pudo cargar la información del servidor. ¿Está el servidor activo y la base de datos conectada?';
-    }
+function goToProductPage(productId) {
+    window.location.href = `producto.html?id=${productId}`;
 }
 
-
-// =====================================================
-// === 3. LÓGICA DE CATÁLOGO (services.html) ===
-// =====================================================
-
-/**
- * Función que crea la tarjeta de presentación de cada gorra.
- */
-function createProductCard(product) {
-    // Usamos tus clases CSS para mantener el diseño
-    return `
-        <div class="hat-item">
-            <img id="img-${product.id_producto}" src="${product.imagenUrl}" alt="${product.nombre}"> 
-            <h4 class="hat-title">${product.nombre}</h4>
-            <p class="hat-description">${product.descripcion}</p>
-            
-            <div class="purchase-button-container">
-                <a href="producto.html?id=${product.id_producto}" class="purchase-button">Ver mas</a>
-            </div>
-        </div>
-    `;
-}
+// =================================================================
+// === FUNCIÓN PARA LA PÁGINA DE CATÁLOGO (services.html) ===
+// =================================================================
 
 /**
- * Carga todos los productos desde el servidor y los inserta en el catálogo (services.html).
+ * Carga todos los productos desde la API y los renderiza en la cuadrícula.
  */
 async function loadCatalog() {
     const catalogContainer = document.getElementById('catalog-container');
-    if (!catalogContainer) return;
+    if (!catalogContainer) return; // Si no estamos en la página del catálogo, salimos.
+
+    // Usamos el indicador de carga que ya tenías
+    catalogContainer.innerHTML = '<h2>Cargando catálogo...</h2>'; 
 
     try {
-        const response = await fetch(`${API_BASE_URL}/api/products`);
-        if (!response.ok) throw new Error('No se pudo cargar el catálogo. (Server status: ' + response.status + ')');
+        // Llama al endpoint de catálogo completo
+        const url = `${API_BASE_URL}/api/products`; 
+        
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            const errorText = await response.json().catch(() => ({ message: 'Error de servidor desconocido o formato JSON inválido.' }));
+            throw new Error(`No se pudo cargar el catálogo. (Server status: ${response.status}). Mensaje: ${errorText.message}`);
+        }
 
         const products = await response.json();
         
-        let htmlContent = '';
-        const productIdsToStartCarousel = []; 
+        // ===============================================
+        // === NUEVO MANEJO DE CATÁLOGO VACÍO (CRÍTICO) ===
+        // ===============================================
+        if (products.length === 0) {
+            catalogContainer.innerHTML = `
+                <div style="text-align: center; padding: 40px; border: 1px solid #ccc; background: #f9f9f9; border-radius: 8px; margin-top: 20px; color: #333;">
+                    <h2>¡El Catálogo Está Vacío!</h2>
+                    <p>La API se conectó con éxito, pero la base de datos no devolvió ningún producto.</p>
+                    <p><strong>ACCIONES:</strong> Asegúrate de que tienes documentos (productos) en tu colección de MongoDB Atlas.</p>
+                </div>
+            `;
+            return;
+        }
+        // ===============================================
 
-        products.forEach(product => {
-            htmlContent += createProductCard(product);
-            // Si la gorra tiene vistas definidas, la añadimos para el carrusel
-            if (hatViews[product.id_producto]) {
-                productIdsToStartCarousel.push(product.id_producto);
-            }
-        });
-
-        catalogContainer.innerHTML = htmlContent;
+        // Limpiamos el contenedor y empezamos a construir la cuadrícula
+        catalogContainer.innerHTML = ''; 
         
-        // 🚨 INICIA EL CARRUSEL 🚨
-        startHatCarousels(productIdsToStartCarousel);
+        products.forEach(product => {
+            const productElement = document.createElement('div');
+            productElement.classList.add('hat-item');
+            
+            // Usamos la función goToProductPage al hacer clic en cualquier parte del elemento
+            productElement.onclick = () => goToProductPage(product.id_producto);
+
+            // CRÍTICO: Asegúrate de que los nombres de las propiedades coincidan con tu base de datos
+            productElement.innerHTML = `
+                <img src="${product.imagenUrl}" alt="${product.nombre}">
+                <h3 class="hat-title">${product.nombre}</h3>
+                <p class="hat-description">${product.descripcion.substring(0, 50)}...</p>
+                <p class="hat-price">$${product.precio.toFixed(2)} MXN</p>
+                <button class="purchase-button">Ver más</button>
+            `;
+            catalogContainer.appendChild(productElement);
+        });
 
     } catch (error) {
         console.error('Error al cargar el catálogo:', error);
-        catalogContainer.innerHTML = '<p class="error-message">Error al conectar con la base de datos o el servidor no está corriendo. Revisa la consola para detalles.</p>';
+        catalogContainer.innerHTML = `
+            <h2>Error al cargar los productos</h2>
+            <p>Ocurrió un fallo de red o la API no está respondiendo correctamente.</p>
+            <p style="color: red;">Detalles del error: ${error.message}</p>
+        `;
     }
 }
 
+// =================================================================
+// === FUNCIÓN PARA LA PÁGINA DE DETALLE (producto.html) ===
+// =================================================================
 
-// =====================================================
-// === 4. LÓGICA DE CARRITO (USANDO localStorage) ===
-// =====================================================
+/**
+ * Carga un producto específico por ID y lo renderiza.
+ */
+async function loadProductDetails() {
+    const productId = getProductIdFromUrl();
+    const detailContainer = document.getElementById('product-detail-container'); // Asumo que tienes un contenedor principal con este ID en producto.html
 
-function getCart() {
-    const cart = localStorage.getItem('shoppingCart');
-    return cart ? JSON.parse(cart) : [];
-}
-
-function saveCart(cart) {
-    localStorage.setItem('shoppingCart', JSON.stringify(cart));
-}
-
-function showCustomMessage(message) {
-    const container = document.body;
-    const msgElement = document.createElement('div');
-    msgElement.textContent = message;
-    msgElement.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #333;
-        color: white;
-        padding: 15px 30px;
-        border-radius: 8px;
-        z-index: 10000;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        font-family: 'Inter', sans-serif;
-        font-size: 16px;
-    `;
-    container.appendChild(msgElement);
-    
-    setTimeout(() => {
-        msgElement.remove();
-    }, 2000);
-}
-
-function addToCart(productId, name, price, quantity = 1) {
-    const cart = getCart();
-    const existingItem = cart.find(item => item.id === productId);
-
-    if (existingItem) {
-        existingItem.quantity += quantity;
-    } else {
-        cart.push({ id: productId, name, price, quantity });
-    }
-
-    saveCart(cart);
-    showCustomMessage(`"${name}" agregado al carrito.`);
-}
-
-function handleAddToCartClick(event) {
-    const button = event.target.closest('#addToCartButton');
-    if (!button) return;
-
-    const id = button.dataset.id;
-    const name = button.dataset.name;
-    const price = parseFloat(button.dataset.price);
-
-    if (id && name && !isNaN(price)) {
-        addToCart(id, name, price);
-    } else {
-        showCustomMessage('Error: Datos del producto no cargados.');
-    }
-}
-
-/** Renderiza la lista de productos y el resumen de pago */
-function renderCart() {
-    const cart = getCart();
-    const container = document.getElementById('cart-items-container');
-    const summary = document.getElementById('cart-summary');
-    let subtotal = 0;
-    
-    if (!container || !summary) return;
-
-    if (cart.length === 0) {
-        container.innerHTML = '<p class="empty-cart-message">Tu carrito está vacío. ¡Empieza a agregar preventas!</p>';
-        summary.innerHTML = '';
+    if (!productId || !detailContainer) {
+        if (detailContainer) {
+            detailContainer.innerHTML = '<h2>Error: ID de producto no encontrado.</h2>';
+        }
         return;
     }
-
-    let itemsHtml = '';
-    cart.forEach(item => {
-        // Asumiendo que el precio es un número y la cantidad también
-        const itemTotal = item.price * item.quantity;
-        subtotal += itemTotal;
+    
+    detailContainer.innerHTML = '<h2>Cargando detalle del producto...</h2>'; // Indicador de carga
+    
+    try {
+        // CRÍTICO: Usa el nuevo endpoint de Serverless con el parámetro ?id=
+        const url = `${API_BASE_URL}/api/product-detail?id=${productId}`; 
         
-        itemsHtml += `
-            <div class="cart-item-card">
-                <div class="item-info">
-                    <p class="item-name">${item.name}</p>
-                    <p class="item-price-unit">Precio Unitario: $${item.price.toFixed(2)} MXN</p>
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            const errorText = await response.json().catch(() => ({ message: 'Error de servidor desconocido o formato JSON inválido.' }));
+            throw new Error(`Producto no encontrado o error en el servidor. (Status: ${response.status}). Mensaje: ${errorText.message}`);
+        }
+
+        const product = await response.json();
+
+        // Limpiamos el contenedor y renderizamos el detalle
+        detailContainer.innerHTML = `
+            <div class="detail-content">
+                <div class="image-section">
+                    <img src="${product.imagenUrl}" alt="${product.nombre}">
                 </div>
-                <div class="item-controls">
-                    <button class="quantity-button decrease" data-id="${item.id}">-</button>
-                    <span class="item-quantity">${item.quantity}</span>
-                    <button class="quantity-button increase" data-id="${item.id}">+</button>
-                    <button class="remove-button" data-id="${item.id}"><i class="fas fa-trash-alt"></i></button>
-                </div>
-                <div class="item-total">
-                    Total: $${itemTotal.toFixed(2)} MXN
+                <div class="info-section">
+                    <h1 class="product-title">${product.nombre}</h1>
+                    <p class="product-price">$${product.precio.toFixed(2)} MXN</p>
+                    <p class="product-stock">Disponibilidad: ${product.stock > 0 ? 'En Stock' : 'Agotado'}</p>
+                    <div class="product-description">
+                        <h2>Descripción</h2>
+                        <p>${product.descripcion}</p>
+                    </div>
+                    <button class="add-to-cart-button">Añadir al Carrito</button>
+                    <button onclick="window.location.href='services.html'" class="back-button">
+                        ← Volver al Catálogo
+                    </button>
                 </div>
             </div>
         `;
-    });
 
-    container.innerHTML = itemsHtml;
-    
-    // Renderizado del resumen (Total)
-    summary.innerHTML = `
-        <h4 class="summary-title">Resumen del Pedido</h4>
-        <p>Subtotal: <span>$${subtotal.toFixed(2)} MXN</span></p>
-        <p>Envío: <span>GRATIS</span></p>
-        <h3 class="total-price">Total a Pagar: <span>$${subtotal.toFixed(2)} MXN</span></h3>
-        <button id="checkoutButton" class="buy-button large-button">
-            Proceder al Checkout (WhatsApp)
-        </button>
-    `;
-
-    // Agregar listeners a los botones de control (aumentar/disminuir/eliminar)
-    addCartControlListeners();
-}
-
-/** Modifica la cantidad de un producto en el carrito */
-function updateQuantity(productId, change) {
-    let cart = getCart();
-    const itemIndex = cart.findIndex(item => item.id === productId);
-
-    if (itemIndex > -1) {
-        cart[itemIndex].quantity += change;
-
-        // Si la cantidad llega a cero, eliminar el producto
-        if (cart[itemIndex].quantity <= 0) {
-            cart.splice(itemIndex, 1);
-        }
+    } catch (error) {
+        console.error('Error al cargar detalles del producto:', error);
+        detailContainer.innerHTML = `
+            <h2>No se pudo cargar el producto.</h2>
+            <p>El producto con ID "${productId}" no existe o hubo un error de conexión.</p>
+            <p class="error-detail">(Detalles: ${error.message})</p>
+        `;
     }
-
-    saveCart(cart);
-    renderCart(); // Vuelve a renderizar el carrito
-}
-
-/** Elimina un producto por completo del carrito */
-function removeCartItem(productId) {
-    let cart = getCart();
-    cart = cart.filter(item => item.id !== productId);
-    
-    saveCart(cart);
-    renderCart(); // Vuelve a renderizar el carrito
-}
-
-/** Genera el enlace de WhatsApp con el resumen del pedido */
-function generateWhatsappLink() {
-    const cart = getCart();
-    if (cart.length === 0) return showCustomMessage('El carrito está vacío.'); 
-
-    let message = '¡Hola! Me gustaría hacer un pedido de Crownside:\n\n';
-    let subtotal = 0;
-
-    cart.forEach(item => {
-        const itemTotal = item.price * item.quantity;
-        subtotal += itemTotal;
-        message += `* ${item.quantity}x ${item.name} ($${item.price.toFixed(2)} c/u)\n`;
-    });
-
-    message += `\nSubtotal: $${subtotal.toFixed(2)} MXN`;
-    message += `\nEnvío: GRATIS`;
-    message += `\n*TOTAL FINAL: $${subtotal.toFixed(2)} MXN*\n\n`;
-    message += 'Por favor, confírmame los detalles y el proceso de pago.';
-
-    // Codificar el mensaje y el número (REEMPLAZA ESTE NÚMERO CON EL TUYO)
-    const whatsappNumber = '5218123456789'; // Ejemplo: Cambia esto por tu número
-    const encodedMessage = encodeURIComponent(message);
-    
-    const url = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
-    
-    window.open(url, '_blank');
 }
 
 
-// =====================================================
-// === 5. INICIALIZACIÓN (PUNTO DE ENTRADA) ===
-// =====================================================
+// =================================================================
+// === INICIO DE LA APLICACIÓN ===
+// =================================================================
 
+// Determina qué función ejecutar basándose en la página actual
 document.addEventListener('DOMContentLoaded', () => {
-    // Si estamos en la página de catálogo (services.html)
-    if (document.body.classList.contains('services-page')) {
-        loadCatalog(); 
-    }
+    const path = window.location.pathname;
     
-    // Si estamos en la página de detalles del producto (producto.html)
-    if (document.body.classList.contains('product-page')) {
+    if (path.includes('services.html')) {
+        loadCatalog();
+    } else if (path.includes('producto.html')) {
         loadProductDetails();
-    }
-
-    // 🚨 Si estamos en la página de carrito (cart.html)
-    if (document.body.classList.contains('cart-page')) {
-        renderCart(); 
-    }
+    } 
     
-    // Añadir listener para el botón de Agregar al Carrito (Disponible en producto.html)
-    const cartButton = document.getElementById('addToCartButton');
-    if (cartButton) {
-        cartButton.addEventListener('click', handleAddToCartClick);
-    }
+    // Aquí podrías añadir otras funciones de inicialización global si las necesitas.
 });
