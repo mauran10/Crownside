@@ -31,50 +31,39 @@ function goToProductPage(productId) {
  */
 async function loadCatalog() {
     const catalogContainer = document.getElementById('catalog-container');
-    if (!catalogContainer) return; // Si no estamos en la página del catálogo, salimos.
+    if (!catalogContainer) return;
 
-    // Usamos el indicador de carga que ya tenías
     catalogContainer.innerHTML = '<h2>Cargando catálogo...</h2>'; 
 
     try {
-        // Llama al endpoint de catálogo completo
-        const url = `${API_BASE_URL}/api/products`; 
-        
+        const url = `${API_BASE_URL}/api/products`;
         const response = await fetch(url);
 
         if (!response.ok) {
-            const errorText = await response.json().catch(() => ({ message: 'Error de servidor desconocido o formato JSON inválido.' }));
-            throw new Error(`No se pudo cargar el catálogo. (Server status: ${response.status}). Mensaje: ${errorText.message}`);
+            const errorText = await response.json().catch(() => ({ message: 'Error JSON o servidor desconocido.' }));
+            throw new Error(`No se pudo cargar catálogo. Status: ${response.status}. Mensaje: ${errorText.message}`);
         }
 
         const products = await response.json();
-        
-        // ===============================================
-        // === NUEVO MANEJO DE CATÁLOGO VACÍO (CRÍTICO) ===
-        // ===============================================
+
         if (products.length === 0) {
             catalogContainer.innerHTML = `
-                <div style="text-align: center; padding: 40px; border: 1px solid #ccc; background: #f9f9f9; border-radius: 8px; margin-top: 20px; color: #333;">
-                    <h2>¡El Catálogo Está Vacío!</h2>
-                    <p>La API se conectó con éxito, pero la base de datos no devolvió ningún producto.</p>
-                    <p><strong>ACCIONES:</strong> Asegúrate de que tienes documentos (productos) en tu colección de MongoDB Atlas.</p>
+                <div style="text-align:center;padding:40px;border:1px solid #ccc;background:#f9f9f9;border-radius:8px;margin-top:20px;">
+                    <h2>¡El catálogo está vacío!</h2>
+                    <p>La API funciona, pero no hay productos en MongoDB.</p>
                 </div>
             `;
             return;
         }
-        // ===============================================
 
-        // Limpiamos el contenedor y empezamos a construir la cuadrícula
-        catalogContainer.innerHTML = ''; 
-        
+        catalogContainer.innerHTML = '';
+
         products.forEach(product => {
             const productElement = document.createElement('div');
             productElement.classList.add('hat-item');
-            
-            // Usamos la función goToProductPage al hacer clic en cualquier parte del elemento
+
             productElement.onclick = () => goToProductPage(product.id_producto);
 
-            // CRÍTICO: Asegúrate de que los nombres de las propiedades coincidan con tu base de datos
             productElement.innerHTML = `
                 <img src="${product.imagenUrl}" alt="${product.nombre}">
                 <h3 class="hat-title">${product.nombre}</h3>
@@ -82,15 +71,15 @@ async function loadCatalog() {
                 <p class="hat-price">$${product.precio.toFixed(2)} MXN</p>
                 <button class="purchase-button">Ver más</button>
             `;
+
             catalogContainer.appendChild(productElement);
         });
 
     } catch (error) {
         console.error('Error al cargar el catálogo:', error);
         catalogContainer.innerHTML = `
-            <h2>Error al cargar los productos</h2>
-            <p>Ocurrió un fallo de red o la API no está respondiendo correctamente.</p>
-            <p style="color: red;">Detalles del error: ${error.message}</p>
+            <h2>Error al cargar productos</h2>
+            <p>${error.message}</p>
         `;
     }
 }
@@ -104,7 +93,7 @@ async function loadCatalog() {
  */
 async function loadProductDetails() {
     const productId = getProductIdFromUrl();
-    const detailContainer = document.getElementById('product-detail-container'); // Asumo que tienes un contenedor principal con este ID en producto.html
+    const detailContainer = document.getElementById('product-detail-container');
 
     if (!productId || !detailContainer) {
         if (detailContainer) {
@@ -112,23 +101,22 @@ async function loadProductDetails() {
         }
         return;
     }
-    
-    detailContainer.innerHTML = '<h2>Cargando detalle del producto...</h2>'; // Indicador de carga
-    
+
+    detailContainer.innerHTML = '<h2>Cargando detalle del producto...</h2>';
+
     try {
-        // CRÍTICO: Usa el nuevo endpoint de Serverless con el parámetro ?id=
-        const url = `${API_BASE_URL}/api/product-detail?id=${productId}`; 
-        
+        // EL ENDPOINT CORRECTO
+        const url = `${API_BASE_URL}/api/products/${productId}`;
+
         const response = await fetch(url);
-        
+
         if (!response.ok) {
-            const errorText = await response.json().catch(() => ({ message: 'Error de servidor desconocido o formato JSON inválido.' }));
-            throw new Error(`Producto no encontrado o error en el servidor. (Status: ${response.status}). Mensaje: ${errorText.message}`);
+            const errorText = await response.json().catch(() => ({ message: 'Error JSON o servidor desconocido.' }));
+            throw new Error(`Error al obtener producto. Status: ${response.status}. Mensaje: ${errorText.message}`);
         }
 
         const product = await response.json();
 
-        // Limpiamos el contenedor y renderizamos el detalle
         detailContainer.innerHTML = `
             <div class="detail-content">
                 <div class="image-section">
@@ -151,29 +139,24 @@ async function loadProductDetails() {
         `;
 
     } catch (error) {
-        console.error('Error al cargar detalles del producto:', error);
+        console.error('Error al cargar detalles:', error);
         detailContainer.innerHTML = `
-            <h2>No se pudo cargar el producto.</h2>
-            <p>El producto con ID "${productId}" no existe o hubo un error de conexión.</p>
-            <p class="error-detail">(Detalles: ${error.message})</p>
+            <h2>No se pudo cargar el producto</h2>
+            <p>${error.message}</p>
         `;
     }
 }
-
 
 // =================================================================
 // === INICIO DE LA APLICACIÓN ===
 // =================================================================
 
-// Determina qué función ejecutar basándose en la página actual
 document.addEventListener('DOMContentLoaded', () => {
     const path = window.location.pathname;
-    
+
     if (path.includes('services.html')) {
         loadCatalog();
     } else if (path.includes('producto.html')) {
         loadProductDetails();
-    } 
-    
-    // Aquí podrías añadir otras funciones de inicialización global si las necesitas.
+    }
 });

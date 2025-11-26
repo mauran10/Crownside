@@ -1,29 +1,28 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors'); 
-require('dotenv').config(); 
+const cors = require('cors');
+require('dotenv').config();
 
 // =======================================================
-// === 1. CONFIGURACIÓN DE LA BASE DE DATOS (DB) ===
+// === 1. CONEXIÓN A MONGODB ===
 // =======================================================
-const DB_URI = process.env.DB_URI; 
+
+const DB_URI = process.env.DB_URI;
 
 if (!DB_URI) {
-    console.error("❌ ERROR CRÍTICO: La variable de entorno DB_URI no está configurada.");
+    console.error("❌ ERROR: La variable DB_URI no está configurada en Vercel.");
 } else {
-    // Conexión a MongoDB (Vercel maneja la persistencia)
     mongoose.connect(DB_URI)
-        .then(() => console.log('✅ Conexión a MongoDB exitosa.'))
-        .catch(err => {
-            console.error('❌ ERROR 500: Fallo en la conexión a MongoDB. Revisa DB_URI en Vercel.', err.message);
-        });
+        .then(() => console.log("✅ Conectado a MongoDB correctamente"))
+        .catch(err => console.error("❌ Error al conectar a MongoDB:", err.message));
 }
 
-// ==================================================
-// === 2. DEFINICIÓN DEL MODELO ===
-// ==================================================
+// =======================================================
+// === 2. MODELO DE PRODUCTO (Colección: products) ===
+// =======================================================
+
 const ProductSchema = new mongoose.Schema({
-    id_producto: { type: String, required: true, unique: true }, 
+    id_producto: { type: String, required: true, unique: true },
     nombre: { type: String, required: true },
     precio: { type: Number, required: true },
     stock: { type: Number, required: true, default: 0 },
@@ -31,42 +30,81 @@ const ProductSchema = new mongoose.Schema({
     imagenUrl: String,
 });
 
-// CRÍTICO: El nombre de la colección debe coincidir exactamente con el nombre en tu MongoDB Atlas
-// Si tu colección se llama "productos", cámbialo aquí:
-const Product = mongoose.model('Product', ProductSchema, 'products'); // <--- AÑADIDO: 'products'
+// Tercer parámetro = nombre exacto de la colección en MongoDB
+const Product = mongoose.model("Product", ProductSchema, "products");
 
-// ===============================================
-// === 3. CONFIGURACIÓN Y ENDPOINTS (APIs) ===
-// ===============================================
+// =======================================================
+// === 3. APP EXPRESS / CONFIGURACIÓN CORS ===
+// =======================================================
 
 const app = express();
-
-app.use(express.json()); 
+app.use(express.json());
 
 app.use(cors({
-    origin: 'https://crownside.vercel.app', 
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    origin: 'https://crownside.vercel.app',
+    methods: 'GET,HEAD,POST,PUT,DELETE',
     credentials: true,
 }));
 
-// Endpoint 1: Obtener todos los productos (Para el catálogo)
+// =======================================================
+// === 4. OBTENER TODOS LOS PRODUCTOS ===
+// =======================================================
+
 app.get('/api/products', async (req, res) => {
-    // Verifica si la conexión está lista. Si no, devuelve 500.
+
     if (mongoose.connection.readyState !== 1) {
-        return res.status(500).json({ 
-            message: 'Error de conexión a la base de datos. Por favor, revisa la variable DB_URI en Vercel.',
-            status: 'DB_DISCONNECTED'
+        return res.status(500).json({
+            message: '❌ Error: No conectado a MongoDB'
         });
     }
-    
+
     try {
-        const products = await Product.find({});
-        console.log(`✅ API /api/products: Encontrados ${products.length} productos.`); 
-        res.json(products);
+        const productos = await Product.find({});
+        console.log(`📦 Productos encontrados: ${productos.length}`);
+        res.json(productos);
+
     } catch (err) {
-        res.status(500).json({ message: 'Error al obtener productos. Detalles: ' + err.message });
+        res.status(500).json({
+            message: "❌ Error al obtener productos",
+            details: err.message
+        });
     }
 });
 
-// === CRÍTICO PARA VERCEL ===
+// =======================================================
+// === 5. OBTENER UN PRODUCTO POR SU ID (NUEVO) ===
+// =======================================================
+
+app.get('/api/products/:id', async (req, res) => {
+
+    if (mongoose.connection.readyState !== 1) {
+        return res.status(500).json({
+            message: '❌ Error: No conectado a MongoDB'
+        });
+    }
+
+    try {
+        const id = req.params.id;
+
+        const product = await Product.findOne({ id_producto: id });
+
+        if (!product) {
+            return res.status(404).json({
+                message: `❌ Producto no encontrado con ID: ${id}`
+            });
+        }
+
+        res.json(product);
+
+    } catch (err) {
+        res.status(500).json({
+            message: "❌ Error al buscar producto",
+            details: err.message
+        });
+    }
+});
+
+// =======================================================
+// === 6. EXPORTAR APP PARA VERCEL ===
+// =======================================================
 module.exports = app;
