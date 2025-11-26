@@ -3,25 +3,20 @@ const mongoose = require('mongoose');
 const cors = require('cors'); 
 require('dotenv').config(); 
 
-// =======================================================
-// === 1. CONFIGURACIÓN DE LA BASE DE DATOS (DB) ===
-// =======================================================
+// Obtiene la variable de entorno de conexión
 const DB_URI = process.env.DB_URI; 
 
+// Conexión a MongoDB
 if (!DB_URI) {
-    console.error("❌ ERROR: La variable de entorno DB_URI no está configurada. ¡Verifica Vercel!");
+    console.error("❌ ERROR: La variable de entorno DB_URI no está configurada.");
 } else {
-    // Conexión a MongoDB (Vercel maneja la persistencia)
     mongoose.connect(DB_URI)
         .then(() => console.log('✅ Conexión a MongoDB exitosa.'))
-        .catch(err => {
-            console.error('❌ Error de conexión a MongoDB:', err.message);
-            console.error('CRÍTICO: El error 500 es casi siempre por una contraseña incorrecta o un problema de acceso de red en MongoDB Atlas.');
-        });
+        .catch(err => console.error('❌ Error de conexión a MongoDB:', err.message));
 }
 
 // ==================================================
-// === 2. DEFINICIÓN DEL MODELO ===
+// === DEFINICIÓN DEL MODELO ===
 // ==================================================
 const ProductSchema = new mongoose.Schema({
     id_producto: { type: String, required: true, unique: true }, 
@@ -35,36 +30,44 @@ const ProductSchema = new mongoose.Schema({
 const Product = mongoose.model('Product', ProductSchema);
 
 // ===============================================
-// === 3. CONFIGURACIÓN Y ENDPOINTS (APIs) ===
+// === ENDPOINT DE DETALLE ===
 // ===============================================
 
 const app = express();
-
 app.use(express.json()); 
 
+// Configuración de CORS
 app.use(cors({
     origin: 'https://crownside.vercel.app', 
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: 'GET',
     credentials: true,
 }));
 
-// Endpoint 1: Obtener todos los productos (Para el catálogo)
-app.get('/api/products', async (req, res) => {
-    // Verifica si la conexión falló
+// Endpoint para obtener UN solo producto por su ID
+// Vercel mapea la URL /api/product-detail?id=X a esta función
+app.get('/', async (req, res) => {
     if (mongoose.connection.readyState !== 1) {
         return res.status(500).json({ message: 'Error de conexión. El servidor no pudo conectarse con MongoDB.' });
     }
     
+    // Captura el ID desde la query string (el ?id=...)
+    const id_producto = req.query.id;
+    
+    if (!id_producto) {
+        return res.status(400).json({ message: 'Falta el parámetro ID del producto.' });
+    }
+    
     try {
-        const products = await Product.find({});
-        res.json(products);
+        // Busca en la base de datos
+        const product = await Product.findOne({ id_producto: id_producto });
+        if (!product) {
+            return res.status(404).json({ message: `Producto no encontrado con ID: ${id_producto}` });
+        }
+        res.json(product);
     } catch (err) {
-        // En caso de otros errores de consulta
-        res.status(500).json({ message: 'Error al obtener productos. Detalles: ' + err.message });
+        res.status(500).json({ message: 'Error en el servidor al buscar por ID. Detalles: ' + err.message });
     }
 });
 
-// Ya no hay endpoint de detalle aquí.
-
-// === CRÍTICO PARA VERCEL ===
+// Exporta la aplicación para Vercel
 module.exports = app;
