@@ -6,11 +6,12 @@ require('dotenv').config();
 // =======================================================
 // === 1. CONFIGURACIÓN DE LA BASE DE DATOS (DB) ===
 // =======================================================
-const DB_URI = process.env.DB_URI; 
+// CRÍTICO: Usa DB_URI, y si no existe (como en tu Vercel), usa MONGO_URI
+const DB_URI = process.env.DB_URI || process.env.MONGO_URI; 
 const PORT = process.env.PORT || 3000; 
 
 if (!DB_URI) {
-    console.error("❌ ERROR: La variable de entorno DB_URI no está configurada. Verifica Vercel o el archivo .env local.");
+    console.error("❌ ERROR: La variable de entorno DB_URI (o MONGO_URI) no está configurada. Verifica Vercel.");
 } else {
     mongoose.connect(DB_URI)
         .then(() => console.log('✅ Conexión a MongoDB exitosa.'))
@@ -65,6 +66,7 @@ async function seedProducts() {
         console.error('❌ Error al insertar datos iniciales (Seeding):', error.message);
     }
 }
+// Si quieres recargar la base de datos con los dos productos iniciales, descomenta la siguiente línea:
 // seedProducts(); 
 
 
@@ -76,10 +78,10 @@ const app = express();
 
 app.use(express.json()); 
 
-// Configuración de CORS: Permite que tu tienda (frontend) acceda a esta API.
-// !!! CRÍTICO: REEMPLAZA "https://[URL-DE-TU-TIENDA].vercel.app" con la URL REAL de tu frontend de Vercel !!!
+// CRÍTICO: CORS configurado para aceptar peticiones SOLO desde tu dominio de Vercel.
+// Corregido a tu dominio: https://crownside.vercel.app
 app.use(cors({
-    origin: 'https://crownside.vercel.app', // **REEMPLAZA ESTA URL CON LA DE TU TIENDA EN VERCEL**
+    origin: 'https://crownside.vercel.app', 
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
 }));
@@ -93,7 +95,8 @@ app.get('/api/products', async (req, res) => {
         const products = await Product.find({});
         res.json(products);
     } catch (err) {
-        res.status(500).json({ message: 'Error al obtener productos' });
+        // Devuelve un error 500 si falla la conexión a la DB
+        res.status(500).json({ message: 'Error al obtener productos. El servidor falló al conectar con la base de datos.' });
     }
 });
 

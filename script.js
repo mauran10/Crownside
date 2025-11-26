@@ -2,8 +2,9 @@
 // === 1. DATOS Y LÓGICA DE CARRUSEL AUTOMÁTICO (services.html) ===
 // =======================================================
 
-// ¡CRÍTICO! DEFINE LA URL DE TU API EN VERCEL AQUÍ.
-const API_BASE_URL = 'https://crownside.vercel.app'; // **REEMPLAZA ESTA URL CON LA DE TU API EN VERCEL**
+// 🛑 ¡CRÍTICO! DEFINE LA URL DE TU API EN VERCEL AQUÍ.
+// CORRECCIÓN: Apuntando directamente a tu dominio de Vercel para evitar el error de localhost:3000.
+const API_BASE_URL = 'https://crownside.vercel.app'; 
 
 // 🚨 IMPORTANTE: DEFINE AQUÍ LAS VISTAS DE CADA GORRA 🚨
 // Las claves deben coincidir con las 'id_producto' que tienes en MongoDB.
@@ -17,9 +18,9 @@ const hatViews = {
     ],
     // Gorra 2: Clásica 'Minimal'
     'minimal_02': [
-        'img/minimal_b.png',         // Nota: Cambié a minimal_b.png para que no se vea igual.
-        'img/minimal_b_side.png',    // (Asegúrate de que esta imagen exista)
-        'img/minimal_b_back.png'     // (Asegúrate de que esta imagen exista)
+        'img/minimal_b.png',         
+        'img/minimal_b_side.png',    
+        'img/minimal_b_back.png'     
     ]
     // AGREGA AQUÍ CADA GORRA ADICIONAL Y SUS VISTAS
 };
@@ -84,7 +85,6 @@ async function loadProductDetails() {
     if (!productId) return;
 
     try {
-        // 🔥 ¡CORREGIDO! Usa la variable API_BASE_URL
         const response = await fetch(`${API_BASE_URL}/api/products/${productId}`);
         
         if (!response.ok) {
@@ -114,7 +114,7 @@ async function loadProductDetails() {
     } catch (error) {
         console.error('Error al conectar con el servidor:', error);
         document.getElementById('detailTitle').textContent = 'Error de conexión';
-        document.getElementById('productDescription').textContent = 'No se pudo cargar la información del servidor. ¿Está server.js corriendo?';
+        document.getElementById('productDescription').textContent = 'No se pudo cargar la información del servidor. ¿Está el servidor activo y la base de datos conectada?';
     }
 }
 
@@ -149,9 +149,8 @@ async function loadCatalog() {
     if (!catalogContainer) return;
 
     try {
-        // 🔥 ¡CORREGIDO! Usa la variable API_BASE_URL
         const response = await fetch(`${API_BASE_URL}/api/products`);
-        if (!response.ok) throw new Error('No se pudo cargar el catálogo.');
+        if (!response.ok) throw new Error('No se pudo cargar el catálogo. (Server status: ' + response.status + ')');
 
         const products = await response.json();
         
@@ -173,7 +172,7 @@ async function loadCatalog() {
 
     } catch (error) {
         console.error('Error al cargar el catálogo:', error);
-        catalogContainer.innerHTML = '<p class="error-message">Error al conectar con la base de datos o el servidor no está corriendo.</p>';
+        catalogContainer.innerHTML = '<p class="error-message">Error al conectar con la base de datos o el servidor no está corriendo. Revisa la consola para detalles.</p>';
     }
 }
 
@@ -300,27 +299,6 @@ function renderCart() {
 
     // Agregar listeners a los botones de control (aumentar/disminuir/eliminar)
     addCartControlListeners();
-}
-
-/** Agrega listeners a los botones de cantidad y eliminar */
-function addCartControlListeners() {
-    document.querySelectorAll('.quantity-button.increase').forEach(button => {
-        button.addEventListener('click', (e) => updateQuantity(e.target.closest('button').dataset.id, 1));
-    });
-    
-    document.querySelectorAll('.quantity-button.decrease').forEach(button => {
-        button.addEventListener('click', (e) => updateQuantity(e.target.closest('button').dataset.id, -1));
-    });
-    
-    document.querySelectorAll('.remove-button').forEach(button => {
-        button.addEventListener('click', (e) => removeCartItem(e.target.closest('button').dataset.id));
-    });
-
-    // Listener para el checkout
-    const checkoutButton = document.getElementById('checkoutButton');
-    if (checkoutButton) {
-        checkoutButton.addEventListener('click', generateWhatsappLink);
-    }
 }
 
 /** Modifica la cantidad de un producto en el carrito */
