@@ -3,7 +3,6 @@
 // =======================================================
 
 // 🛑 ¡CRÍTICO! DEFINE LA URL DE TU API EN VERCEL AQUÍ.
-// CORRECCIÓN: Apuntando directamente a tu dominio de Vercel para evitar el error de localhost:3000.
 const API_BASE_URL = 'https://crownside.vercel.app'; 
 
 // 🚨 IMPORTANTE: DEFINE AQUÍ LAS VISTAS DE CADA GORRA 🚨

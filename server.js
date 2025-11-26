@@ -11,6 +11,7 @@ const DB_URI = process.env.DB_URI || process.env.MONGO_URI;
 const PORT = process.env.PORT || 3000; 
 
 if (!DB_URI) {
+    // Este error solo debe verse en local si no usas .env o en Vercel si no configuras la variable.
     console.error("❌ ERROR: La variable de entorno DB_URI (o MONGO_URI) no está configurada. Verifica Vercel.");
 } else {
     mongoose.connect(DB_URI)
@@ -79,7 +80,6 @@ const app = express();
 app.use(express.json()); 
 
 // CRÍTICO: CORS configurado para aceptar peticiones SOLO desde tu dominio de Vercel.
-// Corregido a tu dominio: https://crownside.vercel.app
 app.use(cors({
     origin: 'https://crownside.vercel.app', 
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -112,7 +112,14 @@ app.get('/api/products/:id', async (req, res) => {
 });
 
 
-// Inicia el servidor
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor Express escuchando en el puerto ${PORT}`);
-});
+// === CRÍTICO PARA VERCEL ===
+// En lugar de app.listen(), exportamos la aplicación para que Vercel la pueda ejecutar
+// como una función Serverless.
+// Mantenemos app.listen solo para pruebas locales.
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`🚀 Servidor Express escuchando en el puerto ${PORT}`);
+    });
+}
+
+module.exports = app;
