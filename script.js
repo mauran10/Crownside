@@ -84,8 +84,8 @@ async function loadProductDetails() {
     if (!productId) return;
 
     try {
-            const response = await fetch(`${API_BASE_URL}/api/products-details?id=${productId}`);   
-
+        const response = await fetch(`${API_BASE_URL}/api/products/${productId}`);
+        
         if (!response.ok) {
             document.getElementById('detailTitle').textContent = 'Producto no disponible';
             document.getElementById('productDescription').textContent = 'El producto solicitado no existe.';
