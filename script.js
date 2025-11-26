@@ -1,130 +1,143 @@
-// ===============================================================
-// === CONFIGURACIÓN DE API (AJUSTA SEGÚN VERCEL O LOCAL) ========
-// ===============================================================
-const API_BASE_URL = "https://crownside-final.vercel.app"; 
-// Si estás local, usa: "http://localhost:3000"
+// =======================================================
+// === 1. Cargar productos en el Catálogo (services.html) ===
+// =======================================================
 
-// ===============================================================
-// === CARGAR PRODUCTOS EN services.html ==========================
-// ===============================================================
 async function loadCatalog() {
-    const container = document.getElementById("catalog-container");
-    if (!container) return; // Solo aplica en services.html
-
-    container.innerHTML = `<p style="color:white;">Cargando productos...</p>`;
+    const grid = document.getElementById("catalog-grid");
+    if (!grid) return; // Evita errores si no estamos en services.html
 
     try {
-        const response = await fetch(`${API_BASE_URL}/api/products`);
-        const productos = await response.json();
+        const res = await fetch("https://crownside-backend.vercel.app/api/products");
 
-        if (!Array.isArray(productos)) throw new Error("Respuesta inválida");
+        if (!res.ok) {
+            throw new Error("Error al obtener productos: " + res.status);
+        }
 
-        container.innerHTML = "";
+        const productos = await res.json();
+        grid.innerHTML = "";
 
-        productos.forEach(p => {
-            const card = document.createElement("div");
-            card.classList.add("hat-card");
-
-            card.innerHTML = `
-                <img src="${p.imagenUrl}" alt="${p.nombre}">
-                <p class="hat-name">${p.nombre}</p>
-                <p class="hat-price">$${p.precio} MXN</p>
-
-                <button onclick="goToDetail('${p.id_producto}')">
-                    Ver Detalles
-                </button>
+        productos.forEach(prod => {
+            grid.innerHTML += `
+                <div class="product-card">
+                    <img src="${prod.imagenUrl}" alt="${prod.nombre}">
+                    <h3 class="product-name">${prod.nombre}</h3>
+                    <p class="product-description">${prod.descripcion}</p>
+                    <p class="product-price">$${prod.precio} MXN</p>
+                    <button onclick="addToCart('${prod.id_producto}')">Agregar al carrito</button>
+                </div>
             `;
-
-            container.appendChild(card);
         });
 
-    } catch (error) {
-        container.innerHTML = `
-            <p style="color:white;">❌ Error al cargar productos</p>
-            <p style="color:white;">${error}</p>
+    } catch (err) {
+        console.error("Error cargando catálogo:", err);
+        grid.innerHTML = `
+            <p style="color:red; text-align:center;">
+                ❌ Error al cargar el catálogo.
+            </p>
         `;
     }
 }
 
-// Ir al detalle del producto
-function goToDetail(id) {
-    window.location.href = `producto.html?id=${id}`;
-}
 
-// ===============================================================
-// === CARGAR DETALLE DEL PRODUCTO EN producto.html ===============
-// ===============================================================
-async function loadProductDetail() {
-    const container = document.getElementById("product-content");
-    if (!container) return; // Solo aplica en producto.html
+// =======================================================
+// === 2. Mostrar producto individual (product.html) ===
+// =======================================================
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get("id");
+async function loadProduct() {
+    const container = document.getElementById("product-detail");
+    if (!container) return; // Evita errores si no estamos en product.html
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
 
     if (!id) {
-        container.innerHTML = `<p style="color:white;">❌ ID de producto no recibido.</p>`;
+        container.innerHTML = "<p>Producto no encontrado.</p>";
         return;
     }
 
-    container.innerHTML = `<p style="color:white;">Cargando producto...</p>`;
-
     try {
-        const response = await fetch(`${API_BASE_URL}/api/products/${id}`);
+        const res = await fetch(`https://crownside-backend.vercel.app/api/products/${id}`);
 
-        if (!response.ok) throw new Error("Producto no encontrado");
+        if (!res.ok) {
+            throw new Error("Error al obtener producto: " + res.status);
+        }
 
-        const p = await response.json();
+        const prod = await res.json();
 
         container.innerHTML = `
-            <div class="product-image-display">
-                <img src="${p.imagenUrl}" class="main-product-image" alt="${p.nombre}">
-            </div>
+            <div class="product-detail-card">
+                <img src="${prod.imagenUrl}" alt="${prod.nombre}">
+                
+                <h2>${prod.nombre}</h2>
 
-            <div class="product-info-details">
-                <h2 class="detail-title">${p.nombre}</h2>
-                <p class="detail-description">${p.descripcion}</p>
-                <p class="detail-price">$<span>${p.precio}</span> MXN</p>
-                <p class="product-stock">Stock disponible: ${p.stock}</p>
+                <p>${prod.descripcion}</p>
 
-                <button class="purchase-button" onclick="addToCart('${p.id_producto}')">
+                <p class="product-price">$${prod.precio} MXN</p>
+
+                <p class="product-stock">Stock disponible: ${prod.stock}</p>
+
+                <button onclick="addToCart('${prod.id_producto}')">
                     Agregar al Carrito
                 </button>
+
+                <a href="services.html" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Volver al Catálogo
+                </a>
             </div>
         `;
 
-    } catch (error) {
+    } catch (err) {
+        console.error("Error cargando producto:", err);
+
         container.innerHTML = `
-            <h2 style="color:white;">❌ Error al cargar el producto</h2>
-            <p style="color:white;">${error}</p>
+            <p style="color:red;">
+                ❌ Error al cargar la información del producto.
+            </p>
         `;
     }
 }
 
-// ===============================================================
-// === CARRITO ================================================
-// ===============================================================
+
+// =======================================================
+// === 3. Carrito (localStorage) ===
+// =======================================================
+
 function addToCart(id) {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    cart.push(id);
-    localStorage.setItem("cart", JSON.stringify(cart));
 
+    // Verificar si ya existe en el carrito
+    const exists = cart.find(p => p.id === id);
+
+    if (exists) {
+        exists.quantity += 1;
+    } else {
+        cart.push({ id: id, quantity: 1 });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
     updateCartCounter();
+
     alert("Producto agregado al carrito 🛒");
 }
 
 function updateCartCounter() {
-    const counter = document.getElementById("cart-counter");
-    if (!counter) return;
-
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    counter.textContent = cart.length;
+    const counter = document.getElementById("cart-counter");
+
+    if (counter) {
+        const total = cart.reduce((sum, p) => sum + p.quantity, 0);
+        counter.textContent = total;
+    }
 }
 
-// ===============================================================
-// === INICIALIZACIÓN GENERAL ====================================
-// ===============================================================
+updateCartCounter();
+
+
+// =======================================================
+// === 4. Inicializar funciones según la página ===
+// =======================================================
+
 document.addEventListener("DOMContentLoaded", () => {
     loadCatalog();
-    loadProductDetail();
-    updateCartCounter();
+    loadProduct();
 });
