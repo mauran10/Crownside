@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
-<body class="product-page">
+<body>
 
     <header class="main-header">
         <div class="logo-container">
@@ -33,14 +33,11 @@
 
     <div class="header-spacer"></div>
 
-    <!-- TARJETA DEL PRODUCTO -->
-    <div class="card-container">
-
-        <div id="product-content" class="product-content">
-            <p style="color:white; text-align:center;">Cargando producto...</p>
+    <section id="product-detail" class="product-detail">
+        <div class="product-container" id="product-container">
+            <p style="color:white;">Cargando producto...</p>
         </div>
-
-    </div>
+    </section>
 
     <div class="back-button-container">
         <a href="services.html" class="back-button">
@@ -48,6 +45,88 @@
         </a>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // =============================================
+        // Obtener parámetros de la URL
+        // =============================================
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // =============================================
+        // Cargar producto desde la API
+        // =============================================
+        async function loadProduct() {
+            const id = getQueryParam("id");
+            const container = document.getElementById("product-container");
+
+            if (!id) {
+                container.innerHTML = `
+                    <h2>Error</h2>
+                    <p style="color:white;">No se proporcionó un ID de producto.</p>
+                `;
+                return;
+            }
+
+            container.innerHTML = `<p style="color:white;">Cargando información...</p>`;
+
+            try {
+                const response = await fetch(`/api/products?id=${id}`);
+
+                if (!response.ok) throw new Error("Error al consultar el producto");
+
+                const p = await response.json();
+
+                container.innerHTML = `
+                    <div class="product-card">
+                        <img src="${p.imagenUrl}" alt="${p.nombre}" class="product-image">
+
+                        <div class="product-info">
+                            <h2 class="product-title">${p.nombre}</h2>
+                            <p class="product-description">${p.descripcion}</p>
+                            <p class="product-price">$${p.precio} MXN</p>
+                            <p class="product-stock">Stock disponible: ${p.stock}</p>
+
+                            <button class="purchase-button" onclick="addToCart('${p.id_producto}')">
+                                Agregar al Carrito
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+            } catch (error) {
+                container.innerHTML = `
+                    <h2 style="color:white;">Error al cargar el producto</h2>
+                    <p style="color:white;">${error}</p>
+                `;
+            }
+        }
+
+        // =============================================
+        // Agregar al carrito
+        // =============================================
+        function addToCart(id) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            cart.push(id);
+            localStorage.setItem("cart", JSON.stringify(cart));
+            alert("Producto agregado al carrito");
+            updateCartCounter();
+        }
+
+        // =============================================
+        // Actualizar contador carrito
+        // =============================================
+        function updateCartCounter() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            document.getElementById("cart-counter").textContent = cart.length;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadProduct();
+            updateCartCounter();
+        });
+    </script>
+
 </body>
 </html>

@@ -7,47 +7,50 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
+
 <body>
+    <div class="card-container">
 
-<header class="main-header">
-    <div class="logo-container">
-        <a href="index.html">
-            <img src="img/logo_crownside.png" alt="Logo CROWNSIDE" class="header-logo">
-        </a>
-    </div>
-
-    <nav class="main-nav">
-        <ul>
-            <li><a href="index.html">Inicio</a></li>
-            <li><a href="services.html" class="active">Catálogo</a></li>
-            <li>
-                <a href="cart.html" class="cart-link">
-                    <i class="fas fa-shopping-cart"></i> Carrito 
-                    <span id="cart-counter" class="cart-counter">0</span>
+        <header class="main-header">
+            <div class="logo-container">
+                <a href="index.html">
+                    <img src="img/logo_crownside.png" alt="Logo" class="header-logo">
                 </a>
-            </li>
-        </ul>
-    </nav>
-</header>
+            </div>
 
-<div class="header-spacer"></div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="services.html">Catálogo</a></li>
+                    <li>
+                        <a href="cart.html" class="cart-link">
+                            <i class="fas fa-shopping-cart"></i> Carrito 
+                            <span id="cart-counter" class="cart-counter">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
 
-<section class="catalog-section">
-    <h3 class="catalog-title">Piezas en preventa</h3>
-    <p class="catalog-subtitle">¡Desliza para ver nuestros próximos lanzamientos!</p>
+        <div class="header-spacer"></div>
 
-    <div id="catalog-grid" class="catalog-grid"></div>
-</section>
+        <section style="background-color: rgb(70, 73, 67); padding: 20px; border-radius: 10px;">
+            <h3 style="text-align:center;">Piezas en preventa</h3>
+            <p style="text-align:center; opacity:0.7;">¡Desliza para ver nuestros próximos lanzamientos!</p>
 
-<section class="services-list">
-    <div class="back-button-container">
-        <a href="index.html" class="back-button">
-            <i class="fas fa-arrow-left"></i>
-            Volver al Inicio
-        </a>
+            <div id="catalog-container" class="hats-carousel-container"></div>
+        </section>
+
+        <section class="services-list">
+            <div class="back-button-container">
+                <a href="index.html" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Volver al Inicio
+                </a>
+            </div>
+        </section>
+
     </div>
-</section>
 
-<script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
