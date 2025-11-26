@@ -31,7 +31,9 @@ const ProductSchema = new mongoose.Schema({
     imagenUrl: String,
 });
 
-const Product = mongoose.model('Product', ProductSchema);
+// CRÍTICO: El nombre de la colección debe coincidir exactamente con el nombre en tu MongoDB Atlas
+// Si tu colección se llama "productos", cámbialo aquí:
+const Product = mongoose.model('Product', ProductSchema, 'products'); // <--- AÑADIDO: 'products'
 
 // ===============================================
 // === 3. CONFIGURACIÓN Y ENDPOINTS (APIs) ===
@@ -58,13 +60,10 @@ app.get('/api/products', async (req, res) => {
     }
     
     try {
-        // Busca todos los productos en la colección
         const products = await Product.find({});
-        // Registramos cuántos productos encontramos (para logs de Vercel)
         console.log(`✅ API /api/products: Encontrados ${products.length} productos.`); 
         res.json(products);
     } catch (err) {
-        // En caso de otros errores de consulta
         res.status(500).json({ message: 'Error al obtener productos. Detalles: ' + err.message });
     }
 });

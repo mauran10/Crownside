@@ -8,13 +8,11 @@ const DB_URI = process.env.DB_URI;
 
 // Conexión a MongoDB
 if (!DB_URI) {
-    console.error("❌ ERROR CRÍTICO: La variable de entorno DB_URI no está configurada.");
+    console.error("❌ ERROR: La variable de entorno DB_URI no está configurada.");
 } else {
     mongoose.connect(DB_URI)
         .then(() => console.log('✅ Conexión a MongoDB exitosa.'))
-        .catch(err => {
-            console.error('❌ ERROR 500: Fallo en la conexión a MongoDB. Revisa DB_URI en Vercel.', err.message);
-        });
+        .catch(err => console.error('❌ Error de conexión a MongoDB:', err.message));
 }
 
 // ==================================================
@@ -46,13 +44,10 @@ app.use(cors({
 }));
 
 // Endpoint para obtener UN solo producto por su ID
+// Vercel mapea la URL /api/product-detail?id=X a esta función
 app.get('/', async (req, res) => {
-    // Verifica si la conexión está lista. Si no, devuelve 500.
     if (mongoose.connection.readyState !== 1) {
-        return res.status(500).json({ 
-            message: 'Error de conexión a la base de datos. Por favor, revisa la variable DB_URI en Vercel.',
-            status: 'DB_DISCONNECTED'
-        });
+        return res.status(500).json({ message: 'Error de conexión. El servidor no pudo conectarse con MongoDB.' });
     }
     
     // Captura el ID desde la query string (el ?id=...)
