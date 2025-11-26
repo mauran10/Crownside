@@ -2,21 +2,24 @@
 // === 1. DATOS Y LÓGICA DE CARRUSEL AUTOMÁTICO (services.html) ===
 // =======================================================
 
+// ¡CRÍTICO! DEFINE LA URL DE TU API EN VERCEL AQUÍ.
+const API_BASE_URL = 'https://crownside.vercel.app'; // **REEMPLAZA ESTA URL CON LA DE TU API EN VERCEL**
+
 // 🚨 IMPORTANTE: DEFINE AQUÍ LAS VISTAS DE CADA GORRA 🚨
 // Las claves deben coincidir con las 'id_producto' que tienes en MongoDB.
 // Asegúrate de que las rutas de las imágenes sean correctas (ej: 'img/nombre_archivo.png').
 const hatViews = {
     // Gorra 1: Edición 'El Contable'
     'contable_01': [
-        'img/othani_gold1_f.png',    // Vista 1: Frente
-        'img/othani_gold2_f.png',    // Vista 2: Lado 
-        'img/othani_gold3_f.png'     // Vista 3: Atrás 
+        'img/othani_gold1_f.png',    // Vista 1: Frente
+        'img/othani_gold2_f.png',    // Vista 2: Lado 
+        'img/othani_gold3_f.png'     // Vista 3: Atrás 
     ],
     // Gorra 2: Clásica 'Minimal'
     'minimal_02': [
-        'img/minimal_b.png',         // Nota: Cambié a minimal_b.png para que no se vea igual.
-        'img/minimal_b_side.png',    // (Asegúrate de que esta imagen exista)
-        'img/minimal_b_back.png'     // (Asegúrate de que esta imagen exista)
+        'img/minimal_b.png',         // Nota: Cambié a minimal_b.png para que no se vea igual.
+        'img/minimal_b_side.png',    // (Asegúrate de que esta imagen exista)
+        'img/minimal_b_back.png'     // (Asegúrate de que esta imagen exista)
     ]
     // AGREGA AQUÍ CADA GORRA ADICIONAL Y SUS VISTAS
 };
@@ -81,7 +84,8 @@ async function loadProductDetails() {
     if (!productId) return;
 
     try {
-        const response = await fetch(`http://localhost:3000/api/products/${productId}`);
+        // 🔥 ¡CORREGIDO! Usa la variable API_BASE_URL
+        const response = await fetch(`${API_BASE_URL}/api/products/${productId}`);
         
         if (!response.ok) {
             document.getElementById('detailTitle').textContent = 'Producto no disponible';
@@ -95,9 +99,6 @@ async function loadProductDetails() {
         document.getElementById('detailTitle').textContent = product.nombre; 
         document.getElementById('productDescription').textContent = product.descripcion; 
         
-        // ❌ PRECIO OCULTO (Línea original eliminada):
-        // document.getElementById('detailPrice').textContent = `$${product.precio.toFixed(2)} MXN`; 
-        
         document.getElementById('productImage').src = product.imagenUrl;
         document.getElementById('productImage').alt = product.nombre;
 
@@ -106,7 +107,7 @@ async function loadProductDetails() {
         if (cartButton) {
             cartButton.dataset.id = product.id_producto;
             cartButton.dataset.name = product.nombre;
-            // A pesar de estar oculto, el precio es necesario para el carrito.
+            // El precio es necesario para el carrito.
             cartButton.dataset.price = product.precio; 
         }
 
@@ -148,7 +149,8 @@ async function loadCatalog() {
     if (!catalogContainer) return;
 
     try {
-        const response = await fetch('http://localhost:3000/api/products');
+        // 🔥 ¡CORREGIDO! Usa la variable API_BASE_URL
+        const response = await fetch(`${API_BASE_URL}/api/products`);
         if (!response.ok) throw new Error('No se pudo cargar el catálogo.');
 
         const products = await response.json();
@@ -189,6 +191,31 @@ function saveCart(cart) {
     localStorage.setItem('shoppingCart', JSON.stringify(cart));
 }
 
+function showCustomMessage(message) {
+    const container = document.body;
+    const msgElement = document.createElement('div');
+    msgElement.textContent = message;
+    msgElement.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #333;
+        color: white;
+        padding: 15px 30px;
+        border-radius: 8px;
+        z-index: 10000;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        font-family: 'Inter', sans-serif;
+        font-size: 16px;
+    `;
+    container.appendChild(msgElement);
+    
+    setTimeout(() => {
+        msgElement.remove();
+    }, 2000);
+}
+
 function addToCart(productId, name, price, quantity = 1) {
     const cart = getCart();
     const existingItem = cart.find(item => item.id === productId);
@@ -200,7 +227,7 @@ function addToCart(productId, name, price, quantity = 1) {
     }
 
     saveCart(cart);
-    alert(`"${name}" agregado al carrito!`);
+    showCustomMessage(`"${name}" agregado al carrito.`);
 }
 
 function handleAddToCartClick(event) {
@@ -214,7 +241,7 @@ function handleAddToCartClick(event) {
     if (id && name && !isNaN(price)) {
         addToCart(id, name, price);
     } else {
-        alert('Error: Datos del producto no cargados. Asegúrate de que el servidor esté corriendo.');
+        showCustomMessage('Error: Datos del producto no cargados.');
     }
 }
 
@@ -326,7 +353,7 @@ function removeCartItem(productId) {
 /** Genera el enlace de WhatsApp con el resumen del pedido */
 function generateWhatsappLink() {
     const cart = getCart();
-    if (cart.length === 0) return alert('El carrito está vacío.');
+    if (cart.length === 0) return showCustomMessage('El carrito está vacío.'); 
 
     let message = '¡Hola! Me gustaría hacer un pedido de Crownside:\n\n';
     let subtotal = 0;

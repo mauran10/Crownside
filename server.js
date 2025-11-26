@@ -1,16 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors'); // Necesario para evitar errores de seguridad CORS
-require('dotenv').config(); // Lee el archivo .env si trabajas en tu computadora
+const cors = require('cors'); 
+require('dotenv').config(); 
 
 // =======================================================
 // === 1. CONFIGURACIÓN DE LA BASE DE DATOS (DB) ===
 // =======================================================
-
-// DB_URI se leerá del archivo .env (local) o de Vercel (producción)
-// Este es el paso clave de seguridad: ya no expones la contraseña en el código.
 const DB_URI = process.env.DB_URI; 
-const PORT = process.env.PORT || 3000; // Usa el puerto de Vercel, si no existe, usa 3000 (local)
+const PORT = process.env.PORT || 3000; 
 
 if (!DB_URI) {
     console.error("❌ ERROR: La variable de entorno DB_URI no está configurada. Verifica Vercel o el archivo .env local.");
@@ -68,7 +65,6 @@ async function seedProducts() {
         console.error('❌ Error al insertar datos iniciales (Seeding):', error.message);
     }
 }
-// ⚠️ INSTRUCCIÓN: Solo descomentar para cargar el inventario UNA VEZ.
 // seedProducts(); 
 
 
@@ -83,7 +79,7 @@ app.use(express.json());
 // Configuración de CORS: Permite que tu tienda (frontend) acceda a esta API.
 // !!! CRÍTICO: REEMPLAZA "https://[URL-DE-TU-TIENDA].vercel.app" con la URL REAL de tu frontend de Vercel !!!
 app.use(cors({
-    origin: 'https://crownside.vercel.app/', 
+    origin: 'https://crownside.vercel.app', // **REEMPLAZA ESTA URL CON LA DE TU TIENDA EN VERCEL**
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
 }));
