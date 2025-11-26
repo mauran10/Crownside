@@ -1,18 +1,19 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors'); // Necesario para evitar errores de seguridad CORS
+require('dotenv').config(); // Lee el archivo .env si trabajas en tu computadora
 
 // =======================================================
 // === 1. CONFIGURACIÓN DE LA BASE DE DATOS (DB) ===
 // =======================================================
 
-// !!! ⚠️ PASO CRÍTICO: USA VARIABLES DE ENTORNO EN PRODUCCIÓN !!!
-// En tu máquina local, DB_URI puede ser 'undefined', pero Vercel le dará el valor real.
-const DB_URI = process.env.DB_URI; // Lee la cadena de conexión de Vercel
+// DB_URI se leerá del archivo .env (local) o de Vercel (producción)
+// Este es el paso clave de seguridad: ya no expones la contraseña en el código.
+const DB_URI = process.env.DB_URI; 
 const PORT = process.env.PORT || 3000; // Usa el puerto de Vercel, si no existe, usa 3000 (local)
 
 if (!DB_URI) {
-    console.error("❌ ERROR: La variable de entorno DB_URI no está configurada. Verifica Vercel.");
+    console.error("❌ ERROR: La variable de entorno DB_URI no está configurada. Verifica Vercel o el archivo .env local.");
 } else {
     mongoose.connect(DB_URI)
         .then(() => console.log('✅ Conexión a MongoDB exitosa.'))
@@ -79,9 +80,8 @@ const app = express();
 
 app.use(express.json()); 
 
-// Configuración de CORS para Vercel:
-// Permite que tu frontend de Vercel (ej: https://[nombre-de-tu-app].vercel.app) 
-// acceda a esta API. ¡Reemplaza la URL de ejemplo por la URL REAL de tu frontend!
+// Configuración de CORS: Permite que tu tienda (frontend) acceda a esta API.
+// !!! CRÍTICO: REEMPLAZA "https://[URL-DE-TU-TIENDA].vercel.app" con la URL REAL de tu frontend de Vercel !!!
 app.use(cors({
     origin: 'https://crownside.vercel.app/', 
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
