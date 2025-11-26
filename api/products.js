@@ -1,110 +1,83 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-require('dotenv').config();
-
-// =======================================================
-// === 1. CONEXIÓN A MONGODB ===
-// =======================================================
+// api/products.js
+import mongoose from "mongoose";
 
 const DB_URI = process.env.DB_URI;
 
 if (!DB_URI) {
-    console.error("❌ ERROR: La variable DB_URI no está configurada en Vercel.");
-} else {
-    mongoose.connect(DB_URI)
-        .then(() => console.log("✅ Conectado a MongoDB correctamente"))
-        .catch(err => console.error("❌ Error al conectar a MongoDB:", err.message));
+  throw new Error("❌ ERROR: Falta la variable DB_URI en Vercel.");
 }
 
 // =======================================================
-// === 2. MODELO DE PRODUCTO (Colección: products) ===
+// 🔌 CONEXIÓN A MONGODB
 // =======================================================
+async function connectDB() {
+  if (mongoose.connection.readyState === 1) return;
 
+  try {
+    await mongoose.connect(DB_URI);
+    console.log("🔥 MongoDB conectado");
+  } catch (error) {
+    console.error("❌ Error al conectar a MongoDB:", error.message);
+    throw error;
+  }
+}
+
+// =======================================================
+// 📦 MODELO DE PRODUCTO (colección: products)
+// =======================================================
 const ProductSchema = new mongoose.Schema({
-    id_producto: { type: String, required: true, unique: true },
-    nombre: { type: String, required: true },
-    precio: { type: Number, required: true },
-    stock: { type: Number, required: true, default: 0 },
-    descripcion: String,
-    imagenUrl: String,
+  id_producto: { type: String, required: true, unique: true },
+  nombre: String,
+  precio: Number,
+  stock: Number,
+  descripcion: String,
+  imagenUrl: String,
 });
 
-// Tercer parámetro = nombre exacto de la colección en MongoDB
-const Product = mongoose.model("Product", ProductSchema, "products");
+const Product =
+  mongoose.models.Product ||
+  mongoose.model("Product", ProductSchema, "products");
 
 // =======================================================
-// === 3. APP EXPRESS / CONFIGURACIÓN CORS ===
+// 📌 HANDLER DE VERCEL (SIN EXPRESS)
+// GET /api/products  → todos los productos
+// GET /api/products?id=XX → producto por ID
 // =======================================================
+export default async function handler(req, res) {
+  await connectDB();
 
-const app = express();
-app.use(express.json());
+  const { method, query } = req;
 
-app.use(cors({
-    origin: 'https://crownside.vercel.app',
-    methods: 'GET,HEAD,POST,PUT,DELETE',
-    credentials: true,
-}));
-
-// =======================================================
-// === 4. OBTENER TODOS LOS PRODUCTOS ===
-// =======================================================
-
-app.get('/api/products', async (req, res) => {
-
-    if (mongoose.connection.readyState !== 1) {
-        return res.status(500).json({
-            message: '❌ Error: No conectado a MongoDB'
-        });
-    }
-
+  if (method === "GET" && !query.id) {
     try {
-        const productos = await Product.find({});
-        console.log(`📦 Productos encontrados: ${productos.length}`);
-        res.json(productos);
-
+      const productos = await Product.find({});
+      return res.status(200).json(productos);
     } catch (err) {
-        res.status(500).json({
-            message: "❌ Error al obtener productos",
-            details: err.message
-        });
+      return res.status(500).json({
+        message: "Error al obtener productos",
+        details: err.message,
+      });
     }
-});
+  }
 
-// =======================================================
-// === 5. OBTENER UN PRODUCTO POR SU ID (NUEVO) ===
-// =======================================================
-
-app.get('/api/products/:id', async (req, res) => {
-
-    if (mongoose.connection.readyState !== 1) {
-        return res.status(500).json({
-            message: '❌ Error: No conectado a MongoDB'
-        });
-    }
-
+  if (method === "GET" && query.id) {
     try {
-        const id = req.params.id;
+      const producto = await Product.findOne({ id_producto: query.id });
 
-        const product = await Product.findOne({ id_producto: id });
-
-        if (!product) {
-            return res.status(404).json({
-                message: `❌ Producto no encontrado con ID: ${id}`
-            });
-        }
-
-        res.json(product);
-
-    } catch (err) {
-        res.status(500).json({
-            message: "❌ Error al buscar producto",
-            details: err.message
+      if (!producto) {
+        return res.status(404).json({
+          message: "Producto no encontrado",
         });
-    }
-});
+      }
 
-// =======================================================
-// === 6. EXPORTAR APP PARA VERCEL ===
-// =======================================================
-module.exports = app;
+      return res.status(200).json(producto);
+    } catch (err) {
+      return res.status(500).json({
+        message: "Error al buscar producto",
+        details: err.message,
+      });
+    }
+  }
+
+  return res.status(405).json({ message: "Método no permitido" });
+}
