@@ -1,4 +1,3 @@
-/ 🛑 CRÍTICO: Define la URL base de tu API en Vercel.
 // Asegúrate de que esta URL sea la de tu proyecto desplegado.
 const API_BASE_URL = 'https://crownside.vercel.app'; 
 
