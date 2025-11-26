@@ -57,6 +57,75 @@ body {
     display: block; /* Necesario para que el margin auto funcione */
 }
 
+/* ========================================= */
+/* === ESTILOS DE NAVEGACIÓN LOCAL (local-nav-container) === */
+/* ========================================= */
+
+.local-nav-container {
+    /* El ancho de este contenedor es inherentemente el de la tarjeta padre (.card-container) */
+    display: flex;
+    flex-direction: column; /* Apila el logo y la navegación verticalmente */
+    align-items: center; /* Centra el logo y la navegación horizontalmente */
+    padding: 10px 0 20px 0; /* Espacio interno para separarlo del contenido superior/inferior */
+    margin-bottom: 20px; /* Espacio para separar la barra del contenido de la página */
+    border-bottom: 1px solid #eeeeee; /* Línea de separación debajo del menú */
+}
+
+/* Estilo para el logo */
+.header-logo {
+    height: 60px; /* Tamaño del logo */
+    width: auto;
+    object-fit: contain;
+    margin-bottom: 15px;
+}
+
+/* Estilo para la navegación */
+.main-nav {
+    width: 100%; /* Ocupa todo el ancho de .local-nav-container */
+    text-align: center;
+}
+
+.main-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-around; /* Distribuye uniformemente los enlaces en el ancho disponible */
+    align-items: center; 
+}
+
+.main-nav a {
+    text-decoration: none;
+    color: #333333;
+    font-weight: bold;
+    padding: 8px 0;
+    transition: color 0.3s ease;
+}
+
+.main-nav a:hover {
+    color: var(--primary-color, #4CAF50); 
+}
+
+/* Estilo específico para el carrito y el contador */
+.cart-link {
+    display: flex;
+    align-items: center;
+}
+
+.cart-counter {
+    background-color: #ff0000; 
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 50%;
+    padding: 3px 6px;
+    margin-left: 5px;
+    min-width: 12px;
+    text-align: center;
+    line-height: 1;
+    display: none; 
+}
+
 
 /* --- ENCABEZADO Y PERFIL de servicios --- */
 
@@ -70,8 +139,12 @@ body {
 }
 
 .profile-info, .page-title-section {
-    padding: 30px 20px 20px;
+    padding: 20px 20px 20px;
     background-color: transparent; 
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+    position: relative;
+    z-index: 5;
+    
 }
 
 
@@ -224,7 +297,7 @@ body {
     max-width: 300px;
     scroll-snap-align: center; 
     
-    background-color:rgb(206, 201, 201); 
+    background-color:white; 
     border-radius: 10px;
     padding: 15px;
     text-align: center;
@@ -238,7 +311,7 @@ body {
     object-fit: cover;
     border-radius: 8px;
     margin-bottom: 10px;
-    background-color: #aaa;
+    background-color: whitesmoke;
     border: 1px solid var(--primary-color);
     /* ELIMINAMOS 'cursor: pointer;' */
     transition: opacity 0.3s ease-in-out;
@@ -362,3 +435,134 @@ body {
         padding-right: 5%; 
     }
 }
+
+/* ======================================= */
+/* PÁGINA DE DETALLE DE PRODUCTO (producto.html) */
+/* Diseño: Imagen Superior (Ancho Completo), Detalles Inferior */
+/* ======================================= */
+
+/* 1. Contenedor principal para centrar la tarjeta */
+.product-page .card-container {
+    padding: 0;
+    max-width: 600px; /* Ancho cómodo para una vista de producto vertical */
+}
+
+
+/* 3. Contenedor principal del contenido: Fuerza la pila vertical */
+.product-content {
+    display: flex;
+    flex-direction: column; 
+    padding: 0; 
+    gap: 0; 
+}
+
+/* 4. Área de la Imagen (Ocupa todo el ancho superior de la tarjeta) */
+.product-image-display {
+    width: 100%;
+    
+    background-color:whitesmoke; 
+    /* Quitamos el border-radius de abajo para que se una al info-details */
+    border-radius: 10px 10px 0 0; 
+    text-align: center;
+    /* Borde de la imagen */
+}
+
+.main-product-image {
+    /* La imagen ocupa todo el ancho dentro del padding de su contenedor */
+    width: 100%;
+    height: auto;
+    max-height: 200px; 
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+/* 5. Galería de vistas laterales (Thumbnails) */
+.product-gallery {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.gallery-thumbnail {
+    width: 60px; 
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s, border 0.2s;
+    border: 2px solid transparent;
+}
+.gallery-thumbnail:hover {
+    opacity: 1;
+    border: 2px solid var(--primary-color);
+}
+
+
+/* 6. Área de Información (Debajo de la imagen) */
+.product-info-details {
+    width: 100%;
+    /* Padding interno para que el texto respire */
+    padding: 20px; 
+    box-sizing: border-box;
+    background-color: var(--card-background); 
+    /* Redondeado solo en la parte inferior */
+    border-radius: 0 0 10px 10px; 
+}
+
+.detail-title {
+    font-size: 1.6em;
+    color: whitesmoke;
+    margin-bottom: 10px;
+}
+
+.detail-description {
+    font-size: 1.1em;
+    color: var(--light-text-color);
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.detail-price {
+    font-size: 2.2em; 
+    font-weight: bold;
+    color: var(--text-color);
+    margin-bottom: 30px; 
+}
+
+.detail-price span {
+    color: var(--primary-color);
+}
+
+.payment-title-detail {
+    font-size: 1.4em;
+    color: var(--secondary-color);
+    margin-bottom: 15px;
+}
+
+/* 7. Estilos de Botones de Pago (paypal y whatsapp) */
+.payment-button {
+    align-items: center;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    padding: 10px 20px;
+    transition: transform 0.2s;
+}
+
+.paypal-button {
+    background-color: #0070ba; 
+    color: white;
+}
+
+
+/* 8. Estilo del botón de Volver */
+.back-button-container {
+    padding: 20px;
+    text-align: center;
+}
+
+
