@@ -341,8 +341,8 @@
                         }
 
 
-                        .product-image-display {
-                        width: 100%;
+                        .product-image {
+                        width: -webkit-fill-available;
                         text-align: center;
                         background-color: whitesmoke;
                         border-radius: 0;
