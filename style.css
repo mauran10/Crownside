@@ -324,42 +324,42 @@
                          /* Diseño: Imagen Superior (Ancho Completo), Detalles Inferior */ 
                          /* 1. Contenedor principal para centrar la tarjeta */ 
                         .product-page .card-container {
-                            width: 100%;
-                            max-width: 100%;
-                            margin: 0;
-                            padding: 0;
-                            border-radius: 0;
-                            background-color: var(--background-color);
-                            }
+                        width: 100%;
+                        max-width: 100%;
+                        margin: 0;
+                        padding: 0;
+                        border-radius: 0;
+                        background-color: var(--background-color);
+                        }
 
 
-                            .product-content {
-                            display: flex;
-                            flex-direction: column;
-                            width: 100%;
-                            margin-top: 0;
-                            }
+                        .product-content {
+                        display: flex;
+                        flex-direction: column;
+                        width: 100%;
+                        margin-top: 0;
+                        }
 
 
-                            .product-image-display {
-                            width: 100%;
-                            text-align: center;
-                            background-color: whitesmoke;
-                            border-radius: 0;
-                            padding: 10px 0;
-                            }
+                        .product-image-display {
+                        width: 100%;
+                        text-align: center;
+                        background-color: whitesmoke;
+                        border-radius: 0;
+                        padding: 10px 0;
+                        }
 
 
-                            .main-product-image {
-                            width: 100%;
-                            max-height: 320px;
-                            object-fit: contain;
-                            }
+                        .main-product-image {
+                        width: 100%;
+                        max-height: 320px;
+                        object-fit: contain;
+                        }
 
 
-                            .product-gallery {
-                            display:flex;
-                            justify-content:center;
-                            gap:10px;
-                            margin:10px 0 5px 0;
-                            }
+                        .product-gallery {
+                        display:flex;
+                        justify-content:center;
+                        gap:10px;
+                        margin:10px 0 5px 0;
+                        }
