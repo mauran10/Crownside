@@ -178,13 +178,12 @@
             .hats-carousel-container {
                 overflow-x: scroll; 
                 scroll-snap-type: x mandatory; 
-                display: flex; gap: 15px; 
+                display: flex; 
+                gap: 15px; 
                 padding-top: 10px; 
                 padding-bottom: 20px; 
-                background-color: var(--background-color); 
                 margin-bottom: 20px; /* Centrado visual inicial */
-                 padding-left: 10%; 
-                 padding-right: 10%; 
+                flex-direction: column;
                 } 
                 
             .hats-carousel-container::-webkit-scrollbar {
@@ -208,8 +207,7 @@
                     object-fit: cover; 
                     border-radius: 8px; 
                     margin-bottom: 10px; 
-                    background-color: whitesmoke; 
-                    border: 1px solid var(--primary-color); /* ELIMINAMOS 'cursor: pointer;' */ 
+                    cursor: pointer;
                     transition: opacity 0.3s ease-in-out; 
                 } 
                 
