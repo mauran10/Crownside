@@ -320,82 +320,46 @@
                                 padding-right: 5%; 
                             } } 
                             
-                        /* ================================
-   DETALLE DEL PRODUCTO
-================================ */
+                         /* PÁGINA DE DETALLE DE PRODUCTO (producto.html) */ 
+                         /* Diseño: Imagen Superior (Ancho Completo), Detalles Inferior */ 
+                         /* 1. Contenedor principal para centrar la tarjeta */ 
+                        .product-page .card-container {
+                            width: 100%;
+                            max-width: 100%;
+                            margin: 0;
+                            padding: 0;
+                            border-radius: 0;
+                            background-color: var(--background-color);
+                            }
 
-.product-detail {
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-}
 
-.product-card {
-    background: #1b1b1b;
-    padding: 25px;
-    border-radius: 15px;
-    max-width: 500px;
-    width: 100%;
-    text-align: center;
-    margin: auto;
-    color: white;
-    box-shadow: 0px 0px 15px rgba(0,0,0,0.4);
-}
+                            .product-content {
+                            display: flex;
+                            flex-direction: column;
+                            width: 100%;
+                            margin-top: 0;
+                            }
 
-.product-image {
-    width: 100%;
-    max-width: 350px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-}
 
-.product-title {
-    margin-bottom: 12px;
-    font-size: 1.6em;
-}
+                            .product-image-display {
+                            width: 100%;
+                            text-align: center;
+                            background-color: whitesmoke;
+                            border-radius: 0;
+                            padding: 10px 0;
+                            }
 
-.product-description {
-    opacity: 0.8;
-    margin-bottom: 15px;
-}
 
-.product-price {
-    font-size: 1.3em;
-    margin-bottom: 10px;
-    font-weight: bold;
-}
+                            .main-product-image {
+                            width: 100%;
+                            max-height: 320px;
+                            object-fit: contain;
+                            }
 
-.product-stock {
-    opacity: 0.8;
-    margin-bottom: 20px;
-}
 
-.purchase-button {
-    padding: 14px 20px;
-    background: #ffcc00;
-    color: black;
-    width: 100%;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1.1em;
-    transition: 0.2s;
-}
-
-.purchase-button:hover {
-    background: #e6b800;
-    transform: scale(1.03);
-}
-
-/* Textos de carga y error */
-.loading-text,
-.error-text {
-    text-align: center;
-    color: white;
-}
-
-.error-title {
-    text-align: center;
-    color: #ff5555;
-}
+                            .product-gallery {
+                            display:flex;
+                            justify-content:center;
+                            gap:10px;
+                            margin:10px 0 5px 0;
+                            }
