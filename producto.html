@@ -35,7 +35,7 @@
 
     <section id="product-detail" class="product-detail">
         <div class="product-container" id="product-container">
-            <p style="color:white;">Cargando producto...</p>
+            <p class="loading-text">Cargando producto...</p>
         </div>
     </section>
 
@@ -46,30 +46,24 @@
     </div>
 
     <script>
-        // =============================================
-        // Obtener parámetros de la URL
-        // =============================================
         function getQueryParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(param);
         }
 
-        // =============================================
-        // Cargar producto desde la API
-        // =============================================
         async function loadProduct() {
             const id = getQueryParam("id");
             const container = document.getElementById("product-container");
 
             if (!id) {
                 container.innerHTML = `
-                    <h2>Error</h2>
-                    <p style="color:white;">No se proporcionó un ID de producto.</p>
+                    <h2 class="error-title">Error</h2>
+                    <p class="error-text">No se proporcionó un ID de producto.</p>
                 `;
                 return;
             }
 
-            container.innerHTML = `<p style="color:white;">Cargando información...</p>`;
+            container.innerHTML = `<p class="loading-text">Cargando información...</p>`;
 
             try {
                 const response = await fetch(`/api/products?id=${id}`);
@@ -82,30 +76,28 @@
                     <div class="product-card">
                         <img src="${p.imagenUrl}" alt="${p.nombre}" class="product-image">
 
-                        <div class="product-info">
-                            <h2 class="product-title">${p.nombre}</h2>
-                            <p class="product-description">${p.descripcion}</p>
-                            <p class="product-price">$${p.precio} MXN</p>
-                            <p class="product-stock">Stock disponible: ${p.stock}</p>
+                        <h2 class="product-title">${p.nombre}</h2>
 
-                            <button class="purchase-button" onclick="addToCart('${p.id_producto}')">
-                                Agregar al Carrito
-                            </button>
-                        </div>
+                        <p class="product-description">${p.descripcion}</p>
+
+                        <p class="product-price">$${p.precio} MXN</p>
+
+                        <p class="product-stock">Stock disponible: ${p.stock}</p>
+
+                        <button class="purchase-button" onclick="addToCart('${p.id_producto}')">
+                            Agregar al Carrito
+                        </button>
                     </div>
                 `;
 
             } catch (error) {
                 container.innerHTML = `
-                    <h2 style="color:white;">Error al cargar el producto</h2>
-                    <p style="color:white;">${error}</p>
+                    <h2 class="error-title">Error al cargar el producto</h2>
+                    <p class="error-text">${error}</p>
                 `;
             }
         }
 
-        // =============================================
-        // Agregar al carrito
-        // =============================================
         function addToCart(id) {
             let cart = JSON.parse(localStorage.getItem("cart")) || [];
             cart.push(id);
@@ -114,9 +106,6 @@
             updateCartCounter();
         }
 
-        // =============================================
-        // Actualizar contador carrito
-        // =============================================
         function updateCartCounter() {
             const cart = JSON.parse(localStorage.getItem("cart")) || [];
             document.getElementById("cart-counter").textContent = cart.length;
