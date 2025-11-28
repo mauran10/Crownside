@@ -175,22 +175,29 @@
             } } 
             
             /* --- ESTILOS DEL CARRUSEL DE GORRAS (SERVICES.HTML) --- */ 
-            .hats-carousel-container {
-                overflow-x: scroll; 
-                scroll-snap-type: x mandatory; 
-                display: flex; 
-                gap: 15px; 
-                padding-top: 10px; 
-                padding-bottom: 20px; 
-                margin-bottom: 20px; /* Centrado visual inicial */
-                flex-direction: column;
-                } 
-                
+           .hats-carousel-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            padding: 20px 0;
+        }
+
+        .hat-item {
+            width: 90%;
+            max-width: 400px;    /* Tamaño fijo estable */
+            min-height: 450px;   /* Altura consistente */
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+                        
             .hats-carousel-container::-webkit-scrollbar {
                  display: none; 
                 } 
                 
-                .hat-item { 
+                /*.hat-item { 
                     flex: 0 0 80%;
                     max-width: 300px;
                     scroll-snap-align:center;
@@ -198,7 +205,7 @@
                     border-radius: 10px; 
                     padding: 15px; text-align: center; 
                     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-                 } 
+                 } */
                  
                 .hat-item img { 
                     width: 100%; 
