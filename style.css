@@ -8,7 +8,11 @@
        --border-color: #333333; /* Borde oscuro y sutil */ 
        --shadow-color: rgba(0, 0, 0, 0.5); /* Sombra adaptada al oscuro */ 
     } /* --- ESTILOS GENERALES Y LAYOUT --- */ 
-    body { font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+    body { 
+         font-family: "Roboto Condensed", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
         display: flex; justify-content: center; align-items: center; min-height: 100vh;
          margin: 0; background-color: whitesmoke;
           color: black; line-height: 1.6;
@@ -222,7 +226,8 @@
          @media (max-width: 640px) { 
             .hours-title { font-size: 1.5em; } 
             .hours-list { max-width: 90%; /* Ajusta el ancho en móviles */ 
-            } } 
+            } 
+        } 
             
             /* --- ESTILOS DEL CARRUSEL DE GORRAS (SERVICES.HTML) --- */ 
            .hats-container {
@@ -231,7 +236,7 @@
             grid-template-columns: 1fr 1fr;
             /* Espacio entre las tarjetas */
             gap: 10px; 
-            padding: 10px 0;
+            padding: 10px 6px;
             /* Aseguramos que el carrusel desaparezca si se convierte en grid */
             overflow-x: hidden; 
         }
