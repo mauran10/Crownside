@@ -268,7 +268,8 @@
                 .hat-title { 
                     color: black; 
                     font-size: 13.2px; 
-                    margin: 5px 0; 
+                    margin: 5px 10px; 
+                    text-align: left;
                 } 
                 
                 .hat-description { 
@@ -276,6 +277,12 @@
                     font-size: 0.9em; 
                     margin-bottom: 15px; 
                 } 
+
+                .hat-price{
+                    font-size: 13.8px;
+                    text-align: left;
+                    margin: 3px 10px;
+                }
                 
                 /* Botón de Compra Específico */ 
                 .purchase-button { 
