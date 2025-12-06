@@ -118,7 +118,57 @@
                              position: relative; z-index: 5;
                              } 
                              
-                    .title { font-size: 1.1em; color: lightslategray; margin-top: 0; } /* --- BOTONES PRINCIPALES (INDEX.HTML) --- */ .social-shop-links { display: flex; flex-direction: column; align-items: center; gap: 15px; padding: 20px; background-color: var(--background-color); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); } .link-item { /* **CAMBIOS CLAVE PARA EL ANCHO:** */ width: 95%; /* Incrementamos el ancho para que esté más cerca de los bordes del contenedor */ max-width: 350px; /* Incrementamos el ancho máximo en pantallas grandes */ display: flex; flex-direction: row; align-items: center; justify-content: center; padding: 15px 25px; text-decoration: none; background-color: var(--card-background); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 8px; transition: all 0.2s ease-in-out; } .link-item:hover { background-color: var(--primary-color); color: var(--background-color); transform: translateY(-2px); box-shadow: 0 4px 8px var(--shadow-color); } .link-item i { font-size: 1.5em; margin-right: 20px; margin-bottom: 5px; } .link-item span { font-size: 1em; font-weight: 600; } 
+                    .title { 
+                        font-size: 1.1em; 
+                        color: lightslategray; 
+                        margin-top: 0; 
+                    } 
+                    /* --- BOTONES PRINCIPALES (INDEX.HTML) --- */ 
+                    
+                    .social-shop-links {
+                         display: flex; 
+                         flex-direction: column; 
+                         align-items: center; 
+                         gap: 15px; 
+                         padding: 20px; 
+                         background-color: var(--background-color); 
+                         border-top: 1px solid var(--border-color);
+                          border-bottom: 1px solid var(--border-color); 
+                        } 
+                        
+                        .link-item {
+                             /* **CAMBIOS CLAVE PARA EL ANCHO:** */ 
+                             width: 95%;/* Incrementamos el ancho para que esté más cerca de los bordes del contenedor */ 
+                             max-width: 350px; /* Incrementamos el ancho máximo en pantallas grandes */ 
+                             display: flex; 
+                             flex-direction: row;
+                             align-items: center; 
+                             justify-content: center; 
+                             padding: 15px 25px; 
+                             text-decoration: none; 
+                             background-color: var(--card-background); 
+                             color: var(--text-color); 
+                             border: 1px solid var(--border-color); 
+                             border-radius: 8px; 
+                             transition: all 0.2s ease-in-out;
+                             } 
+                             
+                             .link-item:hover { 
+                                background-color: var(--primary-color); 
+                                color: var(--background-color); 
+                                transform: translateY(-2px); 
+                                box-shadow: 0 4px 8px var(--shadow-color); 
+                            } 
+                            
+                            .link-item i { 
+                                font-size: 1.5em; 
+                                margin-right: 20px; 
+                                margin-bottom: 5px; 
+                            } 
+                            .link-item span { 
+                                font-size: 1em; 
+                                font-weight: 600; 
+                            } 
 /*SECCION DE HORARIO DE PUESTO*/ 
 .business-hours-section { 
     padding: 10px 20px;
@@ -175,12 +225,15 @@
             } } 
             
             /* --- ESTILOS DEL CARRUSEL DE GORRAS (SERVICES.HTML) --- */ 
-           .hats-carousel-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 25px;
-            padding: 20px 0;
+           .hats-container {
+           display: grid;
+            /* Dos columnas de igual ancho */
+            grid-template-columns: 1fr 1fr;
+            /* Espacio entre las tarjetas */
+            gap: 10px; 
+            padding: 10px 0;
+            /* Aseguramos que el carrusel desaparezca si se convierte en grid */
+            overflow-x: hidden; 
         }
 
         .hat-item {
@@ -318,11 +371,15 @@
                             font-size: 1em; 
                         }
                         
-                            /* 6. CARRUSEL DE GORRAS (services.html) */ 
-                            .hats-carousel-container { 
-                                /* Ajusta el padding para que el carrusel se vea mejor de borde a borde */ 
-                                padding-left: 5%; 
-                                padding-right: 5%; 
+                            .hatscontainer { 
+                               display: grid;
+                                /* Dos columnas de igual ancho */
+                                grid-template-columns: 1fr 1fr;
+                                /* Espacio entre las tarjetas */
+                                gap: 10px; 
+                                padding: 10px 0;
+                                /* Aseguramos que el carrusel desaparezca si se convierte en grid */
+                                overflow-x: hidden; 
                             } } 
                             
                          /* PÁGINA DE DETALLE DE PRODUCTO (producto.html) */ 
