@@ -237,10 +237,8 @@
         }
 
         .hat-item {
-            width: 90%;
             max-width: 400px;    /* Tamaño fijo estable */
-            min-height: 450px;   /* Altura consistente */
-            margin: 0 auto;
+            min-height: 10px;   /* Altura consistente */
             background-color: white;
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
@@ -250,15 +248,6 @@
                  display: none; 
                 } 
                 
-                /*.hat-item { 
-                    flex: 0 0 80%;
-                    max-width: 300px;
-                    scroll-snap-align:center;
-                    background-color:white; 
-                    border-radius: 10px; 
-                    padding: 15px; text-align: center; 
-                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-                 } */
                  
                 .hat-item img { 
                     width: 100%; 
@@ -273,7 +262,7 @@
                 
                 .hat-title { 
                     color: black; 
-                    font-size: 1.2em; 
+                    font-size: 13.2px; 
                     margin: 5px 0; 
                 } 
                 

@@ -32,7 +32,6 @@ async function loadCatalog() {
                 <img src="${p.imagenUrl}" alt="${p.nombre}">
                 <h3 class="hat-title">${p.nombre}</h3>
                 <p class="hat-price">$${p.precio} MXN</p>
-                <button class="purchase-button">Ver más</button>
             </div>
         `).join("");
 
