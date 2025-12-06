@@ -31,7 +31,6 @@ async function loadCatalog() {
             <div class="hat-item" onclick="goToProduct('${p.id_producto}')">
                 <img src="${p.imagenUrl}" alt="${p.nombre}">
                 <h3 class="hat-title">${p.nombre}</h3>
-                <p class="hat-description">${p.descripcion}</p>
                 <p class="hat-price">$${p.precio} MXN</p>
                 <button class="purchase-button">Ver más</button>
             </div>
