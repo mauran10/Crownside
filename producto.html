@@ -8,7 +8,104 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Estilos específicos para la página de producto y la galería -->
+    <style>
+        .product-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .product-card {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Contenedor de la galería */
+        .image-gallery {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Imagen principal */
+        .main-product-image {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: opacity 0.3s ease;
+        }
+
+        /* Contenedor de miniaturas */
+        .thumbnail-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px; /* Para sombra o barra de desplazamiento */
+        }
+
+        /* Estilo de miniatura */
+        .thumbnail {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+
+        .thumbnail.active, .thumbnail:hover {
+            border-color: #1e1e1e; /* Color de borde activo/hover */
+        }
+
+        /* Detalle del producto */
+        .product-title {
+            font-family: 'Roboto Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+        }
+
+        .product-price {
+            font-weight: 700;
+            color: #E53E3E;
+            font-size: 20px;
+        }
+
+        .purchase-button {
+            padding: 12px 20px;
+            background-color: #1e1e1e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        /* Asegúrate de reemplazar alert() con un modal de confirmación */
+        .custom-alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1e1e1e;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body>
@@ -52,14 +149,58 @@
 
 </div>
     <script>
+        // Utilidad para obtener parámetros de la URL
         function getQueryParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(param);
         }
 
+        // --- FUNCIONES DE GALERÍA DE IMÁGENES ---
+
+        /**
+         * Inicializa la galería de imágenes (main image y thumbnails).
+         * @param {string} mainImageUrl - URL de la imagen principal.
+         * @param {string[]} additionalImages - Array de URLs de imágenes secundarias.
+         */
+        function initializeGallery(mainImageUrl, additionalImages) {
+            const allImages = [mainImageUrl, ...additionalImages];
+            const mainImageElement = document.getElementById('main-product-image');
+            const thumbnailContainer = document.getElementById('thumbnail-container');
+            
+            if (!mainImageElement || !thumbnailContainer) return;
+
+            thumbnailContainer.innerHTML = ''; // Limpiar miniaturas existentes
+
+            allImages.forEach((url, index) => {
+                const thumbnail = document.createElement('img');
+                thumbnail.src = url;
+                thumbnail.alt = `Vista ${index + 1}`;
+                thumbnail.className = 'thumbnail';
+                
+                // Marcar la primera imagen como activa
+                if (index === 0) {
+                    thumbnail.classList.add('active');
+                }
+
+                // Evento para cambiar la imagen principal al hacer clic
+                thumbnail.addEventListener('click', () => {
+                    mainImageElement.src = url;
+                    
+                    // Actualizar clase activa
+                    document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                    thumbnail.classList.add('active');
+                });
+
+                thumbnailContainer.appendChild(thumbnail);
+            });
+        }
+
+        // --- FUNCIONES PRINCIPALES ---
+
         async function loadProduct() {
             const id = getQueryParam("id");
             const container = document.getElementById("product-container");
+            const API_BASE_URL = ''; // Dejamos vacío, asumimos que es el mismo host
 
             if (!id) {
                 container.innerHTML = `
@@ -72,43 +213,82 @@
             container.innerHTML = `<p class="loading-text">Cargando información...</p>`;
 
             try {
-                const response = await fetch(`/api/products?id=${id}`);
+                // USAMOS /api/product-detail para obtener los detalles COMPLETOS
+                const response = await fetch(`${API_BASE_URL}/api/product-detail?id=${id}`);
 
-                if (!response.ok) throw new Error("Error al consultar el producto");
+                if (!response.ok) throw new Error("Error al consultar el producto o producto no encontrado.");
 
                 const p = await response.json();
+                
+                // Preparamos las imágenes (incluyendo la principal en el array para la galería)
+                const mainImageUrl = p.imagenUrl || 'https://placehold.co/400x400/CCCCCC/333333?text=IMAGEN+PRINCIPAL';
+                // Aseguramos que 'imagenesAdicionales' sea un array (puede ser null/undefined si no se guardó en la DB)
+                const additionalImages = Array.isArray(p.imagenesAdicionales) ? p.imagenesAdicionales : [];
 
+                // Renderizar la estructura del producto
                 container.innerHTML = `
                     <div class="product-card">
-                        <img src="${p.imagenUrl}" alt="${p.nombre}" class="product-image">
+                        
+                        <!-- GALERÍA DE IMÁGENES -->
+                        <div class="image-gallery">
+                            <img id="main-product-image" src="${mainImageUrl}" alt="${p.nombre}" class="main-product-image">
+                            <!-- Contenedor para las miniaturas -->
+                            <div class="thumbnail-container" id="thumbnail-container">
+                                <!-- Las miniaturas se inyectarán aquí -->
+                            </div>
+                        </div>
 
                         <h2 class="product-title">${p.nombre}</h2>
 
-                        <p class="product-description">${p.descripcion}</p>
+                        <p class="product-description">${p.descripcion || 'Sin descripción disponible.'}</p>
 
-                        <p class="product-price">$${p.precio} MXN</p>
+                        <p class="product-price">$${p.precio ? p.precio.toFixed(2) : 'N/A'} MXN</p>
 
-                        <p class="product-stock">Stock disponible: ${p.stock}</p>
+                        <p class="product-stock">Stock disponible: ${p.stock || 0}</p>
 
-                        <button class="purchase-button" onclick="addToCart('${p.id_producto}')">
+                        <button class="purchase-button" onclick="addToCart('${p.id_producto}', '${p.nombre.replace(/'/g, "\\'")}', ${p.precio})">
                             Agregar al Carrito
                         </button>
                     </div>
                 `;
+                
+                // Inicializar la galería DESPUÉS de renderizar el HTML
+                initializeGallery(mainImageUrl, additionalImages);
 
             } catch (error) {
+                console.error("Error en loadProduct:", error);
                 container.innerHTML = `
                     <h2 class="error-title">Error al cargar el producto</h2>
-                    <p class="error-text">${error}</p>
+                    <p class="error-text">Verifica que el ID sea correcto y que el servidor esté funcionando: ${error.message}</p>
                 `;
             }
         }
 
-        function addToCart(id) {
+        // Reemplazamos alert() con una función de notificación visual
+        function showCustomAlert(message) {
+            const existingAlert = document.querySelector('.custom-alert');
+            if (existingAlert) existingAlert.remove();
+
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'custom-alert';
+            alertDiv.textContent = message;
+            document.body.appendChild(alertDiv);
+
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 2000); 
+        }
+
+        // Corregido para que reciba más datos y use showCustomAlert
+        function addToCart(id, name, price) {
+            // **ADVERTENCIA: Usar localStorage para el carrito es INSEGURO y NO PERSISTENTE en entornos reales.** // Se recomienda migrar a Firestore (como se recomienda en las instrucciones de Google) 
+            // para una aplicación real y multiusuario.
+            
             let cart = JSON.parse(localStorage.getItem("cart")) || [];
-            cart.push(id);
+            cart.push({ id: id, name: name, price: price, quantity: 1 }); // Guardamos el objeto completo para mejor manejo
             localStorage.setItem("cart", JSON.stringify(cart));
-            alert("Producto agregado al carrito");
+            
+            showCustomAlert(`"${name}" agregado al carrito.`);
             updateCartCounter();
         }
 
@@ -122,7 +302,6 @@
             updateCartCounter();
         });
         
-    
     </script>
 
 </body>
