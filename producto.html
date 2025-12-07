@@ -10,51 +10,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- Estilos CSS específicos para la galería y el alert personalizado -->
+    <!-- Estilos CSS específicos para el carrusel y el alert personalizado -->
     <style>
-        /* Estilos de la galería de imágenes */
-        .image-gallery {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            max-width: 400px; /* Limita el ancho de la galería en el centro */
-            margin: 0 auto;
-        }
-
-        .main-product-image {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            cursor: zoom-in; /* Indicamos que se puede hacer zoom si se implementa */
-        }
-
-        .thumbnail-container {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-            justify-content: center;
-            width: 100%;
-        }
-
-        .thumbnail {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 4px;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: border-color 0.2s ease;
-        }
-
-        .thumbnail.active, .thumbnail:hover {
-            border-color: #1e1e1e; /* Color de borde activo/hover */
-        }
-        
-        /* Estilos del producto */
+        /* Estilos generales del contenedor */
         .product-container {
             display: flex;
             flex-direction: column;
@@ -72,6 +30,69 @@
             text-align: center;
         }
 
+        /* --- Estilos de la Galería y Carrusel (Solo táctil) --- */
+        .image-gallery {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 400px; 
+            margin: 0 auto;
+        }
+
+        .main-product-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        /* Contenedor del Carrusel de Miniaturas (Permite Swipe) */
+        .carousel-wrapper {
+            width: 100%;
+            margin-top: 15px;
+            /* Eliminamos las flechas, el contenedor ocupa todo el ancho */
+        }
+
+        /* Contenedor con scroll horizontal (swipe) para las miniaturas */
+        .thumbnail-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: scroll; /* Permite el desplazamiento por swipe */
+            scroll-behavior: smooth; 
+            -webkit-overflow-scrolling: touch; /* Mejora el desplazamiento táctil en iOS */
+            padding: 5px 0;
+            justify-content: flex-start; /* Alinea las miniaturas a la izquierda */
+        }
+        
+        /* Ocultar barra de scroll (opcional, pero mejora la estética móvil) */
+        .thumbnail-container::-webkit-scrollbar {
+            display: none; 
+        }
+        .thumbnail-container {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+
+        /* Estilo de miniatura */
+        .thumbnail {
+            min-width: 60px; /* Tamaño fijo */
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s ease, transform 0.1s;
+        }
+
+        .thumbnail.active, .thumbnail:hover {
+            border-color: #1e1e1e; 
+            transform: scale(1.05);
+        }
+
+        /* Las flechas ya no son necesarias y se eliminan del CSS */
+        
+        /* Botón de compra y alerta */
         .purchase-button {
             padding: 12px 20px;
             background-color: #1e1e1e;
@@ -155,10 +176,10 @@
             return urlParams.get(param);
         }
 
-        // --- Funciones de la Galería de Imágenes ---
+        // --- Funciones de la Galería de Imágenes (Carrusel Táctil) ---
 
         /**
-         * Inicializa la galería de imágenes: imagen principal y miniaturas.
+         * Inicializa la galería de imágenes: imagen principal y carrusel de miniaturas.
          * @param {string} mainImageUrl - URL de la imagen principal.
          * @param {string[]} additionalImages - Array de URLs de imágenes secundarias.
          */
@@ -167,7 +188,7 @@
             const allImages = [mainImageUrl, ...(Array.isArray(additionalImages) ? additionalImages : [])];
             const mainImageElement = document.getElementById('main-product-image');
             const thumbnailContainer = document.getElementById('thumbnail-container');
-            
+
             if (!mainImageElement || !thumbnailContainer) return;
 
             thumbnailContainer.innerHTML = ''; // Limpiar miniaturas existentes
@@ -187,6 +208,12 @@
                 thumbnail.addEventListener('click', () => {
                     mainImageElement.src = url;
                     
+                    // Desplazamos el contenedor para centrar la miniatura activa (opcional, pero mejora UX)
+                    const thumbnailWidth = thumbnail.offsetWidth + 10; // ancho + gap
+                    const containerWidth = thumbnailContainer.offsetWidth;
+                    const scrollPosition = thumbnail.offsetLeft - (containerWidth / 2) + (thumbnailWidth / 2);
+                    thumbnailContainer.scrollLeft = scrollPosition;
+
                     // Actualizar clase activa
                     document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
                     thumbnail.classList.add('active');
@@ -194,11 +221,13 @@
 
                 thumbnailContainer.appendChild(thumbnail);
             });
+            
+            // Eliminamos la lógica de las flechas, ya no son necesarias.
         }
         
         // --- Reemplazo de window.alert() ---
         
-        function showCustomAlert(message) {
+        function showCustomAlert(message, duration = 2000) {
             let alertDiv = document.getElementById('custom-alert-box');
             if (!alertDiv) {
                 alertDiv = document.createElement('div');
@@ -212,7 +241,7 @@
 
             setTimeout(() => {
                 alertDiv.classList.remove('visible');
-            }, 2000); 
+            }, duration); 
         }
 
 
@@ -221,7 +250,7 @@
         async function loadProduct() {
             const id = getQueryParam("id");
             const container = document.getElementById("product-container");
-            const API_BASE_URL = ''; // Usamos ruta relativa (mismo host)
+            const API_BASE_URL = ''; // Usamos ruta relativa
 
             if (!id) {
                 container.innerHTML = `
@@ -243,17 +272,23 @@
                 
                 // Extraemos las imágenes. Usamos una imagen por defecto si no existe p.imagenUrl
                 const mainImageUrl = p.imagenUrl || 'https://placehold.co/400x400/CCCCCC/333333?text=IMAGEN+PRINCIPAL';
-                const additionalImages = p.imagenesAdicionales || []; // Asume que el servidor devuelve este campo
+                // Aseguramos que 'imagenesAdicionales' sea un array (o un array vacío si no existe)
+                const additionalImages = p.imagenesAdicionales || []; 
 
+                // Renderizar la estructura del producto, eliminando las flechas del carrusel
                 container.innerHTML = `
                     <div class="product-card">
                         
                         <!-- GALERÍA DE IMÁGENES -->
                         <div class="image-gallery">
                             <img id="main-product-image" src="${mainImageUrl}" alt="${p.nombre}" class="main-product-image">
-                            <!-- Contenedor para las miniaturas -->
-                            <div class="thumbnail-container" id="thumbnail-container">
-                                <!-- Las miniaturas se inyectarán aquí por JS -->
+                            
+                            <!-- CONTENEDOR DEL CARRUSEL DE MINIATURAS (AHORA SÓLO CON SWIPE) -->
+                            <div class="carousel-wrapper">
+                                <div class="thumbnail-container" id="thumbnail-container">
+                                    <!-- Las miniaturas se inyectarán aquí por JS -->
+                                </div>
+                                <!-- Botones de flecha eliminados -->
                             </div>
                         </div>
 
@@ -265,7 +300,7 @@
 
                         <p class="product-stock">Stock disponible: ${p.stock || 0}</p>
 
-                        <button class="purchase-button" onclick="addToCart('${p.id_producto}', '${p.nombre.replace(/'/g, "\\'")}')">
+                        <button class="purchase-button" onclick="addToCart('${p.id_producto}', '${p.nombre.replace(/'/g, "\\'")}', ${p.precio || 0})">
                             Agregar al Carrito
                         </button>
                     </div>
@@ -284,13 +319,11 @@
         }
 
         // Modificamos addToCart para usar el alert personalizado y guardar nombre/precio
-        function addToCart(id, name) {
-            // **IMPORTANTE: Debes asegurarte que 'name' llegue correctamente desde el onclick**
-            
+        function addToCart(id, name, price) {
             let cart = JSON.parse(localStorage.getItem("cart")) || [];
             
-            // Añadimos solo el ID por simplicidad, como estaba en tu original
-            cart.push(id);
+            // Agregamos un objeto más completo al carrito para usarlo en la página 'cart.html'
+            cart.push({ id: id, name: name, price: price, quantity: 1 });
             localStorage.setItem("cart", JSON.stringify(cart));
             
             // Usamos el alert personalizado
