@@ -13,58 +13,65 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap" rel="stylesheet">
 
     <!-- =============================
-         CSS DE SERVICES PEGADO AQUÍ
+         CSS ESTILO SERVICES INTEGRADO
          ============================= -->
     <style>
-        /* Contenedor de gorras */
+        /* CONTENEDOR PRINCIPAL */
+        .card-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        /* CONTENEDOR DE GORRAS */
         .hats-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
             padding: 20px;
         }
 
-        /* Tarjetas */
+        /* TARJETA */
         .hat-card {
-            width: 200px;
-            background-color: white;
-            border-radius: 10px;
-            padding: 15px;
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 12px;
             text-align: center;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
             cursor: pointer;
-            box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
-            transition: 0.2s ease-in-out;
+            transition: .25s ease-in-out;
         }
 
         .hat-card:hover {
-            transform: scale(1.05);
+            transform: translateY(-5px);
+            box-shadow: 0px 8px 20px rgba(0,0,0,0.15);
         }
 
         .hat-img {
             width: 100%;
-            height: auto;
-            border-radius: 8px;
+            border-radius: 10px;
         }
 
         .price {
+            font-size: 1rem;
             font-weight: bold;
             color: #333;
+            margin-top: 8px;
         }
 
-        /* Botón de volver */
+        /* BOTÓN VOLVER */
         .back-button-container {
             text-align: center;
-            margin-top: 20px;
+            margin: 30px 0;
         }
 
         .back-button {
             display: inline-block;
-            padding: 10px 20px;
-            background-color: black;
-            color: white;
+            padding: 12px 20px;
+            background-color: #000;
+            color: #fff;
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 10px;
             transition: 0.2s ease-in-out;
         }
 
@@ -72,40 +79,54 @@
             background-color: #333;
         }
 
-        /* Navbar */
+        /* NAVBAR */
         .main-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            background-color: white;
+            padding: 15px 25px;
+            background-color: #fff;
             border-bottom: 1px solid #ddd;
-        }
-
-        .main-nav ul {
-            display: flex;
-            gap: 20px;
-            list-style: none;
-        }
-
-        .main-nav ul li a {
-            text-decoration: none;
-            color: black;
-            font-weight: bold;
-            transition: 0.2s;
-        }
-
-        .main-nav ul li a:hover {
-            opacity: 0.7;
         }
 
         .header-logo {
             height: 60px;
         }
 
+        .main-nav ul {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+
+        .main-nav ul li a {
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+            transition: .2s;
+        }
+
+        .main-nav ul li a:hover {
+            opacity: .7;
+        }
+
         .active {
             border-bottom: 2px solid black;
             padding-bottom: 3px;
+        }
+
+        .cart-counter {
+            background-color: red;
+            padding: 3px 8px;
+            border-radius: 8px;
+            margin-left: 5px;
+            color: white;
+            font-size: 0.8rem;
+        }
+
+        /* ESPACIADOR BAJO NAV */
+        .header-spacer {
+            height: 20px;
         }
     </style>
 </head>
@@ -138,8 +159,8 @@
 
         <div class="header-spacer"></div>
 
-        <!-- CONTENEDOR DE PREVENTAS -->
-        <section style="background-color: whitesmoke; padding: 20px 0px; border-radius: 10px;">
+        <!-- CONTENIDO PRINCIPAL -->
+        <section style="background-color: whitesmoke; padding: 30px 0; border-radius: 10px;">
             <h3 style="text-align:center;">Preventas Exclusivas</h3>
             <p style="text-align:center; opacity:0.7;">¡Desliza para ver las piezas en pre-lanzamiento!</p>
 
@@ -147,7 +168,7 @@
         </section>
 
         <!-- BOTÓN VOLVER -->
-        <section class="services-list">
+        <section>
             <div class="back-button-container">
                 <a href="index.html" class="back-button">
                     <i class="fas fa-arrow-left"></i> Volver al Inicio
@@ -157,7 +178,7 @@
 
     </div>
 
-    <!-- SCRIPT QUE CARGA SOLO PREVENTAS -->
+    <!-- SCRIPT -->
     <script src="script-presales.js"></script>
 </body>
 </html>
