@@ -25,7 +25,13 @@ async function loadPreSales() {
 
     try {
         const response = await fetch(API_URL);
-        const data = await response.json();
+
+        // 👀 Ver respuesta REAL antes de intentar convertir a JSON
+        const raw = await response.text();
+        console.log("📌 RAW RESPONSE DESDE LA API:", raw);
+
+        // Intentar convertir raw a JSON
+        const data = JSON.parse(raw);
 
         if (!Array.isArray(data) || data.length === 0) {
             container.innerHTML = `
@@ -55,7 +61,7 @@ async function loadPreSales() {
     }
 }
 
-// Ir al detalle con tipo=preventa
+// Ir al detalle con type=preventa
 function goToDetail(id) {
     window.location.href = `producto.html?id=${id}&type=preventa`;
 }
