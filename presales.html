@@ -4,59 +4,194 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Preventas Exclusivas - CROWNSIDE</title>
+    
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- NUEVA FUENTE A PETICIÓN DEL USUARIO -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap" rel="stylesheet">
+    
+    <!-- ESTILOS INTERNOS MANTENIDOS (CRÍTICOS PARA EL GRID Y TARJETAS DE PREVENTA) -->
+    <style>
+        /* Contenedor principal para el grid de productos */
+        #catalog-container {
+            display: grid;
+            /* Dos columnas de igual ancho */
+            grid-template-columns: 1fr 1fr;
+            /* Espacio entre las tarjetas */
+            gap: 15px; 
+            padding: 15px 0;
+            overflow-x: hidden; 
+        }
+        
+        /* Estilo base para la tarjeta de producto */
+        .service-card {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            background-color: white;
+            position: relative;
+        }
+
+        .service-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Contenedor de imagen */
+        .service-image-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1; 
+        }
+        
+        .service-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* ETIQUETA DE ESTADO DE PREVENTA */
+        .presale-status-tag {
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 5px 10px;
+            color: white;
+            font-size: 10px;
+            font-weight: 900;
+            border-bottom-right-radius: 12px;
+            z-index: 10;
+        }
+
+        .presale-active {
+            background-color: #E53E3E; /* Rojo de acento */
+        }
+        
+        .presale-ended {
+            background-color: #4A5568; /* Gris oscuro para terminada */
+            opacity: 0.9;
+        }
+
+
+        /* Detalles del producto */
+        .service-details {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .service-details h4 {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .service-details .price {
+            font-size: 14px;
+            color: #E53E3E; 
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        /* Botón de acción para Ver Detalles/Pronto en Inventario */
+        .action-button {
+            display: inline-block;
+            width: 100%;
+            padding: 8px 0;
+            background-color: #1e1e1e;
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            margin-top: 5px;
+        }
+
+        .action-button:hover {
+            background-color: #333;
+        }
+        
+        /* Deshabilita el enlace/botón visualmente si la preventa terminó */
+        .disabled-link {
+            pointer-events: none; /* Deshabilita clics */
+            opacity: 0.6; /* Lo hace ver inactivo */
+        }
+
+        /* Estilos para el texto de encabezado */
+        .page-title {
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 24px;
+            font-weight: 900;
+            color: #1e1e1e;
+            padding-top: 20px;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #4A5568;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="card-container">
+    <div class="card-container">
 
-       <header class="main-header">
-        <div class="logo-container">
-            <a href="index.html">
-                <!-- Se asume que tienes esta imagen en el directorio img/ -->
-                <img src="img/logo_crownside.png" alt="Logo CROWNSIDE" class="header-logo">
-            </a>
-        </div>
+       <header class="main-header">
+        <div class="logo-container">
+            <a href="index.html">
+                <!-- Se asume que tienes esta imagen en el directorio img/ -->
+                <img src="img/logo_crownside.png" alt="Logo CROWNSIDE" class="header-logo">
+            </a>
+        </div>
 
-        <nav class="main-nav">
-            <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="services.html">Catálogo</a></li>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <!-- CORREGIDO: Enlace a catalog.html -->
+                <li><a href="catalog.html">Catálogo</a></li>
                 <!-- DESTACADO: El enlace a esta página -->
-                <li><a href="presales.html">Preventas</a></li>
-                <li>
-                    <a href="cart.html" class="cart-link">
-                        <i class="fas fa-shopping-cart"></i> Carrito 
-                        <span id="cart-counter" class="cart-counter">0</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </header>
+                <li class="active-link"><a href="presales.html">Preventas</a></li>
+                <li>
+                    <a href="cart.html" class="cart-link">
+                        <i class="fas fa-shopping-cart"></i> Carrito 
+                        <span id="cart-counter" class="cart-counter">0</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
 
-        <div class="header-spacer"></div>
+        <div class="header-spacer"></div>
 
-        <section style="background-color:whitesmoke; padding: 20px 0px; border-radius: 10px;">
-            <h3 style="text-align:center;">Nuestras proximas preventas</h3>
-            <p style="text-align:center; opacity:0.7;">¡Desliza para ver!</p>
+        <!-- TÍTULOS Y CONTENEDOR SEGÚN TU ESTRUCTURA -->
+        <section style="background-color:whitesmoke; padding: 20px 0px; border-radius: 10px;">
+            <h3 style="text-align:center;">Nuestras proximas preventas</h3>
+            <p style="text-align:center; opacity:0.7;">¡Desliza para ver!</p>
 
-            <div id="catalog-container" class="hats-container"></div>
-        </section>
+            <!-- Este es el contenedor donde script.js inyectará el contenido -->
+            <div id="catalog-container" class="hats-container"></div>
+        </section>
 
-        <section class="services-list">
-            <div class="back-button-container">
-                <a href="index.html" class="back-button">
-                    <i class="fas fa-arrow-left"></i> Volver al Inicio
-                </a>
-            </div>
-        </section>
+        <section class="services-list">
+            <div class="back-button-container">
+                <a href="index.html" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Volver al Inicio
+                </a>
+            </div>
+        </section>
 
-    </div>
+    </div>
 
-    <script src="script.js"></script>
+    <!-- CRÍTICO: El script debe estar aquí para la conexión -->
+    <script src="script.js"></script>
 </body>
 </html>

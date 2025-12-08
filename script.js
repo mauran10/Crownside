@@ -1,4 +1,3 @@
-// Asumo que esta constante existe en la parte superior de tu script.js
 const API_BASE_URL = 'https://crownside.vercel.app/api'; 
 const CART_STORAGE_KEY = 'crownsideCart';
 
@@ -12,7 +11,10 @@ const CART_STORAGE_KEY = 'crownsideCart';
  * @returns {string} Tiempo restante formateado.
  */
 function calculateTimeRemaining(endTime) {
+    // Convierte la fecha final a milisegundos
     const total = Date.parse(endTime) - Date.parse(new Date());
+    
+    // Si la preventa ha terminado (o el tiempo es negativo), retorna un mensaje
     if (total <= 0) return 'Finalizada';
 
     const seconds = Math.floor((total / 1000) % 60);
@@ -64,7 +66,7 @@ function addToCart(product, quantity = 1) {
     if (existingItem) {
         existingItem.quantity += quantity;
     } else {
-        // Asegura que, si es preventa, se añada con una bandera para el checkout
+        // Añade el producto al carrito. La bandera isPresale es útil para la lógica de checkout/envío.
         cart.push({ ...product, quantity, isPresale: !!product.presaleEndDate });
     }
     saveCart(cart);
@@ -76,69 +78,93 @@ function addToCart(product, quantity = 1) {
 // =======================================================
 
 /**
- * Renderiza una sola tarjeta de gorra de Preventa.
+ * Renderiza una sola tarjeta de gorra de Preventa, utilizando la estructura del CSS interno.
  * @param {object} cap - Objeto de gorra de PresaleCap.
  * @returns {HTMLElement} El elemento div de la tarjeta.
  */
 function createPresaleCapCard(cap) {
     const card = document.createElement('div');
-    card.className = 'hat-card presale-card'; 
+    card.className = 'service-card'; // Clase principal de la tarjeta
 
-    // Bloque de información de Preventa (Contador y Envío)
-    const presaleInfo = document.createElement('div');
-    presaleInfo.className = 'presale-info';
-    
     const endDate = new Date(cap.presaleEndDate);
-    const shippingDate = formatDate(cap.estimatedShippingDate);
+    const isPresaleActive = Date.parse(endDate) > Date.parse(new Date());
 
-    // Renderiza el contador de tiempo restante
-    const countdown = document.createElement('p');
-    countdown.className = 'countdown-timer';
-    countdown.id = `countdown-${cap.id_producto}`;
+    // --- 1. ETIQUETA DE ESTADO ---
+    const statusText = isPresaleActive ? 'PREVENTA ACTIVA' : 'PREVENTA FINALIZADA';
+    const statusClass = isPresaleActive ? 'presale-active' : 'presale-ended';
     
-    // Función para actualizar el contador, se llama inmediatamente y luego cada segundo
-    const updateCountdown = () => {
-        countdown.textContent = `Quedan: ${calculateTimeRemaining(endDate)}`;
-        if (Date.parse(endDate) <= Date.parse(new Date())) {
-            clearInterval(timerId); // Detiene la cuenta regresiva si ya terminó
-            countdown.textContent = '¡PREVENTA FINALIZADA!';
-            // Opcional: Deshabilitar el botón de reserva aquí
-        }
-    };
-    
-    const timerId = setInterval(updateCountdown, 1000); 
-    updateCountdown();
-
-    const shippingInfo = document.createElement('p');
-    shippingInfo.className = 'shipping-date';
-    shippingInfo.innerHTML = `<i class="fas fa-truck-ramp-box"></i> Envío estimado: <span>${shippingDate}</span>`;
-    
-    presaleInfo.appendChild(countdown);
-    presaleInfo.appendChild(shippingInfo);
-
-    // Contenido de la tarjeta (Imagen, Nombre, Precio)
+    // --- 2. CONTENIDO DE LA TARJETA (Markup del Canvas) ---
     card.innerHTML = `
-        <img src="${cap.imagenUrl}" alt="${cap.nombre}" class="hat-image">
-        <h4 class="hat-name">${cap.nombre}</h4>
-        <p class="hat-description">${cap.descripcion}</p>
-        <p class="hat-price presale-price">PREVENTA: $${cap.precio.toFixed(2)} MXN</p>
+        <div class="service-image-container">
+            <span class="presale-status-tag ${statusClass}">${statusText}</span>
+            <img 
+                src="${cap.imagenUrl || 'https://placehold.co/400x400/CCCCCC/333333?text=NO+IMAGE'}" 
+                alt="${cap.nombre}" 
+                class="service-image"
+                onerror="this.onerror=null;this.src='https://placehold.co/400x400/CCCCCC/333333?text=Error+Carga';"
+            >
+        </div>
+        <div class="service-details">
+            <h4 class="product-name">${cap.nombre}</h4>
+            <p class="price">$${cap.precio.toFixed(2)} MXN</p>
+            <p class="shipping-date" style="font-size:11px; margin-top:-5px; color:#4A5568;">
+                Envío estimado: ${formatDate(cap.estimatedShippingDate)}
+            </p>
+            
+            <!-- Aquí irá el contador de tiempo restante -->
+            <p id="countdown-${cap.id_producto}" style="font-size:10px; font-weight:700; color:${isPresaleActive ? '#E53E3E' : '#4A5568'}; margin-bottom: 10px;">
+                ${isPresaleActive ? 'Calculando tiempo...' : '¡FINALIZADA!'}
+            </p>
+
+            <a href="javascript:void(0)" class="action-button ${!isPresaleActive ? 'disabled-link' : ''}" 
+               data-id="${cap.id_producto}"
+               data-name="${cap.nombre}"
+               data-price="${cap.precio}">
+                ${isPresaleActive ? 'RESERVAR AHORA' : 'PRONTO EN INVENTARIO'}
+            </a>
+        </div>
     `;
 
-    // Botón de preventa
-    const button = document.createElement('button');
-    button.className = 'add-to-cart-btn presale-btn';
-    button.textContent = 'Reservar Ahora (Añadir al carrito)';
-    button.onclick = () => {
-        if (Date.parse(endDate) > Date.parse(new Date())) {
-            addToCart(cap);
-        } else {
-            // Reemplazar con un modal de error si se presiona después de la fecha límite
-            console.warn(`Preventa de ${cap.nombre} ha finalizado.`);
+    // --- 3. LÓGICA DEL CONTADOR Y EL BOTÓN ---
+
+    const countdownElement = card.querySelector(`#countdown-${cap.id_producto}`);
+    const actionButton = card.querySelector('.action-button');
+
+    // Función para actualizar el contador, se llama inmediatamente y luego cada segundo
+    const updateCountdown = () => {
+        const timeRemaining = calculateTimeRemaining(endDate);
+        countdownElement.textContent = isPresaleActive ? `Quedan: ${timeRemaining}` : '¡PREVENTA FINALIZADA!';
+        
+        // Si la preventa termina mientras el usuario está viendo, actualiza el estado
+        if (timeRemaining === 'Finalizada' && isPresaleActive) {
+             clearInterval(timerId);
+             actionButton.classList.add('disabled-link');
+             actionButton.textContent = 'PRONTO EN INVENTARIO';
+             card.querySelector('.presale-status-tag').textContent = 'PREVENTA FINALIZADA';
+             card.querySelector('.presale-status-tag').classList.remove('presale-active');
+             card.querySelector('.presale-status-tag').classList.add('presale-ended');
+             countdownElement.style.color = '#4A5568';
         }
     };
     
-    card.prepend(presaleInfo);
-    card.appendChild(button);
+    // Inicia el contador si está activa
+    let timerId;
+    if (isPresaleActive) {
+        timerId = setInterval(updateCountdown, 1000); 
+    }
+    updateCountdown();
+
+    // Añade el evento de clic al botón (solo si está activo)
+    if (isPresaleActive) {
+        actionButton.onclick = () => {
+            addToCart(cap);
+            // Retroalimentación visual al usuario
+            actionButton.textContent = '¡AÑADIDO!';
+            setTimeout(() => {
+                actionButton.textContent = 'RESERVAR AHORA';
+            }, 1000);
+        };
+    }
 
     return card;
 }
@@ -170,7 +196,10 @@ async function loadPresaleCaps() {
 
         container.innerHTML = ''; 
 
-        caps.forEach(cap => {
+        // Filtramos para asegurarnos de que solo haya preventas válidas (aunque la API debería hacerlo)
+        const validCaps = caps.filter(cap => cap.id_producto && cap.nombre && cap.precio && cap.presaleEndDate);
+
+        validCaps.forEach(cap => {
             const card = createPresaleCapCard(cap);
             container.appendChild(card);
         });
@@ -191,6 +220,11 @@ async function loadPresaleCaps() {
  */
 async function loadCatalog() {
     const container = document.getElementById("catalog-container");
+
+    // NOTA: Si services.html fue renombrado a catalog.html, debes actualizar el ruteo.
+    // Asumo que esta función es para el catálogo principal/index.
+    if (!container) return;
+
 
     container.innerHTML = `
         <div style="text-align:center; color:white;">
@@ -215,12 +249,28 @@ async function loadCatalog() {
             return;
         }
 
-        // Si estás en index.html, podrías querer solo un subconjunto, o el total si es el contenedor principal
+        // Mapeo adaptado para el contenedor de catálogo (si services.html fue renombrado a catalog.html)
         container.innerHTML = productos.map(p => `
-            <div class="hat-item" onclick="goToProduct('${p.id_producto}')">
-                <img src="${p.imagenUrl}" alt="${p.nombre}">
-                <h3 class="hat-title">${p.nombre}</h3>
-                <p class="hat-price">$${p.precio.toFixed(2)} MXN</p>
+            <div class="service-card" onclick="goToProduct('${p.id_producto}')">
+                <div class="service-image-container">
+                    <img 
+                        src="${p.imagenUrl || 'https://placehold.co/400x400/CCCCCC/333333?text=NO+IMAGE'}" 
+                        alt="${p.nombre}" 
+                        class="service-image"
+                        onerror="this.onerror=null;this.src='https://placehold.co/400x400/CCCCCC/333333?text=Error+Carga';"
+                    >
+                    <!-- Overlay Button for Add to Cart -->
+                    <button 
+                        class="add-to-cart-btn-overlay" 
+                        onclick="event.stopPropagation(); addToCart({id_producto: '${p.id_producto}', nombre: '${p.nombre}', precio: ${p.precio}, imagenUrl: '${p.imagenUrl}'}); this.textContent='¡AÑADIDO!';"
+                    >
+                        + AGREGAR
+                    </button>
+                </div>
+                <div class="service-details">
+                    <h4>${p.nombre}</h4>
+                    <p class="price">$${p.precio.toFixed(2)} MXN</p>
+                </div>
             </div>
         `).join("");
 
@@ -252,9 +302,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (path.includes('presales.html')) {
         // Si estamos en la página de preventas, cargamos las gorras de preventa
         loadPresaleCaps();
-    } else if (path.includes('services.html') || path.includes('index.html')) {
-        // Si estamos en el catálogo o inicio, cargamos el catálogo normal
+    } else if (path.includes('catalog.html') || path.includes('services.html') || path.includes('index.html')) {
+        // Si estamos en el catálogo, services.html (por si no se renombró) o inicio, cargamos el catálogo normal
         loadCatalog();
     } 
     // Aquí puedes añadir lógica para otras páginas como 'cart.html', 'producto.html', etc.
 });
+
+// =======================================================
+// === FUNCIÓN DE DETALLE DE PRODUCTO (FRAGEMENTO MANTENIDO) ===
+// =======================================================
+
+// Esta es la función que necesitas cambiar para el detalle
+async function loadProductDetails(productId) {
+    // CRÍTICO: CAMBIAR LA URL AQUÍ para que apunte al nuevo archivo serverless
+    // Usamos el parámetro de consulta ?id=
+    const url = `${API_BASE_URL}/products?id=${productId}`; 
+    
+    try {
+        const response = await fetch(url);
+        // ... el resto de tu lógica de manejo de respuesta ...
+    } catch (error) {
+        console.error("Error al cargar detalles del producto:", error);
+    }
+}
