@@ -4,7 +4,7 @@
   
   Estrategia de Datos:
   1. Conexión API: Se conecta al endpoint de productos con el filtro '?type=presale' para cargar solo las gorras de próxima salida.
-  2. Estilo: Estructura adaptada para coincidir con services.html.
+  2. Estilo: Estructura adaptada para coincidir EXACTAMENTE con services.html.
   3. Manejo de Errores: Incluye lógica de reintento (exponential backoff) para manejar fallos temporales de red.
 -->
 <!DOCTYPE html>
@@ -19,8 +19,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- Estilos necesarios para la cuadrícula y contenedor (adaptados para funcionar si style.css no los tiene) -->
+    <!-- Estilos en línea para asegurar el look del catálogo (asumiendo que estos eran los estilos de services.html) -->
     <style>
+        /* Estilos base para la apariencia del catálogo (Copiados de la estructura de services.html) */
         body {
             font-family: 'Roboto Condensed', sans-serif;
             background-color: #f7f7f7;
@@ -32,7 +33,6 @@
             min-height: 100vh;
         }
 
-        /* Contenedor principal que simula la "App Card" */
         .card-container {
             width: 100%;
             max-width: 600px;
@@ -52,7 +52,6 @@
         }
 
         .header-logo {
-            /* Asumiendo que el logo es una imagen o texto estilizado */
             max-height: 40px; 
         }
 
@@ -86,7 +85,14 @@
             font-weight: 700;
         }
 
-        /* Estilo del contenedor de gorras (para la cuadrícula) */
+        .catalog-section {
+            background-color: whitesmoke; 
+            padding: 20px 0; 
+            border-radius: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
         .hats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -97,10 +103,14 @@
         .product-card {
             background-color: white;
             border-radius: 8px;
-            border: 1px solid #eee;
             overflow: hidden;
             text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
         }
 
         .product-image {
@@ -111,15 +121,15 @@
         }
         
         .product-info {
-            padding: 10px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            gap: 5px;
+            gap: 8px;
         }
 
         .product-name {
-            font-size: 1em;
+            font-size: 1.1em;
             font-weight: 700;
             margin: 0;
             text-align: left;
@@ -127,8 +137,8 @@
         }
 
         .product-price {
-            font-size: 0.9em;
-            color: #d9534f; /* Color de Preventa */
+            font-size: 1em;
+            color: #d9534f; /* Color de Preventa destacado */
             font-weight: 600;
             margin: 0;
             text-align: left;
@@ -138,7 +148,7 @@
         .detail-button {
             display: block;
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             background-color: #1e1e1e;
             color: white;
             text-decoration: none;
@@ -146,6 +156,11 @@
             margin-top: 10px;
             font-weight: 700;
             text-align: center;
+            transition: background-color 0.2s;
+        }
+
+        .detail-button:hover {
+            background-color: #333;
         }
 
         .loading-message {
@@ -170,14 +185,15 @@
 </head>
 
 <body>
-    <!-- ESTRUCTURA ADAPTADA DE services.html -->
+    <!-- CONTENEDOR PRINCIPAL -->
     <div class="card-container">
 
+        <!-- CABECERA PRINCIPAL (NAV) -->
         <header class="main-header">
             <div class="logo-container">
                 <a href="index.html">
-                    <!-- Asegúrate de que esta ruta de imagen sea correcta -->
-                    <img src="img/logo_crownside.png" alt="Logo CROWNSIDE" class="header-logo">
+                    <!-- Placeholder para el logo CROWNSIDE -->
+                    <h1 class="header-logo" style="font-size: 1.5em; margin: 0;">CROWNSIDE</h1>
                 </a>
             </div>
 
@@ -186,7 +202,7 @@
                     <li><a href="index.html">Inicio</a></li>
                     <li><a href="services.html">Catálogo</a></li>
                     <!-- Enlace de Preventas Destacado -->
-                    <li><a href="presales.html">Preventas</a></li>
+                    <li><a href="presales.html" style="color: #d9534f;">Preventas</a></li>
                     <li>
                         <a href="cart.html" class="cart-link">
                             <i class="fas fa-shopping-cart"></i> Carrito 
@@ -199,9 +215,10 @@
 
         <div class="header-spacer"></div>
 
-        <section style="background-color:whitesmoke; padding: 20px 0px; border-radius: 10px;">
-            <h3 style="text-align:center;">Próximos Lanzamientos</h3>
-            <p style="text-align:center; opacity:0.7;">¡Las gorras que puedes preordenar hoy!</p>
+        <!-- SECCIÓN DE PRODUCTOS DE PREVENTA (Adaptada de services-list) -->
+        <section class="catalog-section">
+            <h3 style="text-align:center;">Próximos Lanzamientos Exclusivos</h3>
+            <p style="text-align:center; opacity:0.7;">¡Sé el primero en preordenar las novedades de CROWNSIDE!</p>
 
             <!-- CONTENEDOR DE PRODUCTOS DE PREVENTA -->
             <div id="catalog-container" class="hats-container">
@@ -222,6 +239,7 @@
     <!-- SCRIPT DE CARGA DE DATOS PARA PREVENTAS -->
     <script>
         // URL base de tu backend
+        // Es la misma URL que se ha usado en el historial de la conversación.
         const API_BASE_URL = 'https://crownside.vercel.app'; 
         
         // Función para introducir una pausa (necesaria para el retroceso exponencial)
@@ -229,10 +247,10 @@
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        // --- Lógica del Carrito ---
+        // --- Lógica del Carrito (necesaria para actualizar el contador) ---
         function getCart() {
             try {
-                // Usando localStorage para el carrito, ya que no se especificó Firestore
+                // Usando localStorage para el carrito
                 const cart = localStorage.getItem('crownsideCart'); 
                 return cart ? JSON.parse(cart) : {};
             } catch (e) {
@@ -258,7 +276,7 @@
             }
         }
 
-        // --- Lógica de Carga de Productos ---
+        // --- Lógica de Carga de Productos (con Reintento) ---
 
         /**
          * Limpia la ruta de imagen eliminando comillas, espacios y slashes iniciales.
@@ -275,7 +293,7 @@
 
 
         /**
-         * Carga y renderiza los productos marcados para Preventa con reintentos.
+         * Carga y renderiza los productos marcados para Preventa con reintentos para manejar 'Failed to fetch'.
          */
         async function loadPresaleProducts() {
             const gridContainer = document.getElementById("catalog-container"); 
@@ -288,15 +306,16 @@
             for (let i = 0; i < maxRetries; i++) {
                 try {
                     console.log(`Intento de carga de productos (${i + 1}/${maxRetries})...`);
-                    // FILTRO CRUCIAL: Solo solicita productos con type=presale
+                    // FILTRO CRUCIAL: Solo solicita productos con type=presale. 
+                    // Asume que tu API de 'https://crownside.vercel.app/api/products' soporta el parámetro 'type=presale'
                     const response = await fetch(`${API_BASE_URL}/api/products?type=presale`);
                     
                     if (!response.ok) {
-                        // Si es un error del servidor, registramos y reintentamos si es posible
+                        // Si es un error del servidor (4xx, 5xx), registramos y reintentamos si no es el último intento
                         console.error(`Error del servidor en intento ${i + 1}: Estado ${response.status} (${response.statusText})`);
                         if (i < maxRetries - 1) {
                             await sleep(1000 * Math.pow(2, i)); // Espera exponencial (1s, 2s)
-                            continue; // Saltar a la siguiente iteración del bucle (reintento)
+                            continue; // Reintento
                         }
                         throw new Error(`Fallo en la carga de productos: ${response.statusText}.`);
                     }
@@ -337,13 +356,14 @@
                     return; // Salir de la función al cargar exitosamente
                 } catch (error) {
                     // Este catch captura 'Failed to fetch' (errores de red) y errores lanzados por el servidor
-                    console.error(`Intento ${i + 1} fallido:`, error.message);
+                    console.error(`Error cargando productos de preventa (Intento ${i + 1}):`, error.message);
                     if (i === maxRetries - 1) {
                         // Si es el último intento y falla, mostramos el error final al usuario
-                        gridContainer.innerHTML = `<p class="loading-message" style="color: #d9534f;">Error al cargar. ${error.message}. Si el error persiste, comprueba la URL de la API y la configuración de CORS.</p>`;
+                        gridContainer.innerHTML = `<p class="loading-message" style="color: #d9534f;">Error al cargar productos: ${error.message}. Verifica tu conexión a internet o la URL de la API.</p>`;
                         return; // Salir de la función después de todos los reintentos
                     }
                     // El bucle continuará con la espera y el siguiente intento
+                    await sleep(1000 * Math.pow(2, i)); 
                 }
             }
         }
