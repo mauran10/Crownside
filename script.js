@@ -78,33 +78,37 @@ function addToCart(product, quantity = 1) {
 // =======================================================
 
 /**
- * Renderiza una sola tarjeta de gorra de Preventa, utilizando la estructura del CSS interno.
+ * Renderiza una sola tarjeta de gorra de Preventa, usando las clases originales del catálogo.
  * @param {object} cap - Objeto de gorra de PresaleCap.
  * @returns {HTMLElement} El elemento div de la tarjeta.
  */
 function createPresaleCapCard(cap) {
     const card = document.createElement('div');
-    card.className = 'service-card'; // Clase principal de la tarjeta
+    // CLASE ORIGINAL RESTAURADA
+    card.className = 'hat-card'; 
 
     const endDate = new Date(cap.presaleEndDate);
-    const isPresaleActive = Date.parse(endDate) > Date.parse(new Date());
+    let isPresaleActive = Date.parse(endDate) > Date.parse(new Date());
 
     // --- 1. ETIQUETA DE ESTADO ---
-    const statusText = isPresaleActive ? 'PREVENTA ACTIVA' : 'PREVENTA FINALIZADA';
-    const statusClass = isPresaleActive ? 'presale-active' : 'presale-ended';
+    let statusText = isPresaleActive ? 'PREVENTA ACTIVA' : 'PREVENTA FINALIZADA';
+    let statusClass = isPresaleActive ? 'presale-active' : 'presale-ended';
     
     // --- 2. CONTENIDO DE LA TARJETA (Markup del Canvas) ---
     card.innerHTML = `
-        <div class="service-image-container">
+        <!-- CLASE ORIGINAL RESTAURADA -->
+        <div class="hat-image-container">
             <span class="presale-status-tag ${statusClass}">${statusText}</span>
+            <!-- CLASE ORIGINAL RESTAURADA -->
             <img 
                 src="${cap.imagenUrl || 'https://placehold.co/400x400/CCCCCC/333333?text=NO+IMAGE'}" 
                 alt="${cap.nombre}" 
-                class="service-image"
+                class="hat-image"
                 onerror="this.onerror=null;this.src='https://placehold.co/400x400/CCCCCC/333333?text=Error+Carga';"
             >
         </div>
-        <div class="service-details">
+        <!-- CLASE ORIGINAL RESTAURADA -->
+        <div class="hat-details">
             <h4 class="product-name">${cap.nombre}</h4>
             <p class="price">$${cap.precio.toFixed(2)} MXN</p>
             <p class="shipping-date" style="font-size:11px; margin-top:-5px; color:#4A5568;">
@@ -129,20 +133,24 @@ function createPresaleCapCard(cap) {
 
     const countdownElement = card.querySelector(`#countdown-${cap.id_producto}`);
     const actionButton = card.querySelector('.action-button');
+    const statusTag = card.querySelector('.presale-status-tag');
+
 
     // Función para actualizar el contador, se llama inmediatamente y luego cada segundo
     const updateCountdown = () => {
         const timeRemaining = calculateTimeRemaining(endDate);
+        isPresaleActive = Date.parse(endDate) > Date.parse(new Date());
+
         countdownElement.textContent = isPresaleActive ? `Quedan: ${timeRemaining}` : '¡PREVENTA FINALIZADA!';
         
         // Si la preventa termina mientras el usuario está viendo, actualiza el estado
-        if (timeRemaining === 'Finalizada' && isPresaleActive) {
+        if (timeRemaining === 'Finalizada' && actionButton.textContent === 'RESERVAR AHORA') {
              clearInterval(timerId);
              actionButton.classList.add('disabled-link');
              actionButton.textContent = 'PRONTO EN INVENTARIO';
-             card.querySelector('.presale-status-tag').textContent = 'PREVENTA FINALIZADA';
-             card.querySelector('.presale-status-tag').classList.remove('presale-active');
-             card.querySelector('.presale-status-tag').classList.add('presale-ended');
+             statusTag.textContent = 'PREVENTA FINALIZADA';
+             statusTag.classList.remove('presale-active');
+             statusTag.classList.add('presale-ended');
              countdownElement.style.color = '#4A5568';
         }
     };
@@ -196,7 +204,6 @@ async function loadPresaleCaps() {
 
         container.innerHTML = ''; 
 
-        // Filtramos para asegurarnos de que solo haya preventas válidas (aunque la API debería hacerlo)
         const validCaps = caps.filter(cap => cap.id_producto && cap.nombre && cap.precio && cap.presaleEndDate);
 
         validCaps.forEach(cap => {
@@ -212,17 +219,15 @@ async function loadPresaleCaps() {
 
 
 // =======================================================
-// === LÓGICA DE CATÁLOGO PRINCIPAL (TU CÓDIGO ANTERIOR) ===
+// === LÓGICA DE CATÁLOGO PRINCIPAL (CLASES ORIGINALES) ===
 // =======================================================
 
 /**
- * Carga el catálogo principal de productos (para services.html o index.html).
+ * Carga el catálogo principal de productos (para catalogo.html o index.html).
  */
 async function loadCatalog() {
     const container = document.getElementById("catalog-container");
 
-    // NOTA: Si services.html fue renombrado a catalog.html, debes actualizar el ruteo.
-    // Asumo que esta función es para el catálogo principal/index.
     if (!container) return;
 
 
@@ -233,7 +238,6 @@ async function loadCatalog() {
     `;
 
     try {
-        // CRÍTICO: Usa API_BASE_URL para llamar al endpoint completo
         const response = await fetch(`${API_BASE_URL}/products`); 
 
         if (!response.ok) {
@@ -249,14 +253,14 @@ async function loadCatalog() {
             return;
         }
 
-        // Mapeo adaptado para el contenedor de catálogo (si services.html fue renombrado a catalog.html)
+        // Usamos las CLASES ORIGINALES (hat-card, hat-image-container, etc.)
         container.innerHTML = productos.map(p => `
-            <div class="service-card" onclick="goToProduct('${p.id_producto}')">
-                <div class="service-image-container">
+            <div class="hat-card" onclick="goToProduct('${p.id_producto}')">
+                <div class="hat-image-container">
                     <img 
                         src="${p.imagenUrl || 'https://placehold.co/400x400/CCCCCC/333333?text=NO+IMAGE'}" 
                         alt="${p.nombre}" 
-                        class="service-image"
+                        class="hat-image"
                         onerror="this.onerror=null;this.src='https://placehold.co/400x400/CCCCCC/333333?text=Error+Carga';"
                     >
                     <!-- Overlay Button for Add to Cart -->
@@ -267,7 +271,7 @@ async function loadCatalog() {
                         + AGREGAR
                     </button>
                 </div>
-                <div class="service-details">
+                <div class="hat-details">
                     <h4>${p.nombre}</h4>
                     <p class="price">$${p.precio.toFixed(2)} MXN</p>
                 </div>
@@ -302,8 +306,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (path.includes('presales.html')) {
         // Si estamos en la página de preventas, cargamos las gorras de preventa
         loadPresaleCaps();
-    } else if (path.includes('catalog.html') || path.includes('services.html') || path.includes('index.html')) {
-        // Si estamos en el catálogo, services.html (por si no se renombró) o inicio, cargamos el catálogo normal
+        
+    // CORREGIDO: Buscamos "catalogo.html" en lugar de "catalog.html"
+    } else if (path.includes('catalogo.html') || path.includes('index.html')) {
+        // Si estamos en el catálogo o inicio, cargamos el catálogo normal
         loadCatalog();
     } 
     // Aquí puedes añadir lógica para otras páginas como 'cart.html', 'producto.html', etc.
@@ -315,8 +321,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Esta es la función que necesitas cambiar para el detalle
 async function loadProductDetails(productId) {
-    // CRÍTICO: CAMBIAR LA URL AQUÍ para que apunte al nuevo archivo serverless
-    // Usamos el parámetro de consulta ?id=
     const url = `${API_BASE_URL}/products?id=${productId}`; 
     
     try {
