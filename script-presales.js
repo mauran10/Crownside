@@ -2,7 +2,7 @@
 // 🔥 CARGAR COLECCIÓN DE PREVENTAS
 // =======================================================
 
-const API_URL = "https://crownside.vercel.app/api/preventas"; 
+const API_URL = "https://crownside.vercel.app/api/presales"; 
 const container = document.getElementById("catalog-container");
 
 // Cargar contador del carrito
