@@ -184,25 +184,50 @@
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(param);
         }
+        
+        /**
+         * Limpia la ruta de imagen de comillas, espacios y elimina slashes iniciales.
+         */
+        const cleanPath = (path) => {
+            if (typeof path !== 'string') return '';
+            // 1. Trim leading/trailing whitespace
+            let cleaned = path.trim();
+            // 2. Remove surrounding quote marks (", ', or backticks) if present
+            cleaned = cleaned.replace(/^["'`]|["'`]$/g, '');
+            // 3. Remove leading slashes if they exist
+            cleaned = cleaned.replace(/^\/+/g, '');
+            return cleaned;
+        };
+
 
         /**
          * Inicializa la galería de imágenes: imagen principal y carrusel de miniaturas (táctil).
          */
-        function initializeGallery(mainImageUrl, additionalImages) {
+        function initializeGallery(mainImageUrl, additionalImages, productName) {
+            // Nota: additionalImages ya debe contener las URLs completas en este punto.
             const allImages = [mainImageUrl, ...(Array.isArray(additionalImages) ? additionalImages : [])];
             const mainImageElement = document.getElementById('main-product-image');
             const thumbnailContainer = document.getElementById('thumbnail-container');
 
             if (!mainImageElement || !thumbnailContainer) return;
 
+            // Asegura que la imagen principal se muestre correctamente al inicio.
+            mainImageElement.src = mainImageUrl;
+            mainImageElement.alt = productName;
+
             thumbnailContainer.innerHTML = ''; 
 
             allImages.forEach((url, index) => {
                 const thumbnail = document.createElement('img');
                 thumbnail.src = url;
-                thumbnail.alt = `Vista ${index + 1}`;
+                thumbnail.alt = `Vista ${index + 1} de ${productName}`;
                 thumbnail.className = 'thumbnail';
                 
+                // Si la imagen no carga, usamos un placeholder.
+                thumbnail.onerror = () => {
+                    thumbnail.src = 'https://placehold.co/60x60/EEEEE/AAAAAA?text=X';
+                };
+
                 if (index === 0) {
                     thumbnail.classList.add('active');
                 }
@@ -261,22 +286,42 @@
             container.innerHTML = `<p class="loading-text">Cargando información...</p>`;
 
             try {
-                // ESTA LLAMADA OBTENDRÍA LOS DATOS DE TU BASE DE DATOS MONGO
                 const response = await fetch(`${API_BASE_URL}/api/products?id=${id}`);
 
                 if (!response.ok) throw new Error("Error al consultar el producto o producto no encontrado.");
 
                 const p = await response.json();
                 
-                // Construir la URL completa de las imágenes
+                // --- ARREGLO CRÍTICO: Construir y sanear la URL completa de las imágenes ---
                 const fallbackImageUrl = 'https://placehold.co/400x400/CCCCCC/333333?text=IMAGEN+PRINCIPAL';
                 
-                const mainImageUrl = p.imagenUrl 
-                    ? `${API_BASE_URL}/${p.imagenUrl.replace(/^\/+/g, '')}`
+                // 1. Sanear la URL de la imagen principal
+                const mainPath = cleanPath(p.imagenUrl);
+                const mainImageUrl = mainPath 
+                    ? `${API_BASE_URL}/${mainPath}`
                     : fallbackImageUrl;
 
-                const additionalImages = (Array.isArray(p.imagenesAdicionales) ? p.imagenesAdicionales : [])
-                    .map(imgUrl => `${API_BASE_URL}/${imgUrl.replace(/^\/+/g, '')}`);
+                // 2. Sanear y procesar el array de imágenes adicionales
+                const rawAdditionalImages = Array.isArray(p.imagenesAdicionales) ? p.imagenesAdicionales : [];
+
+                // Manejo robusto: si hay un solo string con comas (problema de formato MongoDB)
+                const processedAdditionalPaths = rawAdditionalImages.flatMap(rawItem => {
+                    if (typeof rawItem !== 'string') return [];
+                    
+                    // Si el elemento contiene una coma, lo dividimos y saneamos cada parte
+                    if (rawItem.includes(',')) {
+                        return rawItem.split(',').map(pathPart => cleanPath(pathPart)).filter(path => path.length > 0);
+                    }
+                    
+                    // Si es un solo path, solo lo saneamos
+                    const singlePath = cleanPath(rawItem);
+                    return singlePath ? [singlePath] : [];
+                });
+
+                // 3. Construir las URLs completas para las imágenes adicionales
+                const additionalImages = processedAdditionalPaths
+                    .map(path => `${API_BASE_URL}/${path}`);
+                // -------------------------------------------------------------------------
                 
                 // Renderizar la estructura del producto
                 container.innerHTML = `
@@ -284,7 +329,15 @@
                         
                         <!-- GALERÍA DE IMÁGENES -->
                         <div class="image-gallery">
-                            <img id="main-product-image" src="${mainImageUrl}" alt="${p.nombre}" class="main-product-image">
+                            <!--
+                                CORRECCIÓN: Se inyecta SOLO la URL limpia en el src
+                                y se añade el handler onerror por si la URL final falla.
+                            -->
+                            <img id="main-product-image" 
+                                 src="${mainImageUrl}" 
+                                 alt="${p.nombre}" 
+                                 class="main-product-image"
+                                 onerror="this.onerror=null; this.src='${fallbackImageUrl}';">
                             
                             <!-- CONTENEDOR DEL CARRUSEL DE MINIATURAS (SWIPE) -->
                             <div class="carousel-wrapper">
@@ -309,7 +362,9 @@
                     </div>
                 `;
                 
-                initializeGallery(mainImageUrl, additionalImages);
+                // Inicializar la galería con las URLs correctas
+                // Se pasa el nombre del producto para los alts de las miniaturas
+                initializeGallery(mainImageUrl, additionalImages, p.nombre);
 
             } catch (error) {
                 console.error("Error en loadProduct:", error);
