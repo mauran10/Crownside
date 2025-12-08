@@ -1,0 +1,306 @@
+<!--
+  Título: Catálogo de Preventas - CROWNSIDE
+  Descripción: Página dedicada a los productos de preventa.
+  
+  Estrategia de Datos:
+  1. Productos de Preventa: Se asume que tu API debe tener un endpoint o un filtro para devolver solo los productos marcados como "preventa" o "presale".
+  2. Navegación y Estilos: Se mantienen consistentes con el resto de la aplicación.
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preventas - CROWNSIDE</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Estilos específicos para la página de Preventas (Catálogo en formato de cuadrícula) -->
+    <style>
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            background-color: #f7f7f7;
+            color: #1e1e1e;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #1e1e1e;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-logo {
+            height: 40px;
+        }
+
+        .main-nav ul {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.2s;
+        }
+
+        .main-nav a:hover {
+            color: #ccc;
+        }
+        
+        /* Contador del carrito */
+        .cart-link {
+            position: relative;
+            display: inline-block;
+        }
+
+        .cart-counter {
+            position: absolute;
+            top: -8px;
+            right: -15px;
+            background-color: #d9534f;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Título de la sección */
+        .page-title {
+            text-align: center;
+            padding: 40px 20px 20px;
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #1e1e1e;
+        }
+        
+        /* Contenedor principal del catálogo (la cuadrícula de productos) */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Estilo de la tarjeta de producto */
+        .product-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .product-name {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .product-price {
+            font-size: 1.1em;
+            color: #007bff; /* Color azul para destacar el precio/preventa */
+            margin: 0;
+        }
+        
+        .detail-button {
+            display: block;
+            padding: 10px;
+            background-color: #1e1e1e;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-weight: 700;
+            transition: background-color 0.2s;
+        }
+
+        .detail-button:hover {
+            background-color: #333;
+        }
+        
+        .loading-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px;
+            font-size: 1.5em;
+            color: #555;
+        }
+
+        /* Responsividad básica */
+        @media (max-width: 768px) {
+            .main-nav ul {
+                gap: 15px;
+            }
+            .page-title {
+                font-size: 2em;
+            }
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="main-header">
+        <div class="logo-container">
+            <a href="index.html">
+                <!-- Se asume que tienes esta imagen en el directorio img/ -->
+                <img src="img/logo_crownside.png" alt="Logo CROWNSIDE" class="header-logo">
+            </a>
+        </div>
+
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="services.html">Catálogo</a></li>
+                <!-- DESTACADO: El enlace a esta página -->
+                <li><a href="presales.html">Preventas</a></li>
+                <li>
+                    <a href="cart.html" class="cart-link">
+                        <i class="fas fa-shopping-cart"></i> Carrito 
+                        <span id="cart-counter" class="cart-counter">0</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <h1 class="page-title">Próximos Lanzamientos (Preventas)</h1>
+
+    <main class="product-grid" id="presale-product-grid">
+        <p class="loading-message">Cargando productos de preventa...</p>
+    </main>
+
+    <script>
+        // URL base de tu backend
+        const API_BASE_URL = 'https://crownside.vercel.app'; 
+        
+        // Función para actualizar el contador del carrito (copiada de producto.html)
+        function getCart() {
+            try {
+                const cart = localStorage.getItem('crownsideCart');
+                return cart ? JSON.parse(cart) : {};
+            } catch (e) {
+                console.error("Error leyendo localStorage:", e);
+                return {};
+            }
+        }
+        
+        function getCartTotalItems(cart) {
+            let total = 0;
+            for (const id in cart) {
+                total += cart[id].quantity;
+            }
+            return total;
+        }
+
+        function updateCartCounter() {
+            const cart = getCart();
+            const totalItems = getCartTotalItems(cart);
+            const counterElement = document.getElementById("cart-counter");
+            if (counterElement) {
+                counterElement.textContent = totalItems;
+            }
+        }
+
+        /**
+         * Carga y renderiza los productos marcados para Preventa.
+         * NOTA: Requiere que tu backend filtre por productos de preventa.
+         */
+        async function loadPresaleProducts() {
+            const gridContainer = document.getElementById("presale-product-grid");
+            const fallbackImageUrl = 'https://placehold.co/300x250/333333/FFFFFF?text=PREVENTA';
+
+            try {
+                // Endpoint hipotético: asumimos que /api/products acepta un filtro 'type=presale'
+                const response = await fetch(`${API_BASE_URL}/api/products?type=presale`);
+                
+                if (!response.ok) {
+                    throw new Error("No se pudo conectar o el servidor devolvió un error.");
+                }
+
+                const products = await response.json();
+
+                if (!products || products.length === 0) {
+                    gridContainer.innerHTML = `<p class="loading-message">¡Aún no hay productos en preventa! Vuelve pronto.</p>`;
+                    return;
+                }
+
+                gridContainer.innerHTML = ''; // Limpiar el mensaje de carga
+
+                products.forEach(p => {
+                    const imageUrl = p.imagenUrl ? `${API_BASE_URL}/${p.imagenUrl.replace(/["']/g, '').trim().replace(/^\/+/g, '')}` : fallbackImageUrl;
+                    
+                    const productHtml = `
+                        <div class="product-card">
+                            <img src="${imageUrl}" 
+                                 alt="${p.nombre}" 
+                                 class="product-image"
+                                 onerror="this.onerror=null; this.src='${fallbackImageUrl}';">
+                            <div class="product-info">
+                                <h2 class="product-name">${p.nombre}</h2>
+                                <p class="product-price">PREVENTA: $${p.precio ? p.precio.toFixed(2) : 'N/A'} MXN</p>
+                                <a href="producto.html?id=${p._id || p.id_producto}" class="detail-button">
+                                    Ver Detalles (Preventa)
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    gridContainer.insertAdjacentHTML('beforeend', productHtml);
+                });
+
+            } catch (error) {
+                console.error("Error cargando productos de preventa:", error);
+                gridContainer.innerHTML = `<p class="loading-message" style="color: #d9534f;">Error al cargar: ${error.message}. Verifica tu API.</p>`;
+            }
+        }
+
+        // --- INICIO DE LA APLICACIÓN ---
+        document.addEventListener("DOMContentLoaded", () => {
+            loadPresaleProducts();
+            updateCartCounter();
+        });
+        
+    </script>
+
+</body>
+</html>
