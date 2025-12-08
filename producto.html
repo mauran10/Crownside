@@ -79,6 +79,8 @@
         .thumbnail-container {
             -ms-overflow-style: none; /* IE and Edge */
             scrollbar-width: none; /* Firefox */
+            display: flex;
+            justify-content: center;
         }
 
         /* Estilo de miniatura */
@@ -94,7 +96,6 @@
 
         .thumbnail.active, .thumbnail:hover {
             border-color: #1e1e1e; 
-            transform: scale(1.05);
         }
 
         /* Botón de compra y alerta */
@@ -352,8 +353,6 @@
                         <p class="product-description">${p.descripcion || 'Sin descripción disponible.'}</p>
 
                         <p class="product-price">$${p.precio ? p.precio.toFixed(2) : 'N/A'} MXN</p>
-
-                        <p class="product-stock">Stock disponible: ${p.stock || 0}</p>
 
                         <!-- Llamamos a la función addToCart que usa localStorage -->
                         <button class="purchase-button" onclick="addToCart('${p.id_producto}', '${p.nombre.replace(/'/g, "\\'")}', ${p.precio || 0})">
