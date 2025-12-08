@@ -1,10 +1,10 @@
 <!--
-  Título: Detalle del Producto - CROWNSIDE (Firestore)
+  Título: Detalle del Producto - CROWNSIDE (Local Storage)
   Descripción: Página de detalle de producto con galería de imágenes deslizable.
   
   Estrategia de Datos:
   1. Detalles del Producto (Nombre, Precio, Imágenes): Se obtienen de tu API externa (asumiendo que está conectada a tu base de datos MongoDB).
-  2. Carrito de Compras (Artículos en el carrito): Se utiliza Firebase Firestore como base de datos persistente OBLIGATORIA para este entorno.
+  2. Carrito de Compras (Artículos en el carrito): Se utiliza localStorage del navegador, sin persistencia ni sincronización en la nube.
 -->
 <!DOCTYPE html>
 <html lang="es">
@@ -174,64 +174,9 @@
     </div>
 
 </div>
-    <script type="module">
+    <script>
         // ====================================================================
-        // --- 1. INICIALIZACIÓN DE FIREBASE (OBLIGATORIO PARA PERSISTENCIA DEL CARRITO) ---
-        // ====================================================================
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { 
-            getFirestore, doc, setDoc, updateDoc, getDoc, 
-            onSnapshot, collection, setLogLevel 
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Variables globales del entorno Canvas
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        let db;
-        let auth;
-        let currentUserId = null;
-        let isAuthReady = false;
-
-        try {
-            setLogLevel('Debug');
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    currentUserId = user.uid;
-                    isAuthReady = true;
-                    // Una vez autenticado, cargamos el producto (que usa tu API/Mongo) 
-                    // e iniciamos la escucha del contador (que usa Firestore).
-                    loadProduct(); 
-                    updateCartCounter(); 
-                } else {
-                    try {
-                        if (initialAuthToken) {
-                            await signInWithCustomToken(auth, initialAuthToken);
-                        } else {
-                            await signInAnonymously(auth);
-                        }
-                    } catch (e) {
-                        console.error("Fallo la autenticación de Firebase:", e);
-                        showCustomAlert("Error de autenticación. El carrito no estará sincronizado.");
-                        // Si la autenticación falla, cargamos el producto de todas formas
-                        loadProduct();
-                    }
-                }
-            });
-
-        } catch (e) {
-            console.error("Error al inicializar Firebase:", e);
-            showCustomAlert("Error al inicializar la base de datos.");
-        }
-        
-        // ====================================================================
-        // --- 2. FUNCIONES DE UTILIDAD (GALERÍA Y ALERTA) ---
+        // --- 1. FUNCIONES DE UTILIDAD (GALERÍA Y ALERTA) ---
         // ====================================================================
 
         // Utilidad para obtener parámetros de la URL
@@ -244,7 +189,6 @@
          * Inicializa la galería de imágenes: imagen principal y carrusel de miniaturas (táctil).
          */
         function initializeGallery(mainImageUrl, additionalImages) {
-            // NOTE: additionalImages ya debe contener las URLs completas en este punto.
             const allImages = [mainImageUrl, ...(Array.isArray(additionalImages) ? additionalImages : [])];
             const mainImageElement = document.getElementById('main-product-image');
             const thumbnailContainer = document.getElementById('thumbnail-container');
@@ -277,7 +221,6 @@
 
                 thumbnailContainer.appendChild(thumbnail);
             });
-            
         }
         
         // --- Reemplazo de window.alert() ---
@@ -301,13 +244,13 @@
 
 
         // ====================================================================
-        // --- 3. FUNCIÓN DE CARGA DE PRODUCTO (CONECTA CON TU API/MONGO) ---
+        // --- 2. FUNCIÓN DE CARGA DE PRODUCTO (CONECTA CON TU API/MONGO) ---
         // ====================================================================
 
         async function loadProduct() {
             const id = getQueryParam("id");
             const container = document.getElementById("product-container");
-            // CRÍTICO: Usamos la URL base de tu backend para resolver las rutas de las imágenes.
+            // URL base de tu backend para resolver las rutas de las imágenes y la API.
             const API_BASE_URL = 'https://crownside.vercel.app'; 
 
             if (!id) {
@@ -325,18 +268,15 @@
 
                 const p = await response.json();
                 
-                // --- ARREGLO CLAVE: Construir la URL completa de las imágenes ---
-                // Si imagenUrl es una ruta relativa (ej: 'img/nombre.png'), le anteponemos la base.
-                // Usamos el placeholder solo si no hay URL en absoluto.
+                // Construir la URL completa de las imágenes
                 const fallbackImageUrl = 'https://placehold.co/400x400/CCCCCC/333333?text=IMAGEN+PRINCIPAL';
                 
                 const mainImageUrl = p.imagenUrl 
-                    ? `${API_BASE_URL}/${p.imagenUrl.replace(/^\/+/g, '')}` // Aseguramos que solo haya una barra '/'
+                    ? `${API_BASE_URL}/${p.imagenUrl.replace(/^\/+/g, '')}`
                     : fallbackImageUrl;
 
                 const additionalImages = (Array.isArray(p.imagenesAdicionales) ? p.imagenesAdicionales : [])
                     .map(imgUrl => `${API_BASE_URL}/${imgUrl.replace(/^\/+/g, '')}`);
-                // -------------------------------------------------------------
                 
                 // Renderizar la estructura del producto
                 container.innerHTML = `
@@ -362,7 +302,7 @@
 
                         <p class="product-stock">Stock disponible: ${p.stock || 0}</p>
 
-                        <!-- Llamamos a la función addToCart que usa Firestore -->
+                        <!-- Llamamos a la función addToCart que usa localStorage -->
                         <button class="purchase-button" onclick="addToCart('${p.id_producto}', '${p.nombre.replace(/'/g, "\\'")}', ${p.precio || 0})">
                             Agregar al Carrito
                         </button>
@@ -381,73 +321,75 @@
         }
 
         // ====================================================================
-        // --- 4. FUNCIONES DE CARRITO (USANDO FIRESTORE) ---
+        // --- 3. FUNCIONES DE CARRITO (USANDO LOCALSTORAGE) ---
         // ====================================================================
-
-        /**
-         * Agrega o actualiza un producto en el carrito del usuario en Firestore.
-         */
-        window.addToCart = async function(id, name, price) {
-            if (!currentUserId || !db) {
-                showCustomAlert("El carrito no está listo. Inténtalo de nuevo.");
-                return;
-            }
-
-            // Ruta: /artifacts/{appId}/users/{userId}/cart/{productId}
-            const cartRef = doc(db, `artifacts/${appId}/users/${currentUserId}/cart`, id);
-
+        
+        // Obtiene el carrito de localStorage
+        function getCart() {
             try {
-                const docSnap = await getDoc(cartRef);
-
-                if (docSnap.exists()) {
-                    // Si ya existe, incrementa la cantidad
-                    const currentQuantity = docSnap.data().quantity || 0;
-                    await updateDoc(cartRef, {
-                        quantity: currentQuantity + 1,
-                    });
-                    showCustomAlert(`"${name}" - Cantidad actualizada a ${currentQuantity + 1}.`);
-                } else {
-                    // Si es nuevo, lo agrega
-                    await setDoc(cartRef, {
-                        id: id,
-                        name: name,
-                        price: price,
-                        quantity: 1
-                    });
-                    showCustomAlert(`"${name}" agregado al carrito.`);
-                }
+                const cart = localStorage.getItem('crownsideCart');
+                return cart ? JSON.parse(cart) : {};
             } catch (e) {
-                console.error("Error al añadir al carrito:", e);
-                showCustomAlert("Error al guardar el artículo en la base de datos.");
+                console.error("Error leyendo localStorage:", e);
+                return {};
             }
         }
 
+        // Guarda el carrito en localStorage
+        function saveCart(cart) {
+            try {
+                localStorage.setItem('crownsideCart', JSON.stringify(cart));
+            } catch (e) {
+                console.error("Error escribiendo en localStorage:", e);
+            }
+        }
+        
+        // Calcula el total de ítems en el carrito
+        function getCartTotalItems(cart) {
+            let total = 0;
+            for (const id in cart) {
+                total += cart[id].quantity;
+            }
+            return total;
+        }
+
         /**
-         * Escucha los cambios en el carrito de Firestore y actualiza el contador.
+         * Agrega o actualiza un producto en el carrito del usuario en localStorage.
+         */
+        window.addToCart = function(id, name, price) {
+            const cart = getCart();
+
+            if (cart[id]) {
+                cart[id].quantity += 1;
+            } else {
+                // Si es nuevo, lo agrega
+                cart[id] = { 
+                    id: id, 
+                    name: name, 
+                    price: price, 
+                    quantity: 1 
+                };
+            }
+
+            saveCart(cart);
+            updateCartCounter();
+            showCustomAlert(`"${name}" - Agregado al carrito.`);
+        }
+
+        /**
+         * Actualiza el contador del carrito leyendo desde localStorage.
          */
         function updateCartCounter() {
-            if (!currentUserId || !db) return; 
-
-            const cartCollectionRef = collection(db, `artifacts/${appId}/users/${currentUserId}/cart`);
-
-            // onSnapshot escucha los cambios en tiempo real
-            onSnapshot(cartCollectionRef, (snapshot) => {
-                let totalItems = 0;
-                // Suma la cantidad de todos los documentos (items) en el carrito
-                snapshot.docs.forEach(doc => {
-                    totalItems += doc.data().quantity || 0;
-                });
-                
-                // Actualiza el contador
-                document.getElementById("cart-counter").textContent = totalItems;
-            }, (error) => {
-                console.error("Error al escuchar el carrito:", error);
-            });
+            const cart = getCart();
+            const totalItems = getCartTotalItems(cart);
+            document.getElementById("cart-counter").textContent = totalItems;
         }
 
         // --- INICIO DE LA APLICACIÓN ---
         document.addEventListener("DOMContentLoaded", () => {
-            // El resto de la inicialización se hace en onAuthStateChanged
+            // Cargar el producto y actualizar el contador del carrito al inicio
+            loadProduct();
+            updateCartCounter();
         });
         
     </script>
