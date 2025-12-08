@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Preventas Exclusivas - CROWNSIDE</title>
+
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap" rel="stylesheet">
@@ -14,39 +16,40 @@
 <body>
     <div class="card-container">
 
-       <header class="main-header">
-        <div class="logo-container">
-            <a href="index.html">
-                <!-- Se asume que tienes esta imagen en el directorio img/ -->
-                <img src="img/logo_crownside.png" alt="Logo CROWNSIDE" class="header-logo">
-            </a>
-        </div>
+        <!-- HEADER -->
+        <header class="main-header">
+            <div class="logo-container">
+                <a href="index.html">
+                    <img src="img/logo_crownside.png" alt="Logo CROWNSIDE" class="header-logo">
+                </a>
+            </div>
 
-        <nav class="main-nav">
-            <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="services.html">Catálogo</a></li>
-                <!-- DESTACADO: El enlace a esta página -->
-                <li><a href="presales.html">Preventas</a></li>
-                <li>
-                    <a href="cart.html" class="cart-link">
-                        <i class="fas fa-shopping-cart"></i> Carrito 
-                        <span id="cart-counter" class="cart-counter">0</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </header>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="services.html">Catálogo</a></li>
+                    <li><a href="presales.html" class="active">Preventas</a></li>
+                    <li>
+                        <a href="cart.html" class="cart-link">
+                            <i class="fas fa-shopping-cart"></i> Carrito 
+                            <span id="cart-counter" class="cart-counter">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
 
         <div class="header-spacer"></div>
 
-        <section style="background-color:whitesmoke; padding: 20px 0px; border-radius: 10px;">
-            <h3 style="text-align:center;">Nuestras piezas</h3>
-            <p style="text-align:center; opacity:0.7;">¡Desliza para ver!</p>
+        <!-- CONTENEDOR DE PREVENTAS -->
+        <section style="background-color: whitesmoke; padding: 20px 0px; border-radius: 10px;">
+            <h3 style="text-align:center;">Preventas Exclusivas</h3>
+            <p style="text-align:center; opacity:0.7;">¡Desliza para ver las piezas en pre-lanzamiento!</p>
 
             <div id="catalog-container" class="hats-container"></div>
         </section>
 
+        <!-- BOTÓN VOLVER -->
         <section class="services-list">
             <div class="back-button-container">
                 <a href="index.html" class="back-button">
@@ -57,6 +60,7 @@
 
     </div>
 
-    <script src="script.js"></script>
+    <!-- SCRIPT QUE CARGA SOLO PREVENTAS -->
+    <script src="script-presales.js"></script>
 </body>
 </html>
