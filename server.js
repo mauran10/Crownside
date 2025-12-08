@@ -54,7 +54,7 @@ async function seedProducts() {
                 stock: 15,
                 descripcion: 'Diseño premium con bordado 3D, visera curva. Incluye bolsa protectora.', 
                 imagenUrl: 'img/othani_gold1_f.png',
-                imagenesAdicionales: ['img/othani_gold2_f.png', 'img/othani_gold3_f.png'] // Agregamos imágenes al seeder
+                imagenesAdicionales: ['img/othani_gold2_f.png'] // Agregamos imágenes al seeder
             },
             { 
                 id_producto: 'minimal_02', 
