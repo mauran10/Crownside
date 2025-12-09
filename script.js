@@ -48,6 +48,17 @@ function renderCatalog(lista) {
 }
 
 function filterCatalog(categoria) {
+
+  // Cambiar estado visual de botones
+    document.querySelectorAll(".button_filter").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    const selectedButton = document.querySelector(`.button_filter[data-category="${category}"]`);
+    if (selectedButton) {
+        selectedButton.classList.add("active");
+    }
+
     if (categoria === "todos") {
         renderCatalog(productosGlobal);
         return;

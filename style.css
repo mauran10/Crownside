@@ -50,7 +50,12 @@
                     margin: 6px 1px;
                     cursor: pointer;
                     }
-    
+
+            .button_filter.active {
+                background-color: #ffffff;
+                color: #000000;
+                font-weight: bold;
+            }
 
             .header-logo { 
                 /* ** NUEVOS ESTILOS PARA EL LOGO ** */
