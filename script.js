@@ -18,7 +18,7 @@ async function loadCatalog() {
 
         productosGlobal = await response.json();
 
-        renderCatalog(productosGlobal);
+        filterCatalog("gorra");
 
     } catch (error) {
         container.innerHTML = `
