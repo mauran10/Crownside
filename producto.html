@@ -1,3 +1,11 @@
+<!--
+  Título: Detalle del Producto - CROWNSIDE (Local Storage)
+  Descripción: Página de detalle de producto con galería de imágenes deslizable.
+  
+  Estrategia de Datos:
+  1. Detalles del Producto (Nombre, Precio, Imágenes): Se obtienen de tu API externa (asumiendo que está conectada a tu base de datos MongoDB).
+  2. Carrito de Compras (Artículos en el carrito): Se utiliza localStorage del navegador, sin persistencia ni sincronización en la nube.
+-->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,9 +14,13 @@
     <title>Detalle del Producto - CROWNSIDE</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
 
+    <!-- Estilos CSS específicos para el carrusel y el alert personalizado -->
     <style>
+        /* Estilos generales del contenedor */
         .product-container {
             display: flex;
             flex-direction: column;
@@ -26,6 +38,7 @@
             text-align: center;
         }
 
+        /* --- Estilos de la Galería y Carrusel (Solo táctil) --- */
         .image-gallery {
             width: 100%;
             display: flex;
@@ -42,24 +55,37 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
 
+        /* Contenedor del Carrusel de Miniaturas (Permite Swipe) */
         .carousel-wrapper {
             width: 100%;
             margin-top: 15px;
         }
 
+        /* Contenedor con scroll horizontal (swipe) para las miniaturas */
         .thumbnail-container {
             display: flex;
             gap: 10px;
-            overflow-x: scroll;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
+            overflow-x: scroll; /* Permite el desplazamiento por swipe */
+            scroll-behavior: smooth; 
+            -webkit-overflow-scrolling: touch; /* Mejora el desplazamiento táctil en iOS */
             padding: 5px 0;
-            justify-content: flex-start;
+            justify-content: flex-start; /* Alinea las miniaturas a la izquierda */
         }
-        .thumbnail-container::-webkit-scrollbar { display: none; }
+        
+        /* Ocultar barra de scroll (opcional, pero mejora la estética móvil) */
+        .thumbnail-container::-webkit-scrollbar {
+            display: none; 
+        }
+        .thumbnail-container {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+            display: flex;
+            justify-content: center;
+        }
 
+        /* Estilo de miniatura */
         .thumbnail {
-            min-width: 60px;
+            min-width: 60px; /* Tamaño fijo */
             height: 60px;
             object-fit: cover;
             border-radius: 4px;
@@ -69,9 +95,10 @@
         }
 
         .thumbnail.active, .thumbnail:hover {
-            border-color: #1e1e1e;
+            border-color: #1e1e1e; 
         }
 
+        /* Botón de compra y alerta */
         .purchase-button {
             padding: 12px 20px;
             background-color: #1e1e1e;
@@ -80,8 +107,10 @@
             border-radius: 6px;
             font-size: 16px;
             cursor: pointer;
+            transition: background-color 0.2s;
         }
-
+        
+        /* Alert personalizado (reemplazo de window.alert) */
         .custom-alert {
             position: fixed;
             top: 50%;
@@ -91,194 +120,346 @@
             color: white;
             padding: 15px 30px;
             border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
             z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
+            text-align: center;
             font-family: 'Roboto Condensed', sans-serif;
             font-weight: 700;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
         }
-        .custom-alert.visible { opacity: 1; }
+        .custom-alert.visible {
+            opacity: 1;
+        }
+
     </style>
 </head>
 
 <body>
 
-<header class="main-header">
-    <div class="logo-container">
-        <a href="index.html">
-            <img src="img/logo_crownside.png" alt="Logo CROWNSIDE" class="header-logo">
+    <div class="card-container">
+
+     <header class="main-header">
+        <div class="logo-container">
+            <a href="index.html">
+                <!-- Se asume que tienes esta imagen en el directorio img/ -->
+                <img src="img/logo_crownside.png" alt="Logo CROWNSIDE" class="header-logo">
+            </a>
+        </div>
+
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="services.html">Catálogo</a></li>
+                <!-- DESTACADO: El enlace a esta página -->
+                <li><a href="presales.html">Preventas</a></li>
+                <li>
+                    <a href="cart.html" class="cart-link">
+                        <i class="fas fa-shopping-cart"></i> Carrito 
+                        <span id="cart-counter" class="cart-counter">0</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <div class="header-spacer"></div>
+
+    <section id="product-detail" class="product-detail">
+        <div class="product-container" id="product-container">
+            <p class="loading-text">Cargando producto...</p>
+        </div>
+    </section>
+
+    <div class="back-button-container">
+        <a href="services.html" class="back-button">
+            <i class="fas fa-arrow-left"></i> Volver al Catálogo
         </a>
     </div>
 
-    <nav class="main-nav">
-        <ul>
-            <li><a href="index.html">Inicio</a></li>
-            <li><a href="services.html">Catálogo</a></li>
-            <li><a href="presales.html">Preventas</a></li>
-            <li>
-                <a href="cart.html" class="cart-link">
-                    <i class="fas fa-shopping-cart"></i> Carrito 
-                    <span id="cart-counter" class="cart-counter">0</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</header>
-<div class="header-spacer"></div>
-
-<section id="product-detail" class="product-detail">
-    <div class="product-container" id="product-container">
-        <p class="loading-text">Cargando producto...</p>
-    </div>
-</section>
-
-<div class="back-button-container">
-    <a href="services.html" class="back-button">
-        <i class="fas fa-arrow-left"></i> Volver al Catálogo
-    </a>
 </div>
+    <script>
+        // ====================================================================
+        // --- 1. FUNCIONES DE UTILIDAD (GALERÍA Y ALERTA) ---
+        // ====================================================================
 
-<script>
-
-function getQueryParam(p) {
-    return new URLSearchParams(window.location.search).get(p);
-}
-
-const cleanPath = (path) => {
-    if (typeof path !== 'string') return '';
-    let cleaned = path.trim();
-    cleaned = cleaned.replace(/^["'`]|["'`]$/g, '');
-    cleaned = cleaned.replace(/^\/+/g, '');
-    return cleaned;
-};
-
-function initializeGallery(mainImageUrl, additionalImages, productName) {
-    const mainImageElement = document.getElementById('main-product-image');
-    const thumbnailContainer = document.getElementById('thumbnail-container');
-
-    const allImages = [mainImageUrl, ...additionalImages];
-
-    mainImageElement.src = mainImageUrl;
-    mainImageElement.alt = productName;
-
-    thumbnailContainer.innerHTML = '';
-
-    allImages.forEach((url, index) => {
-        const thumb = document.createElement('img');
-        thumb.src = url;
-        thumb.className = 'thumbnail';
-        if (index === 0) thumb.classList.add('active');
-
-        thumb.onclick = () => {
-            mainImageElement.src = url;
-            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
-            thumb.classList.add('active');
+        // Utilidad para obtener parámetros de la URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+        
+        /**
+         * Limpia la ruta de imagen de comillas, espacios y elimina slashes iniciales.
+         */
+        const cleanPath = (path) => {
+            if (typeof path !== 'string') return '';
+            // 1. Trim leading/trailing whitespace
+            let cleaned = path.trim();
+            // 2. Remove surrounding quote marks (", ', or backticks) if present
+            cleaned = cleaned.replace(/^["'`]|["'`]$/g, '');
+            // 3. Remove leading slashes if they exist
+            cleaned = cleaned.replace(/^\/+/g, '');
+            return cleaned;
         };
 
-        thumbnailContainer.appendChild(thumb);
-    });
-}
 
-function showCustomAlert(msg) {
-    let box = document.getElementById("custom-alert-box");
-    if (!box) {
-        box = document.createElement("div");
-        box.id = "custom-alert-box";
-        box.className = "custom-alert";
-        document.body.appendChild(box);
-    }
-    box.textContent = msg;
-    box.classList.add("visible");
-    setTimeout(() => box.classList.remove("visible"), 2000);
-}
+        /**
+         * Inicializa la galería de imágenes: imagen principal y carrusel de miniaturas (táctil).
+         */
+        function initializeGallery(mainImageUrl, additionalImages, productName) {
+            // Nota: additionalImages ya debe contener las URLs completas en este punto.
+            const allImages = [mainImageUrl, ...(Array.isArray(additionalImages) ? additionalImages : [])];
+            const mainImageElement = document.getElementById('main-product-image');
+            const thumbnailContainer = document.getElementById('thumbnail-container');
 
-async function loadProduct() {
+            if (!mainImageElement || !thumbnailContainer) return;
+
+            // Asegura que la imagen principal se muestre correctamente al inicio.
+            mainImageElement.src = mainImageUrl;
+            mainImageElement.alt = productName;
+
+            thumbnailContainer.innerHTML = ''; 
+
+            allImages.forEach((url, index) => {
+                const thumbnail = document.createElement('img');
+                thumbnail.src = url;
+                thumbnail.alt = `Vista ${index + 1} de ${productName}`;
+                thumbnail.className = 'thumbnail';
+                
+                // Si la imagen no carga, usamos un placeholder.
+                thumbnail.onerror = () => {
+                    thumbnail.src = 'https://placehold.co/60x60/EEEEE/AAAAAA?text=X';
+                };
+
+                if (index === 0) {
+                    thumbnail.classList.add('active');
+                }
+
+                thumbnail.addEventListener('click', () => {
+                    mainImageElement.src = url;
+                    
+                    const thumbnailWidth = thumbnail.offsetWidth + 10; 
+                    const containerWidth = thumbnailContainer.offsetWidth;
+                    const scrollPosition = thumbnail.offsetLeft - (containerWidth / 2) + (thumbnailWidth / 2);
+                    thumbnailContainer.scrollLeft = scrollPosition;
+
+                    document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                    thumbnail.classList.add('active');
+                });
+
+                thumbnailContainer.appendChild(thumbnail);
+            });
+        }
+        
+        // --- Reemplazo de window.alert() ---
+        
+        function showCustomAlert(message, duration = 2000) {
+            let alertDiv = document.getElementById('custom-alert-box');
+            if (!alertDiv) {
+                alertDiv = document.createElement('div');
+                alertDiv.id = 'custom-alert-box';
+                alertDiv.className = 'custom-alert';
+                document.body.appendChild(alertDiv);
+            }
+
+            alertDiv.textContent = message;
+            alertDiv.classList.add('visible');
+
+            setTimeout(() => {
+                alertDiv.classList.remove('visible');
+            }, duration); 
+        }
+
+
+        // ====================================================================
+        // --- 2. FUNCIÓN DE CARGA DE PRODUCTO (CONECTA CON TU API/MONGO) ---
+        // ====================================================================
+
+       // ====================================================================
+// --- 2. FUNCIÓN DE CARGA DE PRODUCTO (CONECTA CON TU API/MONGO) ---
+// ====================================================================
+
+    async function loadProduct() {
     const id = getQueryParam("id");
-    const type = getQueryParam("type");
+    const type = getQueryParam("type"); // <--- IMPORTANTE
     const container = document.getElementById("product-container");
 
-    const API = "https://crownside.vercel.app";
+    const API_BASE_URL = 'https://crownside.vercel.app';
 
     if (!id) {
-        container.innerHTML = `<p>No se proporcionó ID.</p>`;
+        container.innerHTML = `<h2 class="error-title">Error</h2><p class="error-text">No se proporcionó un ID de producto.</p>`;
         return;
     }
 
-    container.innerHTML = `<p>Cargando...</p>`;
+    container.innerHTML = `<p class="loading-text">Cargando información...</p>`;
 
     try {
-        const url = `${API}/api/products?id=${id}&type=${type || ""}`;
-        const res = await fetch(url);
+        // Elegir la API dependiendo del tipo (normal o preventa)
+        const url = type === "preventa"
+            ? `${API_BASE_URL}/api/products?id=${id}&type=preventa`
+            : `${API_BASE_URL}/api/products?id=${id}`;
 
-        if (!res.ok) throw new Error("No se encontró el producto");
+        const response = await fetch(url);
 
-        const p = await res.json();
+        if (!response.ok) throw new Error("Error al consultar el producto o producto no encontrado.");
 
-        const fallback = "https://placehold.co/400x400?text=IMG";
+        const p = await response.json();
 
-        const mainUrl = p.imagenUrl ? `${API}/${cleanPath(p.imagenUrl)}` : fallback;
+                
+                // --- ARREGLO CRÍTICO: Construir y sanear la URL completa de las imágenes ---
+                const fallbackImageUrl = 'https://placehold.co/400x400/CCCCCC/333333?text=IMAGEN+PRINCIPAL';
+                
+                // 1. Sanear la URL de la imagen principal
+                const mainPath = cleanPath(p.imagenUrl);
+                const mainImageUrl = mainPath 
+                    ? `${API_BASE_URL}/${mainPath}`
+                    : fallbackImageUrl;
 
-        const addImgs = Array.isArray(p.imagenesAdicionales)
-            ? p.imagenesAdicionales.map(x => `${API}/${cleanPath(x)}`)
-            : [];
+                // 2. Sanear y procesar el array de imágenes adicionales
+                const rawAdditionalImages = Array.isArray(p.imagenesAdicionales) ? p.imagenesAdicionales : [];
 
-        container.innerHTML = `
-            <div class="product-card">
-                <div class="image-gallery">
-                    <img id="main-product-image" class="main-product-image" src="${mainUrl}">
-                    <div class="carousel-wrapper">
-                        <div class="thumbnail-container" id="thumbnail-container"></div>
+                // Manejo robusto: si hay un solo string con comas (problema de formato MongoDB)
+                const processedAdditionalPaths = rawAdditionalImages.flatMap(rawItem => {
+                    if (typeof rawItem !== 'string') return [];
+                    
+                    // Si el elemento contiene una coma, lo dividimos y saneamos cada parte
+                    if (rawItem.includes(',')) {
+                        return rawItem.split(',').map(pathPart => cleanPath(pathPart)).filter(path => path.length > 0);
+                    }
+                    
+                    // Si es un solo path, solo lo saneamos
+                    const singlePath = cleanPath(rawItem);
+                    return singlePath ? [singlePath] : [];
+                });
+
+                // 3. Construir las URLs completas para las imágenes adicionales
+                const additionalImages = processedAdditionalPaths
+                    .map(path => `${API_BASE_URL}/${path}`);
+                // -------------------------------------------------------------------------
+                
+                // Renderizar la estructura del producto
+                container.innerHTML = `
+                    <div class="product-card">
+                        
+                        <!-- GALERÍA DE IMÁGENES -->
+                        <div class="image-gallery">
+                            <!--
+                                CORRECCIÓN: Se inyecta SOLO la URL limpia en el src
+                                y se añade el handler onerror por si la URL final falla.
+                            -->
+                            <img id="main-product-image" 
+                                 src="${mainImageUrl}" 
+                                 alt="${p.nombre}" 
+                                 class="main-product-image"
+                                 onerror="this.onerror=null; this.src='${fallbackImageUrl}';">
+                            
+                            <!-- CONTENEDOR DEL CARRUSEL DE MINIATURAS (SWIPE) -->
+                            <div class="carousel-wrapper">
+                                <div class="thumbnail-container" id="thumbnail-container">
+                                    <!-- Las miniaturas se inyectarán aquí por JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <h2 class="product-title">${p.nombre}</h2>
+
+                        <p class="product-description">${p.descripcion || 'Sin descripción disponible.'}</p>
+
+                        <p class="product-price">$${p.precio ? p.precio.toFixed(2) : 'N/A'} MXN</p>
+
+                        <!-- Llamamos a la función addToCart que usa localStorage -->
+                        <button class="purchase-button" onclick="addToCart('${p.id_producto}', '${p.nombre.replace(/'/g, "\\'")}', ${p.precio || 0})">
+                            Agregar al Carrito
+                        </button>
                     </div>
-                </div>
+                `;
+                
+                // Inicializar la galería con las URLs correctas
+                // Se pasa el nombre del producto para los alts de las miniaturas
+                initializeGallery(mainImageUrl, additionalImages, p.nombre);
 
-                <h2 class="product-title">${p.nombre}</h2>
-                <p class="product-description">${p.descripcion || 'Sin descripción.'}</p>
-                <p class="product-price">$${p.precio?.toFixed(2) || "0.00"} MXN</p>
+            } catch (error) {
+                console.error("Error en loadProduct:", error);
+                container.innerHTML = `
+                    <h2 class="error-title">Error al cargar el producto</h2>
+                    <p class="error-text">Verifica que el ID sea correcto y que tu servidor esté funcionando. Detalle: ${error.message}</p>
+                `;
+            }
+        }
 
-                <button class="purchase-button"
-                    onclick="addToCart('${p.id_producto}', '${p.nombre.replace(/'/g, "\\'")}', ${p.precio})">
-                    Agregar al Carrito
-                </button>
-            </div>
-        `;
+        // ====================================================================
+        // --- 3. FUNCIONES DE CARRITO (USANDO LOCALSTORAGE) ---
+        // ====================================================================
+        
+        // Obtiene el carrito de localStorage
+        function getCart() {
+            try {
+                const cart = localStorage.getItem('crownsideCart');
+                return cart ? JSON.parse(cart) : {};
+            } catch (e) {
+                console.error("Error leyendo localStorage:", e);
+                return {};
+            }
+        }
 
-        initializeGallery(mainUrl, addImgs, p.nombre);
+        // Guarda el carrito en localStorage
+        function saveCart(cart) {
+            try {
+                localStorage.setItem('crownsideCart', JSON.stringify(cart));
+            } catch (e) {
+                console.error("Error escribiendo en localStorage:", e);
+            }
+        }
+        
+        // Calcula el total de ítems en el carrito
+        function getCartTotalItems(cart) {
+            let total = 0;
+            for (const id in cart) {
+                total += cart[id].quantity;
+            }
+            return total;
+        }
 
-    } catch (e) {
-        container.innerHTML = `<p>Error: ${e.message}</p>`;
-    }
-}
+        /**
+         * Agrega o actualiza un producto en el carrito del usuario en localStorage.
+         */
+        window.addToCart = function(id, name, price) {
+            const cart = getCart();
 
-function getCart() {
-    return JSON.parse(localStorage.getItem("crownsideCart") || "{}");
-}
+            if (cart[id]) {
+                cart[id].quantity += 1;
+            } else {
+                // Si es nuevo, lo agrega
+                cart[id] = { 
+                    id: id, 
+                    name: name, 
+                    price: price, 
+                    quantity: 1 
+                };
+            }
 
-function saveCart(cart) {
-    localStorage.setItem("crownsideCart", JSON.stringify(cart));
-}
+            saveCart(cart);
+            updateCartCounter();
+            showCustomAlert(`"${name}" - Agregado al carrito.`);
+        }
 
-function updateCartCounter() {
-    const cart = getCart();
-    let total = 0;
-    for (const id in cart) total += cart[id].quantity;
-    document.getElementById("cart-counter").textContent = total;
-}
+        /**
+         * Actualiza el contador del carrito leyendo desde localStorage.
+         */
+        function updateCartCounter() {
+            const cart = getCart();
+            const totalItems = getCartTotalItems(cart);
+            document.getElementById("cart-counter").textContent = totalItems;
+        }
 
-function addToCart(id, name, price) {
-    const cart = getCart();
-    if (!cart[id]) cart[id] = { id, name, price, quantity: 0 };
-    cart[id].quantity++;
-    saveCart(cart);
-    updateCartCounter();
-    showCustomAlert(`"${name}" agregado al carrito.`);
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    loadProduct();
-    updateCartCounter();
-});
-
-</script>
+        // --- INICIO DE LA APLICACIÓN ---
+        document.addEventListener("DOMContentLoaded", () => {
+            // Cargar el producto y actualizar el contador del carrito al inicio
+            loadProduct();
+            updateCartCounter();
+        });
+        
+    </script>
 
 </body>
 </html>
