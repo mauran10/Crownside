@@ -18,6 +18,7 @@ async function loadCatalog() {
 
         productosGlobal = await response.json();
 
+        // Mostrar solo gorras al iniciar
         filterCatalog("gorra");
 
     } catch (error) {
@@ -49,25 +50,27 @@ function renderCatalog(lista) {
 
 function filterCatalog(categoria) {
 
-  // Cambiar estado visual de botones
+    // Quitar "active" de todos
     document.querySelectorAll(".button_filter").forEach(btn => {
         btn.classList.remove("active");
     });
 
-    const selectedButton = document.querySelector(`.button_filter[data-category="${category}"]`);
+    // Agregar "active" al seleccionado
+    const selectedButton = document.querySelector(`.button_filter[data-category="${categoria}"]`);
     if (selectedButton) {
         selectedButton.classList.add("active");
     }
 
+    // Mostrar todo
     if (categoria === "todos") {
         renderCatalog(productosGlobal);
         return;
     }
 
+    // Filtrar por categoría
     const filtrados = productosGlobal.filter(p => p.categoria === categoria);
     renderCatalog(filtrados);
 }
-
 
 // Abrir detalle del producto
 function goToProduct(id) {
