@@ -1,6 +1,4 @@
-// =======================================================
-// CARGAR CATÁLOGO DESDE VERCEL
-// =======================================================
+let productosGlobal = [];
 
 async function loadCatalog() {
     const container = document.getElementById("catalog-container");
@@ -18,22 +16,9 @@ async function loadCatalog() {
             throw new Error("Status " + response.status);
         }
 
-        const productos = await response.json();
+        productosGlobal = await response.json();
 
-        if (productos.length === 0) {
-            container.innerHTML = `
-                <p style="color:white; text-align:center;">No hay productos disponibles.</p>
-            `;
-            return;
-        }
-
-        container.innerHTML = productos.map(p => `
-            <div class="hat-item" onclick="goToProduct('${p.id_producto}')">
-                <img src="${p.imagenUrl}" alt="${p.nombre}">
-                <h3 class="hat-title">${p.nombre}</h3>
-                <p class="hat-price">$${p.precio} MXN</p>
-            </div>
-        `).join("");
+        renderCatalog(productosGlobal);
 
     } catch (error) {
         container.innerHTML = `
@@ -44,6 +29,34 @@ async function loadCatalog() {
         `;
     }
 }
+
+function renderCatalog(lista) {
+    const container = document.getElementById("catalog-container");
+
+    if (lista.length === 0) {
+        container.innerHTML = `<p style="color:white; text-align:center;">No hay productos disponibles.</p>`;
+        return;
+    }
+
+    container.innerHTML = lista.map(p => `
+        <div class="hat-item" onclick="goToProduct('${p.id_producto}')">
+            <img src="${p.imagenUrl}" alt="${p.nombre}">
+            <h3 class="hat-title">${p.nombre}</h3>
+            <p class="hat-price">$${p.precio} MXN</p>
+        </div>
+    `).join("");
+}
+
+function filterCatalog(categoria) {
+    if (categoria === "todos") {
+        renderCatalog(productosGlobal);
+        return;
+    }
+
+    const filtrados = productosGlobal.filter(p => p.categoria === categoria);
+    renderCatalog(filtrados);
+}
+
 
 // Abrir detalle del producto
 function goToProduct(id) {
