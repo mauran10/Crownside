@@ -45,7 +45,7 @@ async function loadPreSales() {
             .map(producto => `
                 <div class="hat-card" onclick="goToDetail('${producto.id_producto}')">
                     <img src="${producto.imagenUrl}" class="hat-img" alt="${producto.nombre}">
-                    <h4>${producto.nombre}</h4>
+                    <h4 class="title">${producto.nombre}</h4>
                     <p class="price">$${producto.precio}</p>
                 </div>
             `)
