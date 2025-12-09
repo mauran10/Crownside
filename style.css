@@ -13,8 +13,12 @@
         font-optical-sizing: auto;
         font-weight: 400;
         font-style: normal;
-        display: flex; justify-content: center; align-items: center; min-height: 100vh;
-         margin: 0; background-color: whitesmoke;
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        min-height: 100vh;
+         margin: 0; 
+         background-color: whitesmoke;
           color: black; line-height: 1.6;
           -webkit-font-smoothing: antialiased; 
           -moz-osx-font-smoothing: grayscale; 
