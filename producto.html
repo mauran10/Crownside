@@ -295,8 +295,8 @@
 
     try {
         // Elegir la API dependiendo del tipo (normal o preventa)
-        const url = type === "preventa"
-            ? `${API_BASE_URL}/api/products?id=${id}&type=preventa`
+        const url = type === "preventas"
+            ? `${API_BASE_URL}/api/products?id=${id}&type=preventas`
             : `${API_BASE_URL}/api/products?id=${id}`;
 
         const response = await fetch(url);
