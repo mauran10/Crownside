@@ -281,10 +281,10 @@
 
     async function loadProduct() {
     const id = getQueryParam("id");
-    const type = getQueryParam("type"); // <--- IMPORTANTE
+    const type = getQueryParam("type"); 
     const container = document.getElementById("product-container");
 
-    const API_BASE_URL = 'https://crownside.vercel.app';
+    const API_BASE_URL = "https://crownside.vercel.app";
 
     if (!id) {
         container.innerHTML = `<h2 class="error-title">Error</h2><p class="error-text">No se proporcionó un ID de producto.</p>`;
@@ -294,10 +294,13 @@
     container.innerHTML = `<p class="loading-text">Cargando información...</p>`;
 
     try {
-        // Elegir la API dependiendo del tipo (normal o preventa)
-        const url = type === "preventas"
-            ? `${API_BASE_URL}/api/products?id=${id}&type=preventas`
+        // 🔥 ARREGLO FINAL — URL CORRECTA
+        const url =
+            type === "preventa"
+            ? `${API_BASE_URL}/api/presales?id=${id}`
             : `${API_BASE_URL}/api/products?id=${id}`;
+
+        console.log("🔍 URL consultada:", url);
 
         const response = await fetch(url);
 
@@ -305,87 +308,67 @@
 
         const p = await response.json();
 
-                
-                // --- ARREGLO CRÍTICO: Construir y sanear la URL completa de las imágenes ---
-                const fallbackImageUrl = 'https://placehold.co/400x400/CCCCCC/333333?text=IMAGEN+PRINCIPAL';
-                
-                // 1. Sanear la URL de la imagen principal
-                const mainPath = cleanPath(p.imagenUrl);
-                const mainImageUrl = mainPath 
-                    ? `${API_BASE_URL}/${mainPath}`
-                    : fallbackImageUrl;
+        // --- SANEAR URLs ---
+        const fallbackImageUrl = "https://placehold.co/400x400/CCCCCC/333333?text=IMAGEN+PRINCIPAL";
 
-                // 2. Sanear y procesar el array de imágenes adicionales
-                const rawAdditionalImages = Array.isArray(p.imagenesAdicionales) ? p.imagenesAdicionales : [];
+        const mainPath = cleanPath(p.imagenUrl);
+        const mainImageUrl = mainPath ? `${API_BASE_URL}/${mainPath}` : fallbackImageUrl;
 
-                // Manejo robusto: si hay un solo string con comas (problema de formato MongoDB)
-                const processedAdditionalPaths = rawAdditionalImages.flatMap(rawItem => {
-                    if (typeof rawItem !== 'string') return [];
-                    
-                    // Si el elemento contiene una coma, lo dividimos y saneamos cada parte
-                    if (rawItem.includes(',')) {
-                        return rawItem.split(',').map(pathPart => cleanPath(pathPart)).filter(path => path.length > 0);
-                    }
-                    
-                    // Si es un solo path, solo lo saneamos
-                    const singlePath = cleanPath(rawItem);
-                    return singlePath ? [singlePath] : [];
-                });
+        const rawAdditionalImages = Array.isArray(p.imagenesAdicionales) ? p.imagenesAdicionales : [];
 
-                // 3. Construir las URLs completas para las imágenes adicionales
-                const additionalImages = processedAdditionalPaths
-                    .map(path => `${API_BASE_URL}/${path}`);
-                // -------------------------------------------------------------------------
-                
-                // Renderizar la estructura del producto
-                container.innerHTML = `
-                    <div class="product-card">
-                        
-                        <!-- GALERÍA DE IMÁGENES -->
-                        <div class="image-gallery">
-                            <!--
-                                CORRECCIÓN: Se inyecta SOLO la URL limpia en el src
-                                y se añade el handler onerror por si la URL final falla.
-                            -->
-                            <img id="main-product-image" 
-                                 src="${mainImageUrl}" 
-                                 alt="${p.nombre}" 
-                                 class="main-product-image"
-                                 onerror="this.onerror=null; this.src='${fallbackImageUrl}';">
-                            
-                            <!-- CONTENEDOR DEL CARRUSEL DE MINIATURAS (SWIPE) -->
-                            <div class="carousel-wrapper">
-                                <div class="thumbnail-container" id="thumbnail-container">
-                                    <!-- Las miniaturas se inyectarán aquí por JS -->
-                                </div>
-                            </div>
-                        </div>
+        const processedAdditionalPaths = rawAdditionalImages.flatMap(rawItem => {
+            if (typeof rawItem !== "string") return [];
 
-                        <h2 class="product-title">${p.nombre}</h2>
-
-                        <p class="product-description">${p.descripcion || 'Sin descripción disponible.'}</p>
-
-                        <p class="product-price">$${p.precio ? p.precio.toFixed(2) : 'N/A'} MXN</p>
-
-                        <!-- Llamamos a la función addToCart que usa localStorage -->
-                        <button class="purchase-button" onclick="addToCart('${p.id_producto}', '${p.nombre.replace(/'/g, "\\'")}', ${p.precio || 0})">
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                `;
-                
-                // Inicializar la galería con las URLs correctas
-                // Se pasa el nombre del producto para los alts de las miniaturas
-                initializeGallery(mainImageUrl, additionalImages, p.nombre);
-
-            } catch (error) {
-                console.error("Error en loadProduct:", error);
-                container.innerHTML = `
-                    <h2 class="error-title">Error al cargar el producto</h2>
-                    <p class="error-text">Verifica que el ID sea correcto y que tu servidor esté funcionando. Detalle: ${error.message}</p>
-                `;
+            if (rawItem.includes(",")) {
+                return rawItem.split(",").map(pathPart => cleanPath(pathPart)).filter(path => path.length > 0);
             }
-        }
+
+            const singlePath = cleanPath(rawItem);
+            return singlePath ? [singlePath] : [];
+        });
+
+        const additionalImages = processedAdditionalPaths.map(path => `${API_BASE_URL}/${path}`);
+
+        // --- RENDER ---
+        container.innerHTML = `
+            <div class="product-card">
+
+                <div class="image-gallery">
+                    <img id="main-product-image"
+                        src="${mainImageUrl}"
+                        alt="${p.nombre}"
+                        class="main-product-image"
+                        onerror="this.onerror=null; this.src='${fallbackImageUrl}';">
+
+                    <div class="carousel-wrapper">
+                        <div class="thumbnail-container" id="thumbnail-container"></div>
+                    </div>
+                </div>
+
+                <h2 class="product-title">${p.nombre}</h2>
+
+                <p class="product-description">${p.descripcion || "Sin descripción disponible."}</p>
+
+                <p class="product-price">$${p.precio ? p.precio.toFixed(2) : "N/A"} MXN</p>
+
+                <button class="purchase-button" 
+                    onclick="addToCart('${p.id_producto}', '${p.nombre.replace(/'/g, "\\'")}', ${p.precio || 0})">
+                    Agregar al Carrito
+                </button>
+            </div>
+        `;
+
+        initializeGallery(mainImageUrl, additionalImages, p.nombre);
+
+    } catch (error) {
+        console.error("Error en loadProduct:", error);
+        container.innerHTML = `
+            <h2 class="error-title">Error al cargar el producto</h2>
+            <p class="error-text">Verifica que el ID sea correcto y que tu servidor esté funcionando. Detalle: ${error.message}</p>
+        `;
+    }
+}
+
 
         // ====================================================================
         // --- 3. FUNCIONES DE CARRITO (USANDO LOCALSTORAGE) ---
