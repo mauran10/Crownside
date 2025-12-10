@@ -1,17 +1,31 @@
-
 // =======================================================
 // 🛒 SISTEMA DE CARRITO (LocalStorage)
 // =======================================================
 
+// Obtener carrito
 function getCart() {
     return JSON.parse(localStorage.getItem("cart")) || {};
 }
 
+// Guardar carrito
 function saveCart(cart) {
     localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-function addToCart(product) {
+// Normalizar productos (para que catálogo + preventas funcionen igual)
+function normalizeProduct(p) {
+    return {
+        id: p.id || p._id || p.id_producto,
+        name: p.name || p.nombre || "Producto sin nombre",
+        price: p.price || p.precio || p.precio_preventa || 0,
+        image: p.image || p.imagen || p.imagenUrl || "",
+    };
+}
+
+// Agregar al carrito
+function addToCart(p) {
+
+    const product = normalizeProduct(p);
     const cart = getCart();
 
     if (cart[product.id]) {
@@ -28,8 +42,10 @@ function addToCart(product) {
 
     saveCart(cart);
     updateCartCounter();
+    alert("Producto agregado al carrito");
 }
 
+// Contador del carrito en el ícono
 function updateCartCounter() {
     const cart = getCart();
     const total = Object.values(cart).reduce((acc, p) => acc + p.quantity, 0);
@@ -38,6 +54,10 @@ function updateCartCounter() {
     if (counter) counter.textContent = total > 0 ? total : "";
 }
 
+
+// =======================================================
+//  CATÁLOGO
+// =======================================================
 
 let productosGlobal = [];
 
@@ -59,7 +79,7 @@ async function loadCatalog() {
 
         productosGlobal = await response.json();
 
-        // Mostrar solo gorras al iniciar
+        // Mostrar gorras inicialmente
         filterCatalog("gorra");
 
     } catch (error) {
@@ -91,29 +111,24 @@ function renderCatalog(lista) {
 
 function filterCatalog(categoria) {
 
-    // Quitar "active" de todos
     document.querySelectorAll(".button_filter").forEach(btn => {
         btn.classList.remove("active");
     });
 
-    // Agregar "active" al seleccionado
     const selectedButton = document.querySelector(`.button_filter[data-category="${categoria}"]`);
     if (selectedButton) {
         selectedButton.classList.add("active");
     }
 
-    // Mostrar todo
     if (categoria === "todos") {
         renderCatalog(productosGlobal);
         return;
     }
 
-    // Filtrar por categoría
     const filtrados = productosGlobal.filter(p => p.categoria === categoria);
     renderCatalog(filtrados);
 }
 
-// Abrir detalle del producto
 function goToProduct(id) {
     window.location.href = `producto.html?id=${id}`;
 }
@@ -126,14 +141,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 // =======================================================
-// 📌 MOSTRAR CARRITO EN cart.html
+//  MOSTRAR CARRITO EN cart.html
 // =======================================================
 
 function renderCartPage() {
     const container = document.getElementById("cart-items-container");
     const summary = document.getElementById("cart-summary");
 
-    if (!container || !summary) return; // No estamos en cart.html
+    if (!container || !summary) return;
 
     const cart = getCart();
     const items = Object.values(cart);
@@ -144,10 +159,6 @@ function renderCartPage() {
         return;
     }
 
-
-
-
-    // HTML de productos del carrito
     container.innerHTML = items
         .map(item => `
             <div class="cart-item">
@@ -171,7 +182,6 @@ function renderCartPage() {
         `)
         .join("");
 
-    // SUMATORIA DEL TOTAL
     const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
     summary.innerHTML = `
@@ -179,9 +189,11 @@ function renderCartPage() {
     `;
 }
 
+
 // =======================================================
-//  CAMBIAR CANTIDAD
+// CAMBIAR CANTIDAD
 // =======================================================
+
 window.changeQuantity = function (id, amount) {
     const cart = getCart();
 
@@ -196,9 +208,11 @@ window.changeQuantity = function (id, amount) {
     renderCartPage();
 };
 
+
 // =======================================================
 //  ELIMINAR PRODUCTO
 // =======================================================
+
 window.removeFromCart = function (id) {
     const cart = getCart();
 
@@ -209,7 +223,9 @@ window.removeFromCart = function (id) {
     renderCartPage();
 };
 
+
 // =======================================================
-//  AUTO-CARGA DEL CARRITO EN cart.html
+// AUTO-CARGA DEL CARRITO
 // =======================================================
+
 document.addEventListener("DOMContentLoaded", renderCartPage);
