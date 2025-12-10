@@ -8,6 +8,13 @@
        --border-color: #333333; /* Borde oscuro y sutil */ 
        --shadow-color: rgba(0, 0, 0, 0.5); /* Sombra adaptada al oscuro */ 
     } /* --- ESTILOS GENERALES Y LAYOUT --- */ 
+    
+    
+*:focus {
+    outline: none !important;
+}
+
+
     body { 
          font-family: "Roboto Condensed", sans-serif;
         font-optical-sizing: auto;
