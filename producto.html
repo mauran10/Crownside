@@ -188,14 +188,18 @@ function getQueryParam(param) {
     return urlParams.get(param);
 }
 
-// Limpieza de rutas de imagen
-const cleanPath = (path) => {
+cleanPath = (path) => {
     if (typeof path !== "string") return "";
     let cleaned = path.trim();
-    cleaned = cleaned.replace(/^["'`]|["'`]$/g, ""); 
-    cleaned = cleaned.replace(/^\/+/g, "");
+
+    cleaned = cleaned
+        .replace(/^["'`]|["'`]$/g, "")  // quita comillas
+        .replace(/\\/g, "/")            // quita barras invertidas
+        .replace(/^\/+/g, "");          // quita barras dobles al inicio
+
     return cleaned;
 };
+
 
 // Inicializa galería de imágenes
 function initializeGallery(mainImageUrl, additionalImages, productName) {
@@ -282,7 +286,7 @@ async function loadProduct() {
             name: p.nombre || p.name || "Producto",
             price: p.precio || p.precio_preventa || p.price || 0,
             description: p.descripcion || p.description || "",
-            mainImage: p.imagenUrl ? `${API_BASE_URL}/${cleanPath(p.imagenUrl)}` : "https://placehold.co/400",
+            mainImage: p.imagenUrl ? `${API_BASE_URL}/${cleanPath(p.imagenUrl)}`.replace(/\/+/g, "/") : "https://placehold.co/400",
             additional: Array.isArray(p.imagenesAdicionales)
                 ? p.imagenesAdicionales.map(img => `${API_BASE_URL}/${cleanPath(img)}`)
                 : []
