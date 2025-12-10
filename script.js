@@ -1,3 +1,44 @@
+
+// =======================================================
+// 🛒 SISTEMA DE CARRITO (LocalStorage)
+// =======================================================
+
+function getCart() {
+    return JSON.parse(localStorage.getItem("cart")) || {};
+}
+
+function saveCart(cart) {
+    localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+function addToCart(product) {
+    const cart = getCart();
+
+    if (cart[product.id]) {
+        cart[product.id].quantity++;
+    } else {
+        cart[product.id] = {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            quantity: 1
+        };
+    }
+
+    saveCart(cart);
+    updateCartCounter();
+}
+
+function updateCartCounter() {
+    const cart = getCart();
+    const total = Object.values(cart).reduce((acc, p) => acc + p.quantity, 0);
+
+    const counter = document.getElementById("cart-counter");
+    if (counter) counter.textContent = total > 0 ? total : "";
+}
+
+
 let productosGlobal = [];
 
 async function loadCatalog() {
@@ -78,3 +119,93 @@ function goToProduct(id) {
 }
 
 document.addEventListener("DOMContentLoaded", loadCatalog);
+
+
+// =======================================================
+// 📌 MOSTRAR CARRITO EN cart.html
+// =======================================================
+
+function renderCartPage() {
+    const container = document.getElementById("cart-items-container");
+    const summary = document.getElementById("cart-summary");
+
+    if (!container || !summary) return; // No estamos en cart.html
+
+    const cart = getCart();
+    const items = Object.values(cart);
+
+    if (items.length === 0) {
+        container.innerHTML = `<p class="empty-cart">🛒 Tu carrito está vacío.</p>`;
+        summary.innerHTML = "";
+        return;
+    }
+
+
+
+
+    // HTML de productos del carrito
+    container.innerHTML = items
+        .map(item => `
+            <div class="cart-item">
+                <img src="${item.image}" class="cart-item-img" alt="${item.name}">
+                
+                <div class="cart-item-info">
+                    <h3>${item.name}</h3>
+                    <p class="price">$${item.price}</p>
+
+                    <div class="quantity-control">
+                        <button onclick="changeQuantity('${item.id}', -1)" class="qty-btn">-</button>
+                        <span class="qty">${item.quantity}</span>
+                        <button onclick="changeQuantity('${item.id}', 1)" class="qty-btn">+</button>
+                    </div>
+
+                    <button onclick="removeFromCart('${item.id}')" class="remove-btn">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+        `)
+        .join("");
+
+    // SUMATORIA DEL TOTAL
+    const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+    summary.innerHTML = `
+        <h3>Total a pagar: <span class="total-price">$${total}</span></h3>
+    `;
+}
+
+// =======================================================
+//  CAMBIAR CANTIDAD
+// =======================================================
+window.changeQuantity = function (id, amount) {
+    const cart = getCart();
+
+    if (!cart[id]) return;
+
+    cart[id].quantity += amount;
+
+    if (cart[id].quantity <= 0) delete cart[id];
+
+    saveCart(cart);
+    updateCartCounter();
+    renderCartPage();
+};
+
+// =======================================================
+//  ELIMINAR PRODUCTO
+// =======================================================
+window.removeFromCart = function (id) {
+    const cart = getCart();
+
+    if (cart[id]) delete cart[id];
+
+    saveCart(cart);
+    updateCartCounter();
+    renderCartPage();
+};
+
+// =======================================================
+//  AUTO-CARGA DEL CARRITO EN cart.html
+// =======================================================
+document.addEventListener("DOMContentLoaded", renderCartPage);

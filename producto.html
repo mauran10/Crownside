@@ -352,9 +352,10 @@
                 <p class="product-price">$${p.precio ? p.precio.toFixed(2) : "N/A"} MXN</p>
 
                 <button class="purchase-button" 
-                    onclick="addToCart('${p.id_producto}', '${p.nombre.replace(/'/g, "\\'")}', ${p.precio || 0})">
+                    onclick="addToCart('${p.id || p.id_producto}', '${p.nombre.replace(/'/g, "\\'")}', ${p.precio || 0}, '${mainImageUrl}')">
                     Agregar al Carrito
                 </button>
+
             </div>
         `;
 
@@ -377,7 +378,7 @@
         // Obtiene el carrito de localStorage
         function getCart() {
             try {
-                const cart = localStorage.getItem('crownsideCart');
+                const cart = localStorage.getItem('cart');
                 return cart ? JSON.parse(cart) : {};
             } catch (e) {
                 console.error("Error leyendo localStorage:", e);
@@ -388,7 +389,7 @@
         // Guarda el carrito en localStorage
         function saveCart(cart) {
             try {
-                localStorage.setItem('crownsideCart', JSON.stringify(cart));
+                localStorage.setItem('cart', JSON.stringify(cart));
             } catch (e) {
                 console.error("Error escribiendo en localStorage:", e);
             }
@@ -406,25 +407,26 @@
         /**
          * Agrega o actualiza un producto en el carrito del usuario en localStorage.
          */
-        window.addToCart = function(id, name, price) {
-            const cart = getCart();
+      window.addToCart = function(id, name, price, imageUrl) {
+        const cart = getCart();
 
-            if (cart[id]) {
-                cart[id].quantity += 1;
-            } else {
-                // Si es nuevo, lo agrega
-                cart[id] = { 
-                    id: id, 
-                    name: name, 
-                    price: price, 
-                    quantity: 1 
-                };
-            }
-
-            saveCart(cart);
-            updateCartCounter();
-            showCustomAlert(`"${name}" - Agregado al carrito.`);
+        if (cart[id]) {
+            cart[id].quantity += 1;
+        } else {
+            cart[id] = { 
+                id: id, 
+                name: name, 
+                price: price, 
+                image: imageUrl,
+                quantity: 1 
+            };
         }
+
+        saveCart(cart);
+        updateCartCounter();
+        showCustomAlert(`"${name}" - Agregado al carrito.`);
+    }
+
 
         /**
          * Actualiza el contador del carrito leyendo desde localStorage.
