@@ -111,10 +111,7 @@
                         font-weight: bold; padding: 8px 0; 
                         transition: color 0.3s ease; 
                     }
-                    
-                    .main-nav a:hover { 
-                        color: var(--primary-color, #4CAF50);
-                     } 
+                
                      
                      /* Estilo específico para el carrito y el contador */
                       .cart-link { 
@@ -351,10 +348,6 @@
                     text-decoration: none; 
                     font-weight: 600; 
                     transition: background-color 0.2s; 
-                } 
-                
-                .back-button:hover { 
-                    background-color: var(--border-color); 
                 } 
                 
                 .back-button i { 
