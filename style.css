@@ -9,11 +9,6 @@
        --shadow-color: rgba(0, 0, 0, 0.5); /* Sombra adaptada al oscuro */ 
     } /* --- ESTILOS GENERALES Y LAYOUT --- */ 
     
-    
-*:focus {
-    outline: none !important;
-}
-
 
     body { 
          font-family: "Roboto Condensed", sans-serif;
@@ -449,3 +444,22 @@
                         gap:10px;
                         margin:10px 0 5px 0;
                         }
+
+
+
+                        /* Quitar el borde azul al hacer clic o enfocarse */
+*:focus {
+    outline: none !important;
+}
+
+/* Quitar highlight azul en móviles (Android y iOS) */
+* {
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+
+button:active,
+a:active,
+img:active {
+    background-color: transparent !important;
+}
