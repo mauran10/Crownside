@@ -1,453 +1,523 @@
-:root { /* Paleta Oscura y Minimalista (Dark Mode) */ 
-    --primary-color: #BB86FC; /* Púrpura vibrante para el acento */
-     --secondary-color: #03DAC6; /* Verde azulado para botones de acción */ 
-     --background-color: #121212; /* Fondo muy oscuro (casi negro) */ 
-     --card-background: #1F1F1F; /* Fondo de la tarjeta (ligeramente más claro) */
-      --text-color: #E0E0E0; /* Color de texto principal claro */ 
-      --light-text-color: #B0B0B0; /* Color de texto secundario/sutil */
-       --border-color: #333333; /* Borde oscuro y sutil */ 
-       --shadow-color: rgba(0, 0, 0, 0.5); /* Sombra adaptada al oscuro */ 
-    } /* --- ESTILOS GENERALES Y LAYOUT --- */ 
-    
+:root {
+    /* Paleta Oscura y Minimalista (Dark Mode) */
+    --primary-color: #BB86FC;
+    /* Púrpura vibrante para el acento */
+    --secondary-color: #03DAC6;
+    /* Verde azulado para botones de acción */
+    --background-color: #121212;
+    /* Fondo muy oscuro (casi negro) */
+    --card-background: #1F1F1F;
+    /* Fondo de la tarjeta (ligeramente más claro) */
+    --text-color: #E0E0E0;
+    /* Color de texto principal claro */
+    --light-text-color: #B0B0B0;
+    /* Color de texto secundario/sutil */
+    --border-color: #333333;
+    /* Borde oscuro y sutil */
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    /* Sombra adaptada al oscuro */
+}
 
-    body { 
-         font-family: "Roboto Condensed", sans-serif;
-        font-optical-sizing: auto;
-        font-weight: 400;
-        font-style: normal;
-        display: flex; 
-        justify-content: center; 
-        align-items: center; 
-        min-height: 100vh;
-         margin: 0; 
-         background-color: whitesmoke;
-          color: black; line-height: 1.6;
-          -webkit-font-smoothing: antialiased; 
-          -moz-osx-font-smoothing: grayscale; 
-        } 
-        .card-container { 
-            width: 100%; 
-            max-width: 400px;
-            background-color: whitesmoke; 
-            border-radius: 10px;
-            box-shadow: 0 5px 20px var(--shadow-color); 
-            overflow: hidden; text-align: center; 
-            padding-bottom: 20px; 
-        } 
-        /* ======================================= */ /* HEADER Y NOMBRE */ /* ======================================= */ 
-        .profile-header { 
-            text-align: center; 
-            padding: 30px 20px 20px 20px;
-             background-color: #282828; 
-             border-bottom: 1px solid var(--border-color); 
-            } 
+/* --- ESTILOS GENERALES Y LAYOUT --- */
 
-            .button_filter{
-                   background-color: var(--card-background);
-                    color: var(--text-color);
-                    border: 1px solid var(--border-color);
-                    border-radius: 8px;
-                    padding: 8px 15px;
-                    font-size: small;
-                    margin: 6px 1px;
-                    cursor: pointer;
-                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-                    }
 
-            .button_filter.active {
-                background-color: whitesmoke;
-                color: #000000;
-                font-weight: bold;
-            }
+body {
+    font-family: "Roboto Condensed", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: whitesmoke;
+    color: black;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
 
-            .header-logo { 
-                /* ** NUEVOS ESTILOS PARA EL LOGO ** */
-                 width: auto; max-width: 90%; 
-                 /* Para que no sea demasiado grande en pantallas amplias */
-                  max-height: 120px; /* Limita la altura del logo */ 
-                  margin: 0 auto 10px auto;
-                   /* Centra y añade margen inferior */ 
-                   display: block; /* Necesario para que el margin auto funcione */
-                 }
-                 
-                /* === ESTILOS DE NAVEGACIÓN LOCAL (local-nav-container) === */ /* ========================================= */
-                  .local-nav-container { 
-                     display: flex; flex-direction: column; 
-                     /* Apila el logo y la navegación verticalmente */ 
-                     align-items: center; 
-                     /* Centra el logo y la navegación horizontalmente */ 
-                     padding: 10px 0 20px 0;
-                      /* Espacio interno para separarlo del contenido superior/inferior */
-                       margin-bottom: 20px; 
-                       /* Espacio para separar la barra del contenido de la página */
-                        border-bottom: 1px solid #eeeeee; /* Línea de separación debajo del menú */ 
-                    } 
-                    /* Estilo para el logo */ 
-                    .header-logo { height: 60px; /* Tamaño del logo */ 
-                        width: auto; object-fit: contain;
-                         margin-bottom: 15px; }
-                         
-                    /* Estilo para la navegación */ 
-                    .main-nav {
-                         width: 100%; /* Ocupa todo el ancho de .local-nav-container */
-                          text-align: center; } 
-                          
-                    .main-nav ul { 
-                        list-style: none; 
-                        margin: 0; padding: 0; 
-                        display: flex; 
-                        justify-content: space-around; /* Distribuye uniformemente los enlaces en el ancho disponible */ 
-                        align-items: center;
-                     } 
-                     
-                     .main-nav a { 
-                        text-decoration: none; 
-                        color: #333333; 
-                        font-weight: bold; padding: 8px 0; 
-                        transition: color 0.3s ease; 
-                    }
-                
-                     
-                     /* Estilo específico para el carrito y el contador */
-                      .cart-link { 
-                        display: flex;
-                        align-items: center; 
-                    }
-                    
-                    .cart-counter {
-                         background-color: #ff0000; 
-                         color: white;
-                          font-size: 12px; 
-                          font-weight: bold; 
-                          border-radius: 50%; 
-                          padding: 3px 6px; 
-                          margin-left: 5px;
-                           min-width: 12px; 
-                           text-align: center; 
-                           line-height: 1; 
-                           display: none; }
-                           
-                    /* --- ENCABEZADO Y PERFIL de servicios --- */ 
-                    
-                    .card-header {
-                         background-image: url('images/logo_gorras.jpg'); 
-                        background-size: cover; 
-                        background-repeat: no-repeat; 
-                        background-position: center; 
-                        padding: 40px 20px; 
-                        height: 80px; }
-                        
-                    .profile-info, .page-title-section { 
-                            padding: 20px 20px 20px; 
-                            background-color: transparent;
-                             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4); 
-                             position: relative; z-index: 5;
-                             } 
-                             
-                    .title { 
-                        font-size: 1.1em; 
-                        color: lightslategray; 
-                        margin-top: 0; 
-                    } 
-                    /* --- BOTONES PRINCIPALES (INDEX.HTML) --- */ 
-                    
-                    .social-shop-links {
-                         display: flex; 
-                         flex-direction: column; 
-                         align-items: center; 
-                         gap: 15px; 
-                         padding: 20px; 
-                         background-color: var(--background-color); 
-                         border-top: 1px solid var(--border-color);
-                          border-bottom: 1px solid var(--border-color); 
-                        } 
-                        
-                        .link-item {
-                             /* **CAMBIOS CLAVE PARA EL ANCHO:** */ 
-                             width: 95%;/* Incrementamos el ancho para que esté más cerca de los bordes del contenedor */ 
-                             max-width: 350px; /* Incrementamos el ancho máximo en pantallas grandes */ 
-                             display: flex; 
-                             flex-direction: row;
-                             align-items: center; 
-                             justify-content: center; 
-                             padding: 15px 25px; 
-                             text-decoration: none; 
-                             background-color: var(--card-background); 
-                             color: var(--text-color); 
-                             border: 1px solid var(--border-color); 
-                             border-radius: 8px; 
-                             transition: all 0.2s ease-in-out;
-                             } 
-                             
-                             .link-item:hover { 
-                                background-color: var(--primary-color); 
-                                color: var(--background-color); 
-                                transform: translateY(-2px); 
-                                box-shadow: 0 4px 8px var(--shadow-color); 
-                            } 
-                            
-                            .link-item i { 
-                                font-size: 1.5em; 
-                                margin-right: 20px; 
-                                margin-bottom: 5px; 
-                            } 
-                            .link-item span { 
-                                font-size: 1em; 
-                                font-weight: 600; 
-                            } 
-/*SECCION DE HORARIO DE PUESTO*/ 
-.business-hours-section { 
+.card-container {
+    width: 100%;
+    max-width: 400px;
+    background-color: whitesmoke;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px var(--shadow-color);
+    overflow: hidden;
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+/* ======================================= */
+/* HEADER Y NOMBRE */
+/* ======================================= */
+.profile-header {
+    text-align: center;
+    padding: 30px 20px 20px 20px;
+    background-color: #282828;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.button_filter {
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 15px;
+    font-size: small;
+    margin: 6px 1px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.button_filter.active {
+    background-color: whitesmoke;
+    color: #000000;
+    font-weight: bold;
+}
+
+.header-logo {
+    /* ** NUEVOS ESTILOS PARA EL LOGO ** */
+    width: auto;
+    max-width: 90%;
+    /* Para que no sea demasiado grande en pantallas amplias */
+    max-height: 120px;
+    /* Limita la altura del logo */
+    margin: 0 auto 10px auto;
+    /* Centra y añade margen inferior */
+    display: block;
+    /* Necesario para que el margin auto funcione */
+}
+
+/* === ESTILOS DE NAVEGACIÓN LOCAL (local-nav-container) === */
+/* ========================================= */
+.local-nav-container {
+    display: flex;
+    flex-direction: column;
+    /* Apila el logo y la navegación verticalmente */
+    align-items: center;
+    /* Centra el logo y la navegación horizontalmente */
+    padding: 10px 0 20px 0;
+    /* Espacio interno para separarlo del contenido superior/inferior */
+    margin-bottom: 20px;
+    /* Espacio para separar la barra del contenido de la página */
+    border-bottom: 1px solid #eeeeee;
+    /* Línea de separación debajo del menú */
+}
+
+/* Estilo para el logo */
+.header-logo {
+    height: 60px;
+    /* Tamaño del logo */
+    width: auto;
+    object-fit: contain;
+    margin-bottom: 15px;
+}
+
+/* Estilo para la navegación */
+.main-nav {
+    width: 100%;
+    /* Ocupa todo el ancho de .local-nav-container */
+    text-align: center;
+}
+
+.main-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-around;
+    /* Distribuye uniformemente los enlaces en el ancho disponible */
+    align-items: center;
+}
+
+.main-nav a {
+    text-decoration: none;
+    color: #333333;
+    font-weight: bold;
+    padding: 8px 0;
+    transition: color 0.3s ease;
+}
+
+
+/* Estilo específico para el carrito y el contador */
+.cart-link {
+    display: flex;
+    align-items: center;
+}
+
+.cart-counter {
+    background-color: #ff0000;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 50%;
+    padding: 3px 6px;
+    margin-left: 5px;
+    min-width: 12px;
+    text-align: center;
+    line-height: 1;
+    display: none;
+}
+
+/* --- ENCABEZADO Y PERFIL de servicios --- */
+
+.card-header {
+    background-image: url('images/logo_gorras.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    padding: 40px 20px;
+    height: 80px;
+}
+
+.profile-info,
+.page-title-section {
+    padding: 20px 20px 20px;
+    background-color: transparent;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+    position: relative;
+    z-index: 5;
+}
+
+.title {
+    font-size: 1.1em;
+    color: lightslategray;
+    margin-top: 0;
+}
+
+/* --- BOTONES PRINCIPALES (INDEX.HTML) --- */
+
+.social-shop-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background-color: var(--background-color);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.link-item {
+    /* **CAMBIOS CLAVE PARA EL ANCHO:** */
+    width: 95%;
+    /* Incrementamos el ancho para que esté más cerca de los bordes del contenedor */
+    max-width: 350px;
+    /* Incrementamos el ancho máximo en pantallas grandes */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 25px;
+    text-decoration: none;
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+}
+
+.link-item:hover {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.link-item i {
+    font-size: 1.5em;
+    margin-right: 20px;
+    margin-bottom: 5px;
+}
+
+.link-item span {
+    font-size: 1em;
+    font-weight: 600;
+}
+
+/*SECCION DE HORARIO DE PUESTO*/
+.business-hours-section {
     padding: 10px 20px;
-     margin-top: 10px; 
-     background-color: whitesmoke;
-      text-align: center; 
-    } 
-      .hours-title { 
-        font-size: 1.8em;
-         color: black; 
-         margin-bottom: 10px; 
-        } 
-         .hours-description { 
-            font-size: 1em; 
-            color: lightslategray; 
-            margin-bottom: 20px; 
-        } 
-        .hours-list { 
-            list-style: none;  /* Elimina los puntos de la lista */ 
-            padding: 0; 
-            margin: 0 auto 20px auto; /* Centra la lista y añade margen inferior */
-             max-width: 250px; /* Ancho máximo para que la lista no sea demasiado ancha */
-              text-align: left; /* Alinea el texto de la lista a la izquierda */ 
-              box-shadow: 0 5px 20px var(--shadow-color); 
-            } 
-            
-        .hours-list li {
-            background-color: var(--background-color); 
-            padding: 10px 15px; 
-            margin-bottom: 8px; 
-            border-radius: 5px;
-            display: flex; /* Para alinear día y horario */
-            justify-content: space-between; /* Día a la izquierda, horario a la derecha */ 
-            align-items: center; color: var(--text-color); 
-            font-size: 1.05em;
-             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-             } 
-        
-         .hours-list li span { 
-            font-weight: bold; 
-            color: var(--secondary-color); 
-        } 
-        
-        .appointment-info {
-            font-size: 0.9em; 
-            color: var(--light-text-color); 
-            font-style: italic; 
-            margin-top: 20px;
-         } 
-         /* --- Responsive para los horarios --- */ 
-         @media (max-width: 640px) { 
-            .hours-title { font-size: 1.5em; } 
-            .hours-list { max-width: 90%; /* Ajusta el ancho en móviles */ 
-            } 
-        } 
-            
-            /* --- ESTILOS DEL CARRUSEL DE GORRAS (SERVICES.HTML) --- */ 
-           .hats-container {
-           display: grid;
-            /* Dos columnas de igual ancho */
-            grid-template-columns: 1fr 1fr;
-            /* Espacio entre las tarjetas */
-            gap: 10px; 
-            padding: 10px 6px;
-            /* Aseguramos que el carrusel desaparezca si se convierte en grid */
-            overflow-x: hidden; 
-        }
+    margin-top: 10px;
+    background-color: whitesmoke;
+    text-align: center;
+}
 
-        .hat-item {
-            max-width: 400px;    /* Tamaño fijo estable */
-            min-height: 10px;   /* Altura consistente */
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        }
-                        
-            .hats-carousel-container::-webkit-scrollbar {
-                 display: none; 
-                } 
-                
-                 
-                .hat-item img { 
-                    width: 100%; 
-                    height: auto;
-                    max-height: 200px;
-                    object-fit: cover; 
-                    border-radius: 8px; 
-                    margin-bottom: 10px; 
-                    cursor: pointer;
-                    transition: opacity 0.3s ease-in-out; 
-                } 
-                
-                .hat-title { 
-                    color: black; 
-                    font-size: 13.2px; 
-                    margin: 5px 10px; 
-                    text-align: left;
-                } 
-                
-                .hat-description { 
-                    color: black; 
-                    font-size: 0.9em; 
-                    margin-bottom: 15px; 
-                } 
+.hours-title {
+    font-size: 1.8em;
+    color: black;
+    margin-bottom: 10px;
+}
 
-                .hat-price{
-                    font-size: 13.8px;
-                    text-align: left;
-                    margin: 3px 10px;
-                }
-                
-                /* Botón de Compra Específico */ 
-                .purchase-button { 
-                    display: inline-block; 
-                    padding: 10px 20px; 
-                    background-color: var(--card-background); 
-                    color: var(--text-color); 
-                    text-decoration: none; 
-                    border-radius: 5px; 
-                    font-weight: bold; 
-                    transition: background-color 0.2s; 
-                    margin-top: 10px; 
-                } 
-                
-                /* --- Botón de Volver (SERVICES.HTML) --- */ 
-                .back-button-container { 
-                    /* Mantenemos el padding horizontal para que haya espacio entre el botón y los bordes de la tarjeta */ 
-                    padding: 20px; 
-                    /* CENTRADO: Asegura que todo el contenido esté centrado si no ocupa el 100% */ 
-                    display: flex; 
-                    justify-content: center; 
-                } 
-                
-                .back-button { 
-                    /* El botón debe ocupar el 100% del espacio de su contenedor (20px de padding por lado) */ 
-                    width: 100%; 
-                    max-width: 360px; 
-                    /* Opcional: Establecer un ancho máximo si el contenedor principal es muy grande */ 
-                    display: flex; 
-                    align-items: center; 
-                    justify-content: center; /* **CAMBIO CLAVE:** Centra el ícono y el texto dentro del botón */ 
-                    padding: 15px; background-color: var(--card-background); 
-                    color: var(--text-color); 
-                    border: 1px solid var(--border-color); 
-                    border-radius: 8px; 
-                    text-decoration: none; 
-                    font-weight: 600; 
-                    transition: background-color 0.2s; 
-                } 
-                
-                .back-button i { 
-                    margin-right: 10px; 
-                } 
-                
-                /* --- AJUSTES RESPONSIVOS FINALES --- */ 
-                /* --- AJUSTES RESPONSIVOS FINALES (PARA MÓVILES) --- */ 
-                @media (max-width: 640px) { 
-                    /* 1. ESTILOS BASE DEL CUERPO (BODY) */ 
-                    body { 
-                        /* Por defecto, centramos verticalmente (útil para index.html sin scroll) */ 
-                        align-items: center; 
-                        min-height: 100vh; 
-                    } 
-                    .header-logo { 
-                        max-height: 100px; /* Opcional: un poco más pequeño en móviles, pero aún grande */ }
-                        
-                    /* 2. EXCEPCIÓN PARA PÁGINAS LARGAS (services.html) */ 
-                    .services-page { 
-                        /* En la página de preventas, el contenido debe empezar arriba para permitir el scroll */
-                         align-items: flex-start;
-                          min-height: auto; /* Permite que el body se adapte a la altura del contenido total */ } 
-                          
-                          /* 3. CONTENEDOR PRINCIPAL (card-container) */ 
-                          .card-container { 
-                            /* CRÍTICO: Ocupa el 100% del ancho y elimina márgenes y bordes */ 
-                            width: 100%; 
-                            max-width: 100%; 
-                            margin: 0; 
-                            box-shadow: none; 
-                            border-radius: 0; 
-                            padding-bottom: 0; 
-                        } 
-                        
-                        /* 4. AJUSTES ENLACES PRINCIPALES (index.html) */ 
-                        .link-item { 
-                            /* Aseguramos que los botones sigan siendo anchos en móviles */ 
-                            width: 95%;
-                            max-width: none; /* Quitamos el max-width de 350px para móviles */ 
-                        } 
-                        
-                        /* 5. AJUSTES DE TEXTO */ 
-                        .title { 
-                            font-size: 1em; 
-                        }
-                        
-                            .hatscontainer { 
-                               display: grid;
-                                /* Dos columnas de igual ancho */
-                                grid-template-columns: 1fr 1fr;
-                                /* Espacio entre las tarjetas */
-                                gap: 10px; 
-                                padding: 10px 0;
-                                /* Aseguramos que el carrusel desaparezca si se convierte en grid */
-                                overflow-x: hidden; 
-                            } } 
-                            
-                         /* PÁGINA DE DETALLE DE PRODUCTO (producto.html) */ 
-                         /* Diseño: Imagen Superior (Ancho Completo), Detalles Inferior */ 
-                         /* 1. Contenedor principal para centrar la tarjeta */ 
-                        .product-page .card-container {
-                        width: 100%;
-                        max-width: 100%;
-                        margin: 0;
-                        padding: 0;
-                        border-radius: 0;
-                        background-color: var(--background-color);
-                        }
+.hours-description {
+    font-size: 1em;
+    color: lightslategray;
+    margin-bottom: 20px;
+}
+
+.hours-list {
+    list-style: none;
+    /* Elimina los puntos de la lista */
+    padding: 0;
+    margin: 0 auto 20px auto;
+    /* Centra la lista y añade margen inferior */
+    max-width: 250px;
+    /* Ancho máximo para que la lista no sea demasiado ancha */
+    text-align: left;
+    /* Alinea el texto de la lista a la izquierda */
+    box-shadow: 0 5px 20px var(--shadow-color);
+}
+
+.hours-list li {
+    background-color: var(--background-color);
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    display: flex;
+    /* Para alinear día y horario */
+    justify-content: space-between;
+    /* Día a la izquierda, horario a la derecha */
+    align-items: center;
+    color: var(--text-color);
+    font-size: 1.05em;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.hours-list li span {
+    font-weight: bold;
+    color: var(--secondary-color);
+}
+
+.appointment-info {
+    font-size: 0.9em;
+    color: var(--light-text-color);
+    font-style: italic;
+    margin-top: 20px;
+}
+
+/* --- Responsive para los horarios --- */
+@media (max-width: 640px) {
+    .hours-title {
+        font-size: 1.5em;
+    }
+
+    .hours-list {
+        max-width: 90%;
+        /* Ajusta el ancho en móviles */
+    }
+}
+
+/* --- ESTILOS DEL CARRUSEL DE GORRAS (SERVICES.HTML) --- */
+.hats-container {
+    display: grid;
+    /* Dos columnas de igual ancho */
+    grid-template-columns: 1fr 1fr;
+    /* Espacio entre las tarjetas */
+    gap: 10px;
+    padding: 10px 6px;
+    /* Aseguramos que el carrusel desaparezca si se convierte en grid */
+    overflow-x: hidden;
+}
+
+.hat-item {
+    max-width: 400px;
+    /* Tamaño fijo estable */
+    min-height: 10px;
+    /* Altura consistente */
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.hats-carousel-container::-webkit-scrollbar {
+    display: none;
+}
 
 
-                        .product-content {
-                        display: flex;
-                        flex-direction: column;
-                        width: 100%;
-                        margin-top: 0;
-                        }
+.hat-item img {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.hat-title {
+    color: black;
+    font-size: 13.2px;
+    margin: 5px 10px;
+    text-align: left;
+}
+
+.hat-description {
+    color: black;
+    font-size: 0.9em;
+    margin-bottom: 15px;
+}
+
+.hat-price {
+    font-size: 13.8px;
+    text-align: left;
+    margin: 3px 10px;
+}
+
+/* Botón de Compra Específico */
+.purchase-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--card-background);
+    color: var(--text-color);
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.2s;
+    margin-top: 10px;
+}
+
+/* --- Botón de Volver (SERVICES.HTML) --- */
+.back-button-container {
+    /* Mantenemos el padding horizontal para que haya espacio entre el botón y los bordes de la tarjeta */
+    padding: 20px;
+    /* CENTRADO: Asegura que todo el contenido esté centrado si no ocupa el 100% */
+    display: flex;
+    justify-content: center;
+}
+
+.back-button {
+    /* El botón debe ocupar el 100% del espacio de su contenedor (20px de padding por lado) */
+    width: 100%;
+    max-width: 360px;
+    /* Opcional: Establecer un ancho máximo si el contenedor principal es muy grande */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* **CAMBIO CLAVE:** Centra el ícono y el texto dentro del botón */
+    padding: 15px;
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.back-button i {
+    margin-right: 10px;
+}
+
+/* --- AJUSTES RESPONSIVOS FINALES --- */
+/* --- AJUSTES RESPONSIVOS FINALES (PARA MÓVILES) --- */
+@media (max-width: 640px) {
+
+    /* 1. ESTILOS BASE DEL CUERPO (BODY) */
+    body {
+        /* Por defecto, centramos verticalmente (útil para index.html sin scroll) */
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    .header-logo {
+        max-height: 100px;
+        /* Opcional: un poco más pequeño en móviles, pero aún grande */
+    }
+
+    /* 2. EXCEPCIÓN PARA PÁGINAS LARGAS (services.html) */
+    body.services-page {
+        justify-content: flex-start !important;
+        align-items: flex-start !important;
+        min-height: auto !important;
+    }
 
 
-                        .product-image {
-                        width: -webkit-fill-available;
-                        text-align: center;
-                        background-color: whitesmoke;
-                        border-radius: 0;
-                        padding: 10px 0;
-                        }
+    /* 3. CONTENEDOR PRINCIPAL (card-container) */
+    .card-container {
+        /* CRÍTICO: Ocupa el 100% del ancho y elimina márgenes y bordes */
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        box-shadow: none;
+        border-radius: 0;
+        padding-bottom: 0;
+    }
+
+    /* 4. AJUSTES ENLACES PRINCIPALES (index.html) */
+    .link-item {
+        /* Aseguramos que los botones sigan siendo anchos en móviles */
+        width: 95%;
+        max-width: none;
+        /* Quitamos el max-width de 350px para móviles */
+    }
+
+    /* 5. AJUSTES DE TEXTO */
+    .title {
+        font-size: 1em;
+    }
+
+    .hatscontainer {
+        display: grid;
+        /* Dos columnas de igual ancho */
+        grid-template-columns: 1fr 1fr;
+        /* Espacio entre las tarjetas */
+        gap: 10px;
+        padding: 10px 0;
+        /* Aseguramos que el carrusel desaparezca si se convierte en grid */
+        overflow-x: hidden;
+    }
+}
+
+/* PÁGINA DE DETALLE DE PRODUCTO (producto.html) */
+/* Diseño: Imagen Superior (Ancho Completo), Detalles Inferior */
+/* 1. Contenedor principal para centrar la tarjeta */
+.product-page .card-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    background-color: var(--background-color);
+}
 
 
-                        .main-product-image {
-                        width: 100%;
-                        max-height: 320px;
-                        object-fit: contain;
-                        }
+.product-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 0;
+}
 
 
-                        .product-gallery {
-                        display:flex;
-                        justify-content:center;
-                        gap:10px;
-                        margin:10px 0 5px 0;
-                        }
+.product-image {
+    width: -webkit-fill-available;
+    text-align: center;
+    background-color: whitesmoke;
+    border-radius: 0;
+    padding: 10px 0;
+}
+
+
+.main-product-image {
+    width: 100%;
+    max-height: 320px;
+    object-fit: contain;
+}
+
+
+.product-gallery {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0 5px 0;
+}
 
 
 
-                        /* Quitar el borde azul al hacer clic o enfocarse */
+/* Quitar el borde azul al hacer clic o enfocarse */
 *:focus {
     outline: none !important;
 }
