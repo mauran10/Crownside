@@ -3,27 +3,24 @@
 // 🛒 SISTEMA DE CARRITO (LocalStorage)
 // =======================================================
 
-// Obtener carrito
 function getCart() {
     return JSON.parse(localStorage.getItem("cart")) || {};
 }
 
-// Guardar carrito
 function saveCart(cart) {
     localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-// 🔥 FUNCIÓN PRINCIPAL DE AGREGAR AL CARRITO
 function addToCart(product) {
     const cart = getCart();
 
     if (cart[product.id]) {
-        cart[product.id].quantity += 1;
+        cart[product.id].quantity++;
     } else {
         cart[product.id] = {
             id: product.id,
             name: product.name,
-            price: Number(product.price),
+            price: product.price,
             image: product.image,
             quantity: 1
         };
@@ -33,41 +30,6 @@ function addToCart(product) {
     updateCartCounter();
 }
 
-
-// =======================================================
-// 🔄 NORMALIZADOR PARA CATÁLOGO + PREVENTAS
-// =======================================================
-function normalizeProduct(p) {
-    return {
-        id: p.id || p._id || p.id_producto,
-        name: p.name || p.nombre || "Producto sin nombre",
-        price: p.price || p.precio || p.precio_preventa || 0,
-        image: p.image || p.imagen || p.imagenUrl || p.mainImage || "",
-
-    };
-}
-
-
-// =======================================================
-// ➕ AGREGAR AL CARRITO DESDE EL CATÁLOGO
-// =======================================================
-function addToCartById(idProducto) {
-    const p = productosGlobal.find(item => item.id_producto == idProducto);
-
-    if (!p) {
-        alert("Error: producto no encontrado");
-        return;
-    }
-
-    const product = normalizeProduct(p);
-    addToCart(product);
-}
-
-
-
-// =======================================================
-// 🧮 CONTADOR DEL ÍCONO DEL CARRITO
-// =======================================================
 function updateCartCounter() {
     const cart = getCart();
     const total = Object.values(cart).reduce((acc, p) => acc + p.quantity, 0);
@@ -77,10 +39,6 @@ function updateCartCounter() {
 }
 
 
-
-// =======================================================
-// 📦 CARGAR CATÁLOGO
-// =======================================================
 let productosGlobal = [];
 
 async function loadCatalog() {
@@ -95,11 +53,13 @@ async function loadCatalog() {
     try {
         const response = await fetch("/api/products");
 
-        if (!response.ok) throw new Error("Status " + response.status);
+        if (!response.ok) {
+            throw new Error("Status " + response.status);
+        }
 
         productosGlobal = await response.json();
 
-        // Mostrar gorras primero
+        // Mostrar solo gorras al iniciar
         filterCatalog("gorra");
 
     } catch (error) {
@@ -112,11 +72,6 @@ async function loadCatalog() {
     }
 }
 
-
-
-// =======================================================
-// 🎨 RENDER DE CATÁLOGO
-// =======================================================
 function renderCatalog(lista) {
     const container = document.getElementById("catalog-container");
 
@@ -125,74 +80,60 @@ function renderCatalog(lista) {
         return;
     }
 
-    container.innerHTML = lista
-        .map(p => {
-            const product = normalizeProduct(p);
-            return `
-                <div class="hat-item">
-                    <img src="${product.image}" alt="${product.name}">
-                    <h3 class="hat-title">${product.name}</h3>
-                    <p class="hat-price">$${product.price} MXN</p>
-
-                    <button class="add-to-cart-btn"
-                        onclick="addToCartById('${p.id_producto}')">
-                        Agregar al carrito
-                    </button>
-
-                    <button class="view-detail-btn"
-                        onclick="goToProduct('${p.id_producto}')">
-                        Ver producto
-                    </button>
-                </div>
-            `;
-        })
-        .join("");
+    container.innerHTML = lista.map(p => `
+        <div class="hat-item" onclick="goToProduct('${p.id_producto}')">
+            <img src="${p.imagenUrl}" alt="${p.nombre}">
+            <h3 class="hat-title">${p.nombre}</h3>
+            <p class="hat-price">$${p.precio} MXN</p>
+        </div>
+    `).join("");
 }
 
-
-
-// =======================================================
-// 🔍 FILTRO DEL CATÁLOGO
-// =======================================================
 function filterCatalog(categoria) {
 
-    document.querySelectorAll(".button_filter").forEach(btn =>
-        btn.classList.remove("active")
-    );
+    // Quitar "active" de todos
+    document.querySelectorAll(".button_filter").forEach(btn => {
+        btn.classList.remove("active");
+    });
 
-    const selectedButton = document.querySelector(
-        `.button_filter[data-category="${categoria}"]`
-    );
-    if (selectedButton) selectedButton.classList.add("active");
+    // Agregar "active" al seleccionado
+    const selectedButton = document.querySelector(`.button_filter[data-category="${categoria}"]`);
+    if (selectedButton) {
+        selectedButton.classList.add("active");
+    }
 
+    // Mostrar todo
     if (categoria === "todos") {
         renderCatalog(productosGlobal);
         return;
     }
 
+    // Filtrar por categoría
     const filtrados = productosGlobal.filter(p => p.categoria === categoria);
     renderCatalog(filtrados);
 }
 
-
-
-// =======================================================
-// 🔗 IR A PRODUCTO
-// =======================================================
+// Abrir detalle del producto
 function goToProduct(id) {
     window.location.href = `producto.html?id=${id}`;
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.getElementById("catalog-container")) {
+        loadCatalog();
+    }
+});
 
 
 // =======================================================
-// 🛒 RENDER EN cart.html
+// 📌 MOSTRAR CARRITO EN cart.html
 // =======================================================
+
 function renderCartPage() {
     const container = document.getElementById("cart-items-container");
     const summary = document.getElementById("cart-summary");
 
-    if (!container || !summary) return;
+    if (!container || !summary) return; // No estamos en cart.html
 
     const cart = getCart();
     const items = Object.values(cart);
@@ -203,11 +144,15 @@ function renderCartPage() {
         return;
     }
 
+
+    
+
+    // HTML de productos del carrito
     container.innerHTML = items
         .map(item => `
             <div class="cart-item">
                 <img src="${item.image}" class="cart-item-img" alt="${item.name}">
-
+                
                 <div class="cart-item-info">
                     <h3>${item.name}</h3>
                     <p class="price">$${item.price}</p>
@@ -226,19 +171,18 @@ function renderCartPage() {
         `)
         .join("");
 
-    const total = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    // SUMATORIA DEL TOTAL
+    const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
     summary.innerHTML = `
         <h3>Total a pagar: <span class="total-price">$${total}</span></h3>
     `;
 }
 
-
-
 // =======================================================
-// ➕➖ CAMBIAR CANTIDAD
+//  CAMBIAR CANTIDAD
 // =======================================================
-window.changeQuantity = function(id, amount) {
+window.changeQuantity = function (id, amount) {
     const cart = getCart();
 
     if (!cart[id]) return;
@@ -252,27 +196,20 @@ window.changeQuantity = function(id, amount) {
     renderCartPage();
 };
 
-
-
 // =======================================================
-// 🗑 ELIMINAR PRODUCTO
+//  ELIMINAR PRODUCTO
 // =======================================================
-window.removeFromCart = function(id) {
+window.removeFromCart = function (id) {
     const cart = getCart();
+
     if (cart[id]) delete cart[id];
+
     saveCart(cart);
     updateCartCounter();
     renderCartPage();
 };
 
-
-
 // =======================================================
-// 🚀 INICIADORES
+//  AUTO-CARGA DEL CARRITO EN cart.html
 // =======================================================
-document.addEventListener("DOMContentLoaded", () => {
-    updateCartCounter();
-    if (document.getElementById("catalog-container")) loadCatalog();
-    if (document.getElementById("cart-items-container")) renderCartPage();
-});
-
+document.addEventListener("DOMContentLoaded", renderCartPage);
