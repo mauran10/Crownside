@@ -101,10 +101,26 @@ function renderCatalog(lista) {
     }
 
     container.innerHTML = lista.map(p => `
-        <div class="hat-item" onclick="goToProduct('${p.id_producto}')">
+        <div class="hat-item">
             <img src="${p.imagenUrl}" alt="${p.nombre}">
             <h3 class="hat-title">${p.nombre}</h3>
             <p class="hat-price">$${p.precio} MXN</p>
+
+            <!-- 🔥 BOTÓN AGREGAR AL CARRITO -->
+            <button class="add-to-cart-btn"
+                onclick='addToCart({
+                    id: "${p.id_producto}",
+                    name: "${p.nombre}",
+                    price: ${p.precio},
+                    image: "${p.imagenUrl}"
+                })'>
+                Agregar al carrito
+            </button>
+
+            <!-- 🔗 Para ver el detalle del producto (si quieres mantenerlo) -->
+            <button class="view-detail-btn" onclick="goToProduct('${p.id_producto}')">
+                Ver producto
+            </button>
         </div>
     `).join("");
 }
