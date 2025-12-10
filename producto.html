@@ -327,62 +327,6 @@ async function loadProduct() {
     }
 }
 
-/* ======================================================================================
-   3. SISTEMA DE CARRITO
-====================================================================================== */
-
-function getCart() {
-    return JSON.parse(localStorage.getItem("cart") || "{}");
-}
-
-function saveCart(cart) {
-    localStorage.setItem("cart", JSON.stringify(cart));
-}
-
-function updateCartCounter() {
-    const cart = getCart();
-    const total = Object.values(cart).reduce((a, p) => a + p.quantity, 0);
-    document.getElementById("cart-counter").textContent = total;
-}
-
-window.addToCart = function () {
-    const p = window.loadedProduct;
-    if (!p) return;
-
-    const cart = getCart();
-
-    if (cart[p.id]) {
-        cart[p.id].quantity++;
-    } else {
-        cart[p.id] = {
-            id: p.id,
-            name: p.name,
-            price: p.price,
-            image: p.mainImage,
-            quantity: 1
-        };
-    }
-
-    saveCart(cart);
-    updateCartCounter();
-    showCustomAlert(`"${p.name}" agregado al carrito`);
-};
-
-/* ======================================================================================
-   4. INICIALIZACIÓN
-====================================================================================== */
-
-document.addEventListener("DOMContentLoaded", () => {
-    loadProduct();
-
-    // Esperar a que el DOM cargue el botón
-    setTimeout(() => {
-        const btn = document.getElementById("add-to-cart-btn");
-        if (btn) btn.addEventListener("click", addToCart);
-    }, 400);
-
-    updateCartCounter();
-});
 </script>
 
 
