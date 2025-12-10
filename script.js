@@ -118,7 +118,11 @@ function goToProduct(id) {
     window.location.href = `producto.html?id=${id}`;
 }
 
-document.addEventListener("DOMContentLoaded", loadCatalog);
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.getElementById("catalog-container")) {
+        loadCatalog();
+    }
+});
 
 
 // =======================================================
