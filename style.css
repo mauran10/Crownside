@@ -572,7 +572,7 @@ img:active {
     width: 100%;
 }
 
-.cart-item-list{
+.cart-items-list{
     display: grid;
     grid-template-columns: 1fr;
     gap: 10px;
