@@ -352,10 +352,16 @@
 
                 <p class="product-price">$${p.precio ? p.precio.toFixed(2) : "N/A"} MXN</p>
 
-                <button class="purchase-button" 
-                    onclick="addToCart('${p.id || p.id_producto}', '${p.nombre.replace(/'/g, "\\'")}', ${p.precio || 0}, '${mainImageUrl}')">
-                    Agregar al Carrito
-                </button>
+              <button class="purchase-button"
+                onclick='addToCart(
+                    "${p.id || p.id_producto}",
+                    ${JSON.stringify(p.nombre)},
+                    ${p.precio || 0},
+                    "${mainImageUrl}"
+                )'>
+                Agregar al Carrito
+            </button>
+
 
             </div>
         `;
