@@ -155,7 +155,7 @@ function renderCartPage() {
                 
                 <div class="cart-item-info">
                     <h3>${item.name || 'Producto Desconocido'}</h3>
-                    <p class="price">$${(item.price || 0).toFixed(2)}</p>
+                    <p class="cart-price">$${(item.price || 0).toFixed(2)}</p>
 
                     <div class="quantity-control">
                         <button onclick="changeQuantity('${item.id}', -1)" class="qty-btn">-</button>

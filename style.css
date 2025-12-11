@@ -533,3 +533,82 @@ a:active,
 img:active {
     background-color: transparent !important;
 }
+
+
+/*Seccion de carrito css*/
+/* ==========================
+   CART ITEM CON FLEX
+========================== */
+.cart-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #fff;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+}
+
+/* IMAGEN PEQUEÑA A LA IZQUIERDA */
+.cart-item-img {
+    width: 120px;
+    height: auto;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+/* INFORMACIÓN A LA DERECHA */
+.cart-item-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.cart-item-info h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.cart-price {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+/* CONTROLES DE CANTIDAD */
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.qty-btn {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.qty {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* BOTÓN ELIMINAR */
+.remove-btn {
+    background: #e63946;
+    color: #fff;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    width: fit-content;
+    margin-top: 5px;
+}
