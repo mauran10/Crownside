@@ -332,39 +332,34 @@
 
                 // --- RENDER ---
                 container.innerHTML = `
-            <div class="product-card">
+    <div class="product-card">
 
-                <div class="image-gallery">
-                    <img id="main-product-image"
-                        src="${mainImageUrl}"
-                        alt="${p.nombre}"
-                        class="main-product-image"
-                        onerror="this.onerror=null; this.src='${fallbackImageUrl}';">
-
-                    <div class="carousel-wrapper">
-                        <div class="thumbnail-container" id="thumbnail-container"></div>
-                    </div>
-                </div>
-
-                <h2 class="product-title">${p.nombre}</h2>
-
-                <p class="product-description">${p.descripcion || "Sin descripción disponible."}</p>
-
-                <p class="product-price">$${p.precio ? p.precio.toFixed(2) : "N/A"} MXN</p>
-
-            <button class="purchase-button"
-                onclick='addToCart({
-                    id: "${p.id_producto}",
-                    name: ${JSON.stringify(p.nombre)},
-                    price: Number(${p.precio || 0}),
-                    image: "${mainImageUrl}"
-                })'>
-                Agregar al Carrito
-            </button>
-
-
+        <div class="image-gallery">
+            <img id="main-product-image" src="${mainImageUrl}" class="main-product-image">
+            <div class="carousel-wrapper">
+                <div class="thumbnail-container" id="thumbnail-container"></div>
             </div>
-        `;
+        </div>
+
+        <h2 class="product-title">${p.nombre}</h2>
+        <p class="product-description">${p.descripcion || "Sin descripción disponible."}</p>
+        <p class="product-price">$${p.precio ? p.precio.toFixed(2) : "N/A"} MXN</p>
+
+        <button id="add-to-cart-btn" class="purchase-button">
+            Agregar al Carrito
+        </button>
+
+    </div>
+`;
+                document.getElementById("add-to-cart-btn").onclick = () => {
+                    addToCart({
+                        id: p.id_producto || p._id,
+                        name: p.nombre,
+                        price: Number(p.precio),
+                        image: mainImageUrl
+                    });
+                    showCustomAlert("Producto agregado al carrito");
+                };
 
                 initializeGallery(mainImageUrl, additionalImages, p.nombre);
 
@@ -415,25 +410,25 @@
         /**
          * Agrega o actualiza un producto en el carrito del usuario en localStorage.
          */
- window.addToCart = function (product) {
-    const cart = getCart();
-    const id = product.id || product.id_producto;
+        window.addToCart = function (product) {
+            const cart = getCart();
+            const id = product.id || product.id_producto;
 
-    if (cart[id]) {
-        cart[id].quantity += 1;
-    } else {
-        cart[id] = {
-            id: id,                  // ✔ CORRECTO
-            name: product.name,
-            price: Number(product.price),
-            image: product.image,
-            quantity: 1
+            if (cart[id]) {
+                cart[id].quantity += 1;
+            } else {
+                cart[id] = {
+                    id: id,                 
+                    name: product.name,
+                    price: Number(product.price),
+                    image: product.image,
+                    quantity: 1
+                };
+            }
+
+            saveCart(cart);
+            updateCartCounter();
         };
-    }
-
-    saveCart(cart);
-    updateCartCounter();
-};
 
 
 
