@@ -352,11 +352,11 @@
 
                 <p class="product-price">$${p.precio ? p.precio.toFixed(2) : "N/A"} MXN</p>
 
-             <button class="purchase-button"
+            <button class="purchase-button"
                 onclick='addToCart({
-                    id: "${p.id || p.id_producto}",
+                    id: "${p.id_producto}",
                     name: ${JSON.stringify(p.nombre)},
-                    price: ${p.precio || 0},
+                    price: Number(${p.precio || 0}),
                     image: "${mainImageUrl}"
                 })'>
                 Agregar al Carrito
@@ -415,26 +415,25 @@
         /**
          * Agrega o actualiza un producto en el carrito del usuario en localStorage.
          */
-        window.addToCart = function (product) {
-            const cart = getCart();
-            const id = product.id;
+ window.addToCart = function (product) {
+    const cart = getCart();
+    const id = product.id || product.id_producto;
 
-            if (cart[id]) {
-                cart[id].quantity += 1;
-            } else {
-                cart[id] = {
-                    id: product.id,
-                    name: product.name,
-                    price: Number(product.price),   // <- aseguramos número
-                    image: product.image,
-                    quantity: 1
-                };
-            }
-
-            saveCart(cart);
-            updateCartCounter();
-            showCustomAlert(`"${product.name}" - Agregado al carrito.`);
+    if (cart[id]) {
+        cart[id].quantity += 1;
+    } else {
+        cart[id] = {
+            id: id,                  // ✔ CORRECTO
+            name: product.name,
+            price: Number(product.price),
+            image: product.image,
+            quantity: 1
         };
+    }
+
+    saveCart(cart);
+    updateCartCounter();
+};
 
 
 
