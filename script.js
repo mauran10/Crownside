@@ -133,7 +133,7 @@ function renderCartPage() {
     const container = document.getElementById("cart-items-container");
     const summary = document.getElementById("cart-summary");
 
-    if (!container || !summary) return; // No estamos en cart.html
+    if (!container || !summary) return; 
 
     const cart = getCart();
     const items = Object.values(cart);
@@ -148,14 +148,14 @@ function renderCartPage() {
     
 
     // HTML de productos del carrito
-    container.innerHTML = items
+   container.innerHTML = items
         .map(item => `
             <div class="cart-item">
-                <img src="${item.image}" class="cart-item-img" alt="${item.name}">
+                <img src="${item.image || 'img/placeholder.png'}" class="cart-item-img" alt="${item.name || 'Producto Desconocido'}">
                 
                 <div class="cart-item-info">
-                    <h3>${item.name}</h3>
-                    <p class="price">$${item.price}</p>
+                    <h3>${item.name || 'Producto Desconocido'}</h3>
+                    <p class="price">$${(item.price || 0).toFixed(2)}</p>
 
                     <div class="quantity-control">
                         <button onclick="changeQuantity('${item.id}', -1)" class="qty-btn">-</button>
@@ -171,11 +171,11 @@ function renderCartPage() {
         `)
         .join("");
 
-    // SUMATORIA DEL TOTAL
-    const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    // SUMATORIA DEL TOTAL (Asegurando que el precio no sea nulo)
+    const total = items.reduce((acc, item) => acc + (item.price || 0) * item.quantity, 0);
 
     summary.innerHTML = `
-        <h3>Total a pagar: <span class="total-price">$${total}</span></h3>
+        <h3>Total a pagar: <span class="total-price">$${total.toFixed(2)}</span></h3>
     `;
 }
 

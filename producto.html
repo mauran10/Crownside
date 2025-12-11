@@ -8,6 +8,7 @@
 -->
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -44,7 +45,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            max-width: 400px; 
+            max-width: 400px;
             margin: 0 auto;
         }
 
@@ -52,7 +53,7 @@
             width: 100%;
             height: auto;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
         }
 
         /* Contenedor del Carrusel de Miniaturas (Permite Swipe) */
@@ -65,27 +66,34 @@
         .thumbnail-container {
             display: flex;
             gap: 10px;
-            overflow-x: scroll; /* Permite el desplazamiento por swipe */
-            scroll-behavior: smooth; 
-            -webkit-overflow-scrolling: touch; /* Mejora el desplazamiento táctil en iOS */
+            overflow-x: scroll;
+            /* Permite el desplazamiento por swipe */
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            /* Mejora el desplazamiento táctil en iOS */
             padding: 5px 0;
-            justify-content: flex-start; /* Alinea las miniaturas a la izquierda */
+            justify-content: flex-start;
+            /* Alinea las miniaturas a la izquierda */
         }
-        
+
         /* Ocultar barra de scroll (opcional, pero mejora la estética móvil) */
         .thumbnail-container::-webkit-scrollbar {
-            display: none; 
+            display: none;
         }
+
         .thumbnail-container {
-            -ms-overflow-style: none; /* IE and Edge */
-            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
             display: flex;
             justify-content: center;
         }
 
         /* Estilo de miniatura */
         .thumbnail {
-            min-width: 60px; /* Tamaño fijo */
+            min-width: 60px;
+            /* Tamaño fijo */
             height: 60px;
             object-fit: cover;
             border-radius: 4px;
@@ -94,8 +102,9 @@
             transition: border-color 0.2s ease, transform 0.1s;
         }
 
-        .thumbnail.active, .thumbnail:hover {
-            border-color: #1e1e1e; 
+        .thumbnail.active,
+        .thumbnail:hover {
+            border-color: #1e1e1e;
         }
 
         /* Botón de compra y alerta */
@@ -109,7 +118,7 @@
             cursor: pointer;
             transition: background-color 0.2s;
         }
-        
+
         /* Alert personalizado (reemplazo de window.alert) */
         .custom-alert {
             position: fixed;
@@ -128,10 +137,10 @@
             opacity: 0;
             transition: opacity 0.3s ease-in-out;
         }
+
         .custom-alert.visible {
             opacity: 1;
         }
-
     </style>
 </head>
 
@@ -139,44 +148,44 @@
 
     <div class="card-container">
 
-     <header class="main-header">
-        <div class="logo-container">
-            <a href="index.html">
-                <!-- Se asume que tienes esta imagen en el directorio img/ -->
-                <img src="img/logo_crownside.png" alt="Logo CROWNSIDE" class="header-logo">
+        <header class="main-header">
+            <div class="logo-container">
+                <a href="index.html">
+                    <!-- Se asume que tienes esta imagen en el directorio img/ -->
+                    <img src="img/logo_crownside.png" alt="Logo CROWNSIDE" class="header-logo">
+                </a>
+            </div>
+
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="services.html">Catálogo</a></li>
+                    <!-- DESTACADO: El enlace a esta página -->
+                    <li><a href="presales.html">Preventas</a></li>
+                    <li>
+                        <a href="cart.html" class="cart-link">
+                            <i class="fas fa-shopping-cart"></i> Carrito
+                            <span id="cart-counter" class="cart-counter">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+        <div class="header-spacer"></div>
+
+        <section id="product-detail" class="product-detail">
+            <div class="product-container" id="product-container">
+                <p class="loading-text">Cargando producto...</p>
+            </div>
+        </section>
+
+        <div class="back-button-container">
+            <a href="services.html" class="back-button">
+                <i class="fas fa-arrow-left"></i> Volver al Catálogo
             </a>
         </div>
 
-        <nav class="main-nav">
-            <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="services.html">Catálogo</a></li>
-                <!-- DESTACADO: El enlace a esta página -->
-                <li><a href="presales.html">Preventas</a></li>
-                <li>
-                    <a href="cart.html" class="cart-link">
-                        <i class="fas fa-shopping-cart"></i> Carrito 
-                        <span id="cart-counter" class="cart-counter">0</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </header>
-    <div class="header-spacer"></div>
-
-    <section id="product-detail" class="product-detail">
-        <div class="product-container" id="product-container">
-            <p class="loading-text">Cargando producto...</p>
-        </div>
-    </section>
-
-    <div class="back-button-container">
-        <a href="services.html" class="back-button">
-            <i class="fas fa-arrow-left"></i> Volver al Catálogo
-        </a>
     </div>
-
-</div>
     <script>
         // ====================================================================
         // --- 1. FUNCIONES DE UTILIDAD (GALERÍA Y ALERTA) ---
@@ -187,7 +196,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(param);
         }
-        
+
         /**
          * Limpia la ruta de imagen de comillas, espacios y elimina slashes iniciales.
          */
@@ -218,14 +227,14 @@
             mainImageElement.src = mainImageUrl;
             mainImageElement.alt = productName;
 
-            thumbnailContainer.innerHTML = ''; 
+            thumbnailContainer.innerHTML = '';
 
             allImages.forEach((url, index) => {
                 const thumbnail = document.createElement('img');
                 thumbnail.src = url;
                 thumbnail.alt = `Vista ${index + 1} de ${productName}`;
                 thumbnail.className = 'thumbnail';
-                
+
                 // Si la imagen no carga, usamos un placeholder.
                 thumbnail.onerror = () => {
                     thumbnail.src = 'https://placehold.co/60x60/EEEEE/AAAAAA?text=X';
@@ -237,8 +246,8 @@
 
                 thumbnail.addEventListener('click', () => {
                     mainImageElement.src = url;
-                    
-                    const thumbnailWidth = thumbnail.offsetWidth + 10; 
+
+                    const thumbnailWidth = thumbnail.offsetWidth + 10;
                     const containerWidth = thumbnailContainer.offsetWidth;
                     const scrollPosition = thumbnail.offsetLeft - (containerWidth / 2) + (thumbnailWidth / 2);
                     thumbnailContainer.scrollLeft = scrollPosition;
@@ -250,9 +259,9 @@
                 thumbnailContainer.appendChild(thumbnail);
             });
         }
-        
+
         // --- Reemplazo de window.alert() ---
-        
+
         function showCustomAlert(message, duration = 2000) {
             let alertDiv = document.getElementById('custom-alert-box');
             if (!alertDiv) {
@@ -267,7 +276,7 @@
 
             setTimeout(() => {
                 alertDiv.classList.remove('visible');
-            }, duration); 
+            }, duration);
         }
 
 
@@ -275,62 +284,62 @@
         // --- 2. FUNCIÓN DE CARGA DE PRODUCTO (CONECTA CON TU API/MONGO) ---
         // ====================================================================
 
-       // ====================================================================
-// --- 2. FUNCIÓN DE CARGA DE PRODUCTO (CONECTA CON TU API/MONGO) ---
-// ====================================================================
+        // ====================================================================
+        // --- 2. FUNCIÓN DE CARGA DE PRODUCTO (CONECTA CON TU API/MONGO) ---
+        // ====================================================================
 
-    async function loadProduct() {
-    const id = getQueryParam("id");
-    const type = getQueryParam("type"); 
-    const container = document.getElementById("product-container");
+        async function loadProduct() {
+            const id = getQueryParam("id");
+            const type = getQueryParam("type");
+            const container = document.getElementById("product-container");
 
-    const API_BASE_URL = "https://crownside.vercel.app";
+            const API_BASE_URL = "https://crownside.vercel.app";
 
-    if (!id) {
-        container.innerHTML = `<h2 class="error-title">Error</h2><p class="error-text">No se proporcionó un ID de producto.</p>`;
-        return;
-    }
-
-    container.innerHTML = `<p class="loading-text">Cargando información...</p>`;
-
-    try {
-        // 🔥 ARREGLO FINAL — URL CORRECTA
-        const url =
-            type === "preventa"
-            ? `${API_BASE_URL}/api/presales?id=${id}`
-            : `${API_BASE_URL}/api/products?id=${id}`;
-
-        console.log("🔍 URL consultada:", url);
-
-        const response = await fetch(url);
-
-        if (!response.ok) throw new Error("Error al consultar el producto o producto no encontrado.");
-
-        const p = await response.json();
-
-        // --- SANEAR URLs ---
-        const fallbackImageUrl = "https://placehold.co/400x400/CCCCCC/333333?text=IMAGEN+PRINCIPAL";
-
-        const mainPath = cleanPath(p.imagenUrl);
-        const mainImageUrl = mainPath ? `${API_BASE_URL}/${mainPath}` : fallbackImageUrl;
-
-        const rawAdditionalImages = Array.isArray(p.imagenesAdicionales) ? p.imagenesAdicionales : [];
-
-        const processedAdditionalPaths = rawAdditionalImages.flatMap(rawItem => {
-            if (typeof rawItem !== "string") return [];
-
-            if (rawItem.includes(",")) {
-                return rawItem.split(",").map(pathPart => cleanPath(pathPart)).filter(path => path.length > 0);
+            if (!id) {
+                container.innerHTML = `<h2 class="error-title">Error</h2><p class="error-text">No se proporcionó un ID de producto.</p>`;
+                return;
             }
 
-            const singlePath = cleanPath(rawItem);
-            return singlePath ? [singlePath] : [];
-        });
+            container.innerHTML = `<p class="loading-text">Cargando información...</p>`;
 
-        const additionalImages = processedAdditionalPaths.map(path => `${API_BASE_URL}/${path}`);
+            try {
+                // 🔥 ARREGLO FINAL — URL CORRECTA
+                const url =
+                    type === "preventa"
+                        ? `${API_BASE_URL}/api/presales?id=${id}`
+                        : `${API_BASE_URL}/api/products?id=${id}`;
 
-        // --- RENDER ---
-        container.innerHTML = `
+                console.log("🔍 URL consultada:", url);
+
+                const response = await fetch(url);
+
+                if (!response.ok) throw new Error("Error al consultar el producto o producto no encontrado.");
+
+                const p = await response.json();
+
+                // --- SANEAR URLs ---
+                const fallbackImageUrl = "https://placehold.co/400x400/CCCCCC/333333?text=IMAGEN+PRINCIPAL";
+
+                const mainPath = cleanPath(p.imagenUrl);
+                const mainImageUrl = mainPath ? `${API_BASE_URL}/${mainPath}` : fallbackImageUrl;
+
+                const rawAdditionalImages = Array.isArray(p.imagenesAdicionales) ? p.imagenesAdicionales : [];
+
+                const processedAdditionalPaths = rawAdditionalImages.flatMap(rawItem => {
+                    if (typeof rawItem !== "string") return [];
+
+                    if (rawItem.includes(",")) {
+                        return rawItem.split(",").map(pathPart => cleanPath(pathPart)).filter(path => path.length > 0);
+                    }
+
+                    const singlePath = cleanPath(rawItem);
+                    return singlePath ? [singlePath] : [];
+                });
+
+                const additionalImages = processedAdditionalPaths.map(path => `${API_BASE_URL}/${path}`);
+
+                // --- RENDER ---
+                container.innerHTML = `
             <div class="product-card">
 
                 <div class="image-gallery">
@@ -359,22 +368,22 @@
             </div>
         `;
 
-        initializeGallery(mainImageUrl, additionalImages, p.nombre);
+                initializeGallery(mainImageUrl, additionalImages, p.nombre);
 
-    } catch (error) {
-        console.error("Error en loadProduct:", error);
-        container.innerHTML = `
+            } catch (error) {
+                console.error("Error en loadProduct:", error);
+                container.innerHTML = `
             <h2 class="error-title">Error al cargar el producto</h2>
             <p class="error-text">Verifica que el ID sea correcto y que tu servidor esté funcionando. Detalle: ${error.message}</p>
         `;
-    }
-}
+            }
+        }
 
 
         // ====================================================================
         // --- 3. FUNCIONES DE CARRITO (USANDO LOCALSTORAGE) ---
         // ====================================================================
-        
+
         // Obtiene el carrito de localStorage
         function getCart() {
             try {
@@ -386,15 +395,16 @@
             }
         }
 
-        // Guarda el carrito en localStorage
+        // En producto.html (Sección 3. FUNCIONES DE CARRITO)
+
         function saveCart(cart) {
             try {
-                localStorage.setItem('crownsideCart', JSON.stringify(cart));
+                // CAMBIA 'crownsideCart' A 'cart'
+                localStorage.setItem('cart', JSON.stringify(cart));
             } catch (e) {
                 console.error("Error escribiendo en localStorage:", e);
             }
         }
-        
         // Calcula el total de ítems en el carrito
         function getCartTotalItems(cart) {
             let total = 0;
@@ -407,25 +417,25 @@
         /**
          * Agrega o actualiza un producto en el carrito del usuario en localStorage.
          */
-      window.addToCart = function(id, name, price, imageUrl) {
-        const cart = getCart();
+        window.addToCart = function (id, name, price, imageUrl) {
+            const cart = getCart();
 
-        if (cart[id]) {
-            cart[id].quantity += 1;
-        } else {
-            cart[id] = { 
-                id: id, 
-                name: name, 
-                price: price, 
-                image: imageUrl,
-                quantity: 1 
-            };
+            if (cart[id]) {
+                cart[id].quantity += 1;
+            } else {
+                cart[id] = {
+                    id: id,
+                    name: name,
+                    price: price,
+                    image: imageUrl,
+                    quantity: 1
+                };
+            }
+
+            saveCart(cart);
+            updateCartCounter();
+            showCustomAlert(`"${name}" - Agregado al carrito.`);
         }
-
-        saveCart(cart);
-        updateCartCounter();
-        showCustomAlert(`"${name}" - Agregado al carrito.`);
-    }
 
 
         /**
@@ -443,8 +453,9 @@
             loadProduct();
             updateCartCounter();
         });
-        
+
     </script>
 
 </body>
+
 </html>
