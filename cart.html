@@ -9,10 +9,34 @@
 </head>
 <body class="cart-page">
     <div class="card-container">
+
+         <header class="main-header">
+            <div class="logo-container">
+                <a href="index.html">
+                    <!-- Se asume que tienes esta imagen en el directorio img/ -->
+                    <img src="img/logo_crownside.png" alt="Logo CROWNSIDE" class="header-logo">
+                </a>
+            </div>
+
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="services.html">Catálogo</a></li>
+                    <!-- DESTACADO: El enlace a esta página -->
+                    <li><a href="presales.html">Preventas</a></li>
+                    <li>
+                        <a href="cart.html" class="cart-link">
+                            <i class="fas fa-shopping-cart"></i> Carrito
+                            <span id="cart-counter" class="cart-counter">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
         
         <section class="page-title-section">
             <img src="img/logo_crownside.png" alt="Logo de Crownside" class="header-logo">
-            <h2 class="detail-title">🛍️ Tu Carrito de Preventas</h2> 
+            <h2 class="detail-title">Tus compras</h2> 
         </section>
 
         <section id="cart-items-container" class="cart-items-list">
