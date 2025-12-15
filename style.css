@@ -544,7 +544,6 @@ img:active {
     flex-direction: column; /* Para celular: imagen arriba */
     align-items: center;
     background: #fff;
-    padding: 15px;
     margin-bottom: 15px;
     border-radius: 12px;
     border: 1px solid #ddd;
