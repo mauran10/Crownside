@@ -232,3 +232,63 @@ document.getElementById("checkout-form")?.addEventListener("submit", function (e
         console.error(err);
     });
 });
+
+
+/*JAVA DE PAYPAL PAGO CON EMAILJS*/
+
+function getCartTotalAmount() {
+    const cart = getCart();
+    return Object.values(cart).reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+    ).toFixed(2);
+}
+
+function getCartProductsText() {
+    const cart = getCart();
+    return Object.values(cart).map(item =>
+        `${item.name} x${item.quantity} - $${item.price}`
+    ).join("\n");
+}
+
+paypal.Buttons({
+    createOrder: function (data, actions) {
+        return actions.order.create({
+            purchase_units: [{
+                amount: {
+                    value: getCartTotalAmount()
+                }
+            }]
+        });
+    },
+
+    onApprove: function (data, actions) {
+        return actions.order.capture().then(function (details) {
+
+            // 📧 Enviar correo al pagar
+            emailjs.send(
+                "SERVICE_ID",
+                "TEMPLATE_ID",
+                {
+                    name: details.payer.name.given_name,
+                    email: details.payer.email_address,
+                    products: getCartProductsText(),
+                    total: `$${getCartTotalAmount()} MXN`,
+                    date: new Date().toLocaleString()
+                }
+            );
+
+            // 🧹 Vaciar carrito
+            localStorage.removeItem("cart");
+            updateCartCounter();
+            renderCartPage();
+
+            alert("Pago realizado con éxito ✅");
+        });
+    },
+
+    onError: function (err) {
+        console.error(err);
+        alert("Error en el pago ❌");
+    }
+}).render("#paypal-button-container");
