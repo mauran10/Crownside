@@ -80,7 +80,9 @@ function renderCatalog(lista) {
 
     container.innerHTML = lista.map(p => `
         <div class="hat-item" onclick="goToProduct('${p.id_producto}')">
+        <div class="hat-image-container">
             <img src="${p.imagenUrl}" alt="${p.nombre}">
+        </div>
             <h3 class="hat-title">${p.nombre}</h3>
             <p class="hat-price">$${p.precio} MXN</p>
         </div>
