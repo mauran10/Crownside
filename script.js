@@ -365,13 +365,15 @@ const orderData = {
 
 
     // 📦 Guardar orden en MongoDB
+    try {
     await fetch("https://crownside-backend-2025-pxtp.vercel.app/api/orders", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderData)
     });
+} catch (err) {
+    console.error("Error guardando orden:", err);
+}
 
     // 📧 Enviar correo
     emailjs.send(
@@ -401,4 +403,3 @@ const orderData = {
     }
 }).render("#paypal-button-container");
 
-"https://crownside-backend-2025-pxtp.vercel.app/api/orders"
