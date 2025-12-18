@@ -344,15 +344,25 @@ paypal.Buttons({
     onApprove: function (data, actions) {
        return actions.order.capture().then(async function (details) {
 
-    const orderData = {
-        paypalOrderId: details.id,
-        payerName: details.payer.name.given_name,
-        payerEmail: details.payer.email_address,
-        products: JSON.parse(localStorage.getItem("cart")),
-        total: getCartTotalAmount(),
-        status: details.status,
-        date: new Date()
-    };
+    const cart = JSON.parse(localStorage.getItem("cart")) || {};
+
+const products = Object.values(cart).map(item => ({
+    productId: item.id,
+    name: item.name,
+    price: item.price,
+    quantity: item.quantity
+}));
+
+const orderData = {
+    paypalOrderId: details.id,
+    payerName: details.payer.name.given_name,
+    payerEmail: details.payer.email_address,
+    products: products,
+    total: getCartTotalAmount(),
+    status: details.status,
+    date: new Date()
+};
+
 
     // 📦 Guardar orden en MongoDB
     await fetch("https://crownside-backend-2025-pxtp.vercel.app/api/orders", {
@@ -390,3 +400,5 @@ paypal.Buttons({
         alert("❌ Error en el pago");
     }
 }).render("#paypal-button-container");
+
+"https://crownside-backend-2025-pxtp.vercel.app/api/orders"
