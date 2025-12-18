@@ -130,7 +130,7 @@ function renderCartPage() {
     const items = Object.values(cart);
 
     if (items.length === 0) {
-        container.innerHTML = `<p class="empty-cart">🛒 Tu carrito está vacío.</p>`;
+        container.innerHTML = `<p class="empty-cart">Tu carrito está vacío.</p>`;
         summary.innerHTML = "";
         return;
     }
@@ -235,62 +235,142 @@ document.getElementById("checkout-form")?.addEventListener("submit", function (e
     });
 });
 
+/**/
 
-/*JAVA DE PAYPAL PAGO CON EMAILJS*/
+async function createOrderBackend() {
+    const cart = getCart();
+    const items = Object.values(cart);
+
+    const total = items.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+    );
+
+    const res = await fetch("http://localhost:3000/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            customer: {
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                phone: document.getElementById("phone").value,
+                address: document.getElementById("address").value
+            },
+            items: items.map(p => ({
+                productId: p.id,
+                name: p.name,
+                price: p.price,
+                quantity: p.quantity
+            })),
+            total
+        })
+    });
+
+    return await res.json();
+}
+
+
+/* =========================================
+    PAYPAL + BACKEND + EMAILJS
+========================================= */
 
 function getCartTotalAmount() {
     const cart = getCart();
-    return Object.values(cart).reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-    ).toFixed(2);
+    return Object.values(cart)
+        .reduce((acc, item) => acc + item.price * item.quantity, 0)
+        .toFixed(2);
 }
 
 function getCartProductsText() {
     const cart = getCart();
-    return Object.values(cart).map(item =>
-        `${item.name} x${item.quantity} - $${item.price}`
-    ).join("\n");
+    return Object.values(cart)
+        .map(item => `${item.name} x${item.quantity} - $${item.price}`)
+        .join("\n");
 }
 
+// 🔗 CREA ORDEN EN TU BACKEND
+async function createOrderBackend() {
+    const cart = getCart();
+    const items = Object.values(cart);
+
+    const total = items.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+    );
+
+    const res = await fetch("http://localhost:3000/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            customer: {
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                phone: document.getElementById("phone").value,
+                address: document.getElementById("address").value
+            },
+            items: items.map(p => ({
+                productId: p.id,
+                name: p.name,
+                price: p.price,
+                quantity: p.quantity
+            })),
+            total
+        })
+    });
+
+    return await res.json();
+}
+
+let backendOrderId = null;
+
 paypal.Buttons({
-    createOrder: function (data, actions) {
+    // 🟡 1. Crear orden (BACKEND + PAYPAL)
+    createOrder: async function (data, actions) {
+        const order = await createOrderBackend();
+        backendOrderId = order._id;
+
         return actions.order.create({
             purchase_units: [{
                 amount: {
-                    value: getCartTotalAmount()
+                    value: order.total.toFixed(2)
                 }
             }]
         });
     },
 
-    onApprove: function (data, actions) {
-        return actions.order.capture().then(function (details) {
+    // 🟢 2. Pago aprobado
+    onApprove: async function (data, actions) {
+        await actions.order.capture();
 
-            // 📧 Enviar correo al pagar
-            emailjs.send(
-                "SERVICE_ID",
-                "TEMPLATE_ID",
-                {
-                    name: details.payer.name.given_name,
-                    email: details.payer.email_address,
-                    products: getCartProductsText(),
-                    total: `$${getCartTotalAmount()} MXN`,
-                    date: new Date().toLocaleString()
-                }
-            );
-
-            // 🧹 Vaciar carrito
-            localStorage.removeItem("cart");
-            updateCartCounter();
-            renderCartPage();
-
-            alert("Pago realizado con éxito ✅");
+        // 🔒 Marcar como pagada en backend
+        await fetch(`http://localhost:3000/api/orders/${backendOrderId}/pay`, {
+            method: "PUT"
         });
+
+        // 📧 Enviar correo
+        emailjs.send(
+            "SERVICE_ID",
+            "TEMPLATE_ID",
+            {
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                products: getCartProductsText(),
+                total: `$${getCartTotalAmount()} MXN`,
+                date: new Date().toLocaleString()
+            }
+        );
+
+        // 🧹 Limpiar carrito
+        localStorage.removeItem("cart");
+        updateCartCounter();
+        renderCartPage();
+
+        alert("✅ Pago realizado correctamente");
     },
 
+    // 🔴 Error
     onError: function (err) {
         console.error(err);
-        alert("Error en el pago ❌");
+        alert("❌ Error en el pago");
     }
 }).render("#paypal-button-container");
