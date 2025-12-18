@@ -342,30 +342,47 @@ paypal.Buttons({
     },
 
     onApprove: function (data, actions) {
-        return actions.order.capture().then(function (details) {
+       return actions.order.capture().then(async function (details) {
 
-            const productsText = getCartProductsText();
+    const orderData = {
+        paypalOrderId: details.id,
+        payerName: details.payer.name.given_name,
+        payerEmail: details.payer.email_address,
+        products: JSON.parse(localStorage.getItem("cart")),
+        total: getCartTotalAmount(),
+        status: details.status,
+        date: new Date()
+    };
 
-            // 📧 Correo de confirmación
-            emailjs.send(
-                "SERVICE_ID",
-                "TEMPLATE_ID",
-                {
-                    name: details.payer.name.given_name,
-                    email: details.payer.email_address,
-                    products: productsText,
-                    total: `$${getCartTotalAmount()} MXN`,
-                    date: new Date().toLocaleString()
-                }
-            );
+    // 📦 Guardar orden en MongoDB
+    await fetch("https://crownside-backend-2025-pxtp.vercel.app/api/orders", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(orderData)
+    });
 
-            // 🧹 Limpiar carrito
-            localStorage.removeItem("cart");
-            updateCartCounter();
-            renderCartPage();
+    // 📧 Enviar correo
+    emailjs.send(
+        "service_4a8n179",
+        "template_hpshzpj",
+        {
+            name: orderData.payerName,
+            email: orderData.payerEmail,
+            products: getCartProductsText(),
+            total: `$${orderData.total} MXN`,
+            date: new Date().toLocaleString()
+        }
+    );
 
-            alert("✅ Pago realizado con éxito");
-        });
+    localStorage.removeItem("cart");
+    updateCartCounter();
+    renderCartPage();
+
+    alert("✅ Pago realizado con éxito");
+});
+
     },
 
     onError: function (err) {
