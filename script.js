@@ -324,53 +324,52 @@ async function createOrderBackend() {
 let backendOrderId = null;
 
 paypal.Buttons({
-    // 🟡 1. Crear orden (BACKEND + PAYPAL)
-    createOrder: async function (data, actions) {
-        const order = await createOrderBackend();
-        backendOrderId = order._id;
+    createOrder: function (data, actions) {
+        const total = getCartTotalAmount();
+
+        if (!total || total <= 0) {
+            alert("Tu carrito está vacío");
+            return;
+        }
 
         return actions.order.create({
             purchase_units: [{
                 amount: {
-                    value: order.total.toFixed(2)
+                    value: total
                 }
             }]
         });
     },
 
-    // 🟢 2. Pago aprobado
-    onApprove: async function (data, actions) {
-        await actions.order.capture();
+    onApprove: function (data, actions) {
+        return actions.order.capture().then(function (details) {
 
-        // 🔒 Marcar como pagada en backend
-        await fetch(`http://localhost:3000/api/orders/${backendOrderId}/pay`, {
-            method: "PUT"
+            const productsText = getCartProductsText();
+
+            // 📧 Correo de confirmación
+            emailjs.send(
+                "SERVICE_ID",
+                "TEMPLATE_ID",
+                {
+                    name: details.payer.name.given_name,
+                    email: details.payer.email_address,
+                    products: productsText,
+                    total: `$${getCartTotalAmount()} MXN`,
+                    date: new Date().toLocaleString()
+                }
+            );
+
+            // 🧹 Limpiar carrito
+            localStorage.removeItem("cart");
+            updateCartCounter();
+            renderCartPage();
+
+            alert("✅ Pago realizado con éxito");
         });
-
-        // 📧 Enviar correo
-        emailjs.send(
-            "SERVICE_ID",
-            "TEMPLATE_ID",
-            {
-                name: document.getElementById("name").value,
-                email: document.getElementById("email").value,
-                products: getCartProductsText(),
-                total: `$${getCartTotalAmount()} MXN`,
-                date: new Date().toLocaleString()
-            }
-        );
-
-        // 🧹 Limpiar carrito
-        localStorage.removeItem("cart");
-        updateCartCounter();
-        renderCartPage();
-
-        alert("✅ Pago realizado correctamente");
     },
 
-    // 🔴 Error
     onError: function (err) {
-        console.error(err);
+        console.error("PayPal error:", err);
         alert("❌ Error en el pago");
     }
 }).render("#paypal-button-container");
