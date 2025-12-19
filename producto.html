@@ -315,20 +315,11 @@
                 const mainPath = cleanPath(p.imagenUrl);
                 const mainImageUrl = mainPath ? `${API_BASE_URL}/${mainPath}` : fallbackImageUrl;
 
-                const rawAdditionalImages = Array.isArray(p.imagenesAdicionales) ? p.imagenesAdicionales : [];
+                
 
-                const processedAdditionalPaths = rawAdditionalImages.flatMap(rawItem => {
-                    if (typeof rawItem !== "string") return [];
-
-                    if (rawItem.includes(",")) {
-                        return rawItem.split(",").map(pathPart => cleanPath(pathPart)).filter(path => path.length > 0);
-                    }
-
-                    const singlePath = cleanPath(rawItem);
-                    return singlePath ? [singlePath] : [];
-                });
-
-                const additionalImages = processedAdditionalPaths.map(path => `${API_BASE_URL}/${path}`);
+const additionalImages = Array.isArray(p.imagenesAdicionales)
+  ? p.imagenesAdicionales.map(img => `${API_BASE_URL}/${cleanPath(img)}`)
+  : [];
 
                 // --- RENDER ---
                 container.innerHTML = `

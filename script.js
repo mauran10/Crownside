@@ -79,11 +79,8 @@ async function loadCatalog() {
 function renderCatalog(lista) {
     const container = document.getElementById("catalog-container");
 
-    if (!lista || lista.length === 0) {
-        container.innerHTML = `
-            <p style="color:white; text-align:center;">
-                No hay productos disponibles.
-            </p>`;
+    if (lista.length === 0) {
+        container.innerHTML = `<p style="color:white; text-align:center;">No hay productos disponibles.</p>`;
         return;
     }
 
@@ -97,7 +94,6 @@ function renderCatalog(lista) {
         </div>
     `).join("");
 }
-
 
 
 function filterCatalog(categoria) {
