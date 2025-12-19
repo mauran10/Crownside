@@ -1,4 +1,5 @@
 const API_URL = "https://crownside-backend-2025-pxtp.vercel.app/api/presales";
+const FRONTEND_URL = "https://crownside.vercel.app";
 
 async function loadPresaleDetail() {
   const params = new URLSearchParams(window.location.search);
@@ -10,7 +11,9 @@ async function loadPresaleDetail() {
   }
 
   try {
-const res = await fetch(`${API_URL}?id=${id}`);
+    const res = await fetch(`${API_URL}?id=${id}`);
+    if (!res.ok) throw new Error("Error en la API");
+
     const data = await res.json();
 
     if (!data || data.message === "Preventa no encontrada") {
@@ -18,25 +21,31 @@ const res = await fetch(`${API_URL}?id=${id}`);
       return;
     }
 
-    document.getElementById("product-img").src = data.imagenUrl;
+    // Imagen principal
+    document.getElementById("product-img").src =
+      `${FRONTEND_URL}/${data.imagenUrl}`;
+
     document.getElementById("product-name").textContent = data.nombre;
     document.getElementById("product-price").textContent = `$${data.precio}`;
     document.getElementById("product-description").textContent = data.descripcion;
 
+    // Galería
     const gallery = document.getElementById("extra-images");
     gallery.innerHTML = "";
 
-    if (data.imagenesAdicionales && data.imagenesAdicionales.length > 0) {
+    if (Array.isArray(data.imagenesAdicionales)) {
       data.imagenesAdicionales.forEach(img => {
         const imgEl = document.createElement("img");
-        imgEl.src = img;
+        imgEl.src = `${FRONTEND_URL}/${img}`;
         imgEl.classList.add("extra-img");
         gallery.appendChild(imgEl);
       });
     }
+
   } catch (error) {
-    console.error(error);
-    document.body.innerHTML = `<p style="color:red;">Error al cargar detalles.</p>`;
+    console.error("❌ Error preventa:", error);
+    document.body.innerHTML =
+      `<p style="color:red;">Error al cargar detalles.</p>`;
   }
 }
 
