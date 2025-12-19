@@ -1,87 +1,69 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
-const DB_URI = process.env.DB_URI;
+// ===============================
+// 🔌 CONEXIÓN CACHEADA (Vercel)
+// ===============================
+let cached = global.mongoose || { conn: null };
+global.mongoose = cached;
 
-if (!DB_URI) {
-  throw new Error("❌ ERROR: Falta la variable DB_URI en Vercel.");
-}
-
-// =======================================================
-// 🔌 CONEXIÓN A MONGODB
-// =======================================================
 async function connectDB() {
-  if (mongoose.connection.readyState === 1) return;
-
-  try {
-    await mongoose.connect(DB_URI);
-    console.log("🔥 MongoDB conectado");
-  } catch (error) {
-    console.error("❌ Error al conectar a MongoDB:", error.message);
-    throw error;
-  }
+    if (cached.conn) return cached.conn;
+    cached.conn = await mongoose.connect(process.env.DB_URI);
+    return cached.conn;
 }
 
-// =======================================================
-// 📦 MODELO DE PRODUCTO (colección: products)
-// =======================================================
+// ===============================
+// 📦 MODELO
+// ===============================
 const ProductSchema = new mongoose.Schema({
-  id_producto: { type: String, required: true, unique: true },
-  nombre: String,
-  precio: Number,
-  stock: Number,
-  descripcion: String,
-  imagenUrl: String,
-    // 💡 AÑADIMOS EL CAMPO PARA LAS IMÁGENES ADICIONALES
-    imagenesAdicionales: { 
-        type: [String], // Esto define un array de strings
-        default: []      // Valor por defecto: un array vacío
-    }
+    id_producto: String,
+    nombre: String,
+    precio: Number,
+    stock: Number,
+    descripcion: String,
+    imagenUrl: String,
+    imagenesAdicionales: [String],
+    categoria: String
 });
 
 const Product =
-  mongoose.models.Product ||
-  mongoose.model("Product", ProductSchema, "products");
+    mongoose.models.Product ||
+    mongoose.model("Product", ProductSchema, "products");
 
-// =======================================================
-// 📌 HANDLER DE VERCEL (SIN EXPRESS)
-// GET /api/products  → todos los productos
-// GET /api/products?id=XX → producto por ID
-// =======================================================
-export default async function handler(req, res) {
-  await connectDB();
+// ===============================
+// 🚀 HANDLER SERVERLESS
+// ===============================
+module.exports = async (req, res) => {
+    // 🔓 CORS
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET");
 
-  const { method, query } = req;
+    if (req.method !== "GET") {
+        return res.status(405).json({ message: "Método no permitido" });
+    }
 
-  if (method === "GET" && !query.id) {
-    try {
-      const productos = await Product.find({});
-      return res.status(200).json(productos);
-    } catch (err) {
-      return res.status(500).json({
-        message: "Error al obtener productos",
-        details: err.message,
-      });
-    }
-  }
+    try {
+        await connectDB();
 
-  if (method === "GET" && query.id) {
-    try {
-      const producto = await Product.findOne({ id_producto: query.id });
+        const { id } = req.query;
 
-      if (!producto) {
-        return res.status(404).json({
-          message: "Producto no encontrado",
-        });
-      }
+        // 🔹 TODOS LOS PRODUCTOS
+        if (!id) {
+            const productos = await Product.find({});
+            return res.status(200).json(productos);
+        }
 
-      return res.status(200).json(producto);
-    } catch (err) {
-      return res.status(500).json({
-        message: "Error al buscar producto",
-        details: err.message,
-      });
-    }
-  }
+        // 🔹 PRODUCTO POR ID
+        const producto = await Product.findOne({ id_producto: id });
 
-  return res.status(405).json({ message: "Método no permitido" });
-}
+        if (!producto) {
+            return res.status(404).json({ message: "Producto no encontrado" });
+        }
+
+        res.status(200).json(producto);
+
+    } catch (error) {
+        console.error("❌ Error /api/products:", error);
+        res.status(500).json({ message: "Error interno del servidor" });
+    }
+};
