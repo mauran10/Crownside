@@ -313,13 +313,14 @@
                 const fallbackImageUrl = "https://placehold.co/400x400/CCCCCC/333333?text=IMAGEN+PRINCIPAL";
 
                 const mainPath = cleanPath(p.imagenUrl);
-                const mainImageUrl = mainPath ? `${API_BASE_URL}/${mainPath}` : fallbackImageUrl;
+                const mainImageUrl = mainPath || fallbackImageUrl;
 
                 
 
-const additionalImages = Array.isArray(p.imagenesAdicionales)
-  ? p.imagenesAdicionales.map(img => `${API_BASE_URL}/${cleanPath(img)}`)
-  : [];
+                const additionalImages = Array.isArray(p.imagenesAdicionales)
+                ? p.imagenesAdicionales.map(img => cleanPath(img))
+                : [];
+
 
                 // --- RENDER ---
                 container.innerHTML = `
