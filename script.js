@@ -62,7 +62,9 @@ async function loadCatalog() {
         if (!response.ok) throw new Error("Status " + response.status);
 
         productosGlobal = await response.json();
-        filterCatalog("gorra");
+
+        // 👇 MUESTRA TODO SIN FILTRO
+        renderCatalog(productosGlobal);
 
     } catch (error) {
         container.innerHTML = `
@@ -83,15 +85,16 @@ function renderCatalog(lista) {
     }
 
     container.innerHTML = lista.map(p => `
-        <div class="hat-item" onclick="goToProduct('${p.id_producto}')">
-        <div class="hat-image-container">
-            <img src="${p.imagenUrl}" alt="${p.nombre}">
-        </div>
+        <div class="hat-item" onclick="goToProduct('${p._id}')">
+            <div class="hat-image-container">
+                <img src="${p.imagenUrl}" alt="${p.nombre}">
+            </div>
             <h3 class="hat-title">${p.nombre}</h3>
             <p class="hat-price">$${p.precio} MXN</p>
         </div>
     `).join("");
 }
+
 
 function filterCatalog(categoria) {
     document.querySelectorAll(".button_filter").forEach(btn => {
@@ -256,6 +259,7 @@ function getCartProductsText() {
         .map(item => `${item.name} x${item.quantity} - $${item.price}`)
         .join("\n");
 }
+
 
 let backendOrderId = null;
 
