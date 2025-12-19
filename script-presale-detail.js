@@ -1,4 +1,4 @@
-const API_URL = "https://crownside.vercel.app/api/presale-detail";
+const API_URL = "https://crownside-backend-2025-pxtp.vercel.app/api/presale-detail";
 
 async function loadPresaleDetail() {
   const params = new URLSearchParams(window.location.search);
@@ -26,7 +26,7 @@ async function loadPresaleDetail() {
     const gallery = document.getElementById("extra-images");
     gallery.innerHTML = "";
 
-    if (data.imagenesAdicionales.length > 0) {
+    if (data.imagenesAdicionales && data.imagenesAdicionales.length > 0) {
       data.imagenesAdicionales.forEach(img => {
         const imgEl = document.createElement("img");
         imgEl.src = img;
@@ -35,6 +35,7 @@ async function loadPresaleDetail() {
       });
     }
   } catch (error) {
+    console.error(error);
     document.body.innerHTML = `<p style="color:red;">Error al cargar detalles.</p>`;
   }
 }

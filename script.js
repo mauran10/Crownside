@@ -1,3 +1,7 @@
+
+const API_URL = "https://crownside-backend-2025-pxtp.vercel.app";
+
+
 // =======================================================
 // 🛒 SISTEMA DE CARRITO (LocalStorage)
 // =======================================================
@@ -53,7 +57,7 @@ async function loadCatalog() {
     `;
 
     try {
-        const response = await fetch("/api/products");
+        const response = await fetch(`${API_URL}/api/products`);
 
         if (!response.ok) throw new Error("Status " + response.status);
 
@@ -235,41 +239,6 @@ document.getElementById("checkout-form")?.addEventListener("submit", function (e
     });
 });
 
-/**/
-
-async function createOrderBackend() {
-    const cart = getCart();
-    const items = Object.values(cart);
-
-    const total = items.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-    );
-
-    const res = await fetch("http://localhost:3000/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            customer: {
-                name: document.getElementById("name").value,
-                email: document.getElementById("email").value,
-                phone: document.getElementById("phone").value,
-                address: document.getElementById("address").value
-            },
-            items: items.map(p => ({
-                productId: p.id,
-                name: p.name,
-                price: p.price,
-                quantity: p.quantity
-            })),
-            total
-        })
-    });
-
-    return await res.json();
-}
-
-
 /* =========================================
     PAYPAL + BACKEND + EMAILJS
 ========================================= */
@@ -286,39 +255,6 @@ function getCartProductsText() {
     return Object.values(cart)
         .map(item => `${item.name} x${item.quantity} - $${item.price}`)
         .join("\n");
-}
-
-// 🔗 CREA ORDEN EN TU BACKEND
-async function createOrderBackend() {
-    const cart = getCart();
-    const items = Object.values(cart);
-
-    const total = items.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-    );
-
-    const res = await fetch("http://localhost:3000/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            customer: {
-                name: document.getElementById("name").value,
-                email: document.getElementById("email").value,
-                phone: document.getElementById("phone").value,
-                address: document.getElementById("address").value
-            },
-            items: items.map(p => ({
-                productId: p.id,
-                name: p.name,
-                price: p.price,
-                quantity: p.quantity
-            })),
-            total
-        })
-    });
-
-    return await res.json();
 }
 
 let backendOrderId = null;
@@ -365,22 +301,15 @@ const orderData = {
 
 
     // 📦 Guardar orden en MongoDB
-  try {
-  const res = await fetch("https://crownside-backend-2025-pxtp.vercel.app/api/orders", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(orderData)
-  });
-
-  if (!res.ok) {
-    const err = await res.json();
-    console.error("API error:", err);
-  }
-
+    try {
+    await fetch("https://crownside-backend-2025-pxtp.vercel.app/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData)
+    });
 } catch (err) {
-  console.error("Error guardando orden:", err);
+    console.error("Error guardando orden:", err);
 }
-
 
     // 📧 Enviar correo
     emailjs.send(
