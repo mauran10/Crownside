@@ -1,4 +1,4 @@
-const API_URL = "https://crownside-backend-2025-pxtp.vercel.app/api/presale-detail";
+const API_URL = "https://crownside-backend-2025-pxtp.vercel.app/api/presales";
 
 async function loadPresaleDetail() {
   const params = new URLSearchParams(window.location.search);
@@ -10,7 +10,7 @@ async function loadPresaleDetail() {
   }
 
   try {
-    const res = await fetch(`${API_URL}?id=${id}`);
+const res = await fetch(`${API_URL}?id=${id}`);
     const data = await res.json();
 
     if (!data || data.message === "Preventa no encontrada") {
