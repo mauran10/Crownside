@@ -79,13 +79,16 @@ async function loadCatalog() {
 function renderCatalog(lista) {
     const container = document.getElementById("catalog-container");
 
-    if (lista.length === 0) {
-        container.innerHTML = `<p style="color:white; text-align:center;">No hay productos disponibles.</p>`;
+    if (!lista || lista.length === 0) {
+        container.innerHTML = `
+            <p style="color:white; text-align:center;">
+                No hay productos disponibles.
+            </p>`;
         return;
     }
 
     container.innerHTML = lista.map(p => `
-        <div class="hat-item" onclick="goToProduct('${p._id}')">
+        <div class="hat-item" onclick="goToProduct('${p.id_producto}')">
             <div class="hat-image-container">
                 <img src="${p.imagenUrl}" alt="${p.nombre}">
             </div>
@@ -94,6 +97,7 @@ function renderCatalog(lista) {
         </div>
     `).join("");
 }
+
 
 
 function filterCatalog(categoria) {
