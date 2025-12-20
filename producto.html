@@ -203,7 +203,7 @@
             return cleaned;
         };
 
-       function renderPresale(p) {
+      function renderPresale(p) {
   const FRONTEND_BASE_URL = "https://crownside.vercel.app";
   const container = document.getElementById("product-container");
 
@@ -226,17 +226,27 @@
       <p class="product-description">${p.descripcion}</p>
       <p class="product-price">$${p.precio} MXN</p>
 
-        <button id="add-to-cart-btn" class="purchase-button">
-            Agregar al Carrito
-        </button>
+      <button id="add-to-cart-btn" class="purchase-button">
+        Agregar al Carrito
+      </button>
     </div>
   `;
 
   initializeGallery(mainImageUrl, additionalImages, p.nombre);
+
+  // ✅ BOTÓN DE PREVENTA — AQUÍ ES DONDE VA
+  document.getElementById("add-to-cart-btn").onclick = () => {
+    addToCart({
+      id: `preventa-${p.id_producto}`,
+      name: p.nombre,
+      price: Number(p.precio),
+      image: mainImageUrl,
+      type: "preventa"
+    });
+
+    showCustomAlert("Preventa agregada al carrito");
+  };
 }
-
-
-
 
         /**
          * Inicializa la galería de imágenes: imagen principal y carrusel de miniaturas (táctil).
