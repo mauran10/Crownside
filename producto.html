@@ -203,17 +203,17 @@
             return cleaned;
         };
 
-        function renderPresale(p) {
-            const API_BASE_URL = "https://crownside-backend-2025-pxtp.vercel.app";
-            const container = document.getElementById("product-container");
+       function renderPresale(p) {
+  const FRONTEND_BASE_URL = "https://crownside.vercel.app";
+  const container = document.getElementById("product-container");
 
-            const mainImageUrl = `${API_BASE_URL}/${cleanPath(p.imagenUrl)}`;
+  const mainImageUrl = `${FRONTEND_BASE_URL}/${cleanPath(p.imagenUrl)}`;
 
-            const additionalImages = Array.isArray(p.imagenesAdicionales)
-                ? p.imagenesAdicionales.map(img => `${API_BASE_URL}/${cleanPath(img)}`)
-                : [];
+  const additionalImages = Array.isArray(p.imagenesAdicionales)
+    ? p.imagenesAdicionales.map(img => `${FRONTEND_BASE_URL}/${cleanPath(img)}`)
+    : [];
 
-            container.innerHTML = `
+  container.innerHTML = `
     <div class="product-card">
       <div class="image-gallery">
         <img id="main-product-image" src="${mainImageUrl}" class="main-product-image">
@@ -226,18 +226,19 @@
       <p class="product-description">${p.descripcion}</p>
       <p class="product-price">$${p.precio} MXN</p>
 
-      <p style="color:black;font-weight:bold;">
-        PREVENTA – Stock limitado: ${p.stock}
+      <p style="color:#b30000;font-weight:bold;">
+        🔥 PREVENTA – Stock limitado: ${p.stock}
       </p>
 
-       <button id="add-to-cart-btn" class="purchase-button">
-            Agregar al Carrito
-        </button>
+      <button class="purchase-button">
+        Reservar Preventa
+      </button>
     </div>
   `;
 
-            initializeGallery(mainImageUrl, additionalImages, p.nombre);
-        }
+  initializeGallery(mainImageUrl, additionalImages, p.nombre);
+}
+
 
 
 
