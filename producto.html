@@ -203,6 +203,45 @@
             return cleaned;
         };
 
+        function renderPresale(p) {
+            const API_BASE_URL = "https://crownside-backend-2025-pxtp.vercel.app";
+            const container = document.getElementById("product-container");
+
+            const mainImageUrl = `${API_BASE_URL}/${cleanPath(p.imagenUrl)}`;
+
+            const additionalImages = Array.isArray(p.imagenesAdicionales)
+                ? p.imagenesAdicionales.map(img => `${API_BASE_URL}/${cleanPath(img)}`)
+                : [];
+
+            container.innerHTML = `
+    <div class="product-card">
+
+      <div class="image-gallery">
+        <img id="main-product-image" src="${mainImageUrl}" class="main-product-image">
+        <div class="carousel-wrapper">
+          <div class="thumbnail-container" id="thumbnail-container"></div>
+        </div>
+      </div>
+
+      <h2 class="product-title">${p.nombre}</h2>
+      <p class="product-description">${p.descripcion}</p>
+      <p class="product-price">$${p.precio} MXN</p>
+
+      <p style="color:#b30000;font-weight:bold;">
+        🔥 PREVENTA – Stock limitado: ${p.stock}
+      </p>
+
+      <button class="purchase-button">
+        Reservar Preventa
+      </button>
+
+    </div>
+  `;
+
+            initializeGallery(mainImageUrl, additionalImages, p.nombre);
+        }
+
+
 
         /**
          * Inicializa la galería de imágenes: imagen principal y carrusel de miniaturas (táctil).
@@ -309,17 +348,23 @@
 
                 const p = await response.json();
 
+                if (type === "preventa") {
+                    renderPresale(p);
+                    return;
+                }
+
+
                 // --- SANEAR URLs ---
                 const fallbackImageUrl = "https://placehold.co/400x400/CCCCCC/333333?text=IMAGEN+PRINCIPAL";
 
                 const mainPath = cleanPath(p.imagenUrl);
                 const mainImageUrl = mainPath || fallbackImageUrl;
 
-                
+
 
                 const additionalImages = Array.isArray(p.imagenesAdicionales)
-                ? p.imagenesAdicionales.map(img => cleanPath(img))
-                : [];
+                    ? p.imagenesAdicionales.map(img => cleanPath(img))
+                    : [];
 
 
                 // --- RENDER ---
@@ -410,7 +455,7 @@
                 cart[id].quantity += 1;
             } else {
                 cart[id] = {
-                    id: id,                 
+                    id: id,
                     name: product.name,
                     price: Number(product.price),
                     image: product.image,
