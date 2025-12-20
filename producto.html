@@ -286,18 +286,6 @@
             });
         }
 
-        document.getElementById("add-to-cart-btn").onclick = () => {
-  addToCart({
-    id: `preventa-${p.id_producto}`, // 🔥 evita choque con productos normales
-    name: p.nombre,
-    price: Number(p.precio),
-    image: `${FRONTEND_BASE_URL}/${cleanPath(p.imagenUrl)}`,
-    type: "preventa"
-  });
-
-  showCustomAlert("Preventa agregada al carrito");
-};
-
         // --- Reemplazo de window.alert() ---
 
         function showCustomAlert(message, duration = 2000) {
