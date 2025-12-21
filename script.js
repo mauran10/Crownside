@@ -25,13 +25,18 @@ function addToCart(product) {
             name: product.name,
             price: product.price,
             image: product.image,
-            quantity: 1
+            quantity: 1,
+
+            // 🔥 PREVENTA
+            type: product.type || "normal",
+            releaseDate: product.releaseDate || null
         };
     }
 
     saveCart(cart);
     updateCartCounter();
 }
+
 
 function updateCartCounter() {
     const cart = getCart();
@@ -135,6 +140,7 @@ function renderCartPage() {
 
     const cart = getCart();
     const items = Object.values(cart);
+    const today = new Date(); // 🔥 AQUÍ FALTABA
 
     if (items.length === 0) {
         container.innerHTML = `<p class="empty-cart">Tu carrito está vacío.</p>`;
@@ -142,26 +148,44 @@ function renderCartPage() {
         return;
     }
 
-    container.innerHTML = items.map(item => `
-        <div class="cart-item">
-            <img src="${item.image || 'img/placeholder.png'}" class="cart-item-img">
+    container.innerHTML = items.map(item => {
+        const isPresale = item.type === "preventa" && item.releaseDate;
+        const releaseDate = isPresale ? new Date(item.releaseDate) : null;
+        const blocked = isPresale && today < releaseDate;
 
-            <div class="cart-item-info">
-                <h3>${item.name}</h3>
-                <p class="cart-price">$${item.price.toFixed(2)}</p>
+        return `
+            <div class="cart-item">
+                <img src="${item.image || 'img/placeholder.png'}" class="cart-item-img">
 
-                <div class="quantity-control">
-                    <button onclick="changeQuantity('${item.id}', -1)">-</button>
-                    <span>${item.quantity}</span>
-                    <button onclick="changeQuantity('${item.id}', 1)">+</button>
+                <div class="cart-item-info">
+                    <h3>
+                        ${item.name}
+                        ${isPresale ? `<span style="color:red;font-size:12px;">(Preventa)</span>` : ""}
+                    </h3>
+
+                    <p class="cart-price">$${item.price.toFixed(2)}</p>
+
+                    ${
+                        blocked
+                            ? `<p style="color:red;font-size:13px;">
+                                Disponible a partir del ${releaseDate.toLocaleDateString()}
+                              </p>`
+                            : ""
+                    }
+
+                    <div class="quantity-control">
+                        <button onclick="changeQuantity('${item.id}', -1)">-</button>
+                        <span>${item.quantity}</span>
+                        <button onclick="changeQuantity('${item.id}', 1)">+</button>
+                    </div>
+
+                    <button onclick="removeFromCart('${item.id}')" class="remove-btn">
+                        Eliminar
+                    </button>
                 </div>
-
-                <button onclick="removeFromCart('${item.id}')" class="remove-btn">
-                    Eliminar
-                </button>
             </div>
-        </div>
-    `).join("");
+        `;
+    }).join("");
 
     const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
@@ -169,6 +193,7 @@ function renderCartPage() {
         <h3>Total a pagar: <span class="total-price">$${total.toFixed(2)}</span></h3>
     `;
 }
+
 
 window.changeQuantity = function (id, amount) {
     const cart = getCart();
@@ -205,6 +230,18 @@ document.getElementById("checkout-form")?.addEventListener("submit", function (e
 
     const cart = getCart();
     const items = Object.values(cart);
+    const today = new Date();
+
+    const blockedPresale = items.find(item =>
+        item.type === "preventa" &&
+        item.releaseDate &&
+        new Date(item.releaseDate) > today
+    );
+
+    if (blockedPresale) {
+        alert(`⛔ La preventa "${blockedPresale.name}" estará disponible el ${new Date(blockedPresale.releaseDate).toLocaleDateString()}`);
+        return;
+    }
 
     if (items.length === 0) {
         alert("Tu carrito está vacío");
@@ -272,6 +309,21 @@ paypal.Buttons({
             return;
         }
 
+        const cart = getCart();
+        const today = new Date();
+
+        const blockedPresale = Object.values(cart).find(item =>
+            item.type === "preventa" &&
+            item.releaseDate &&
+            new Date(item.releaseDate) > today
+        );
+
+        if (blockedPresale) {
+            alert(`⛔ La preventa "${blockedPresale.name}" estará disponible el ${new Date(blockedPresale.releaseDate).toLocaleDateString()}`);
+            return;
+        }
+
+
         return actions.order.create({
             purchase_units: [{
                 amount: {
@@ -282,58 +334,58 @@ paypal.Buttons({
     },
 
     onApprove: function (data, actions) {
-       return actions.order.capture().then(async function (details) {
+        return actions.order.capture().then(async function (details) {
 
-    const cart = JSON.parse(localStorage.getItem("cart")) || {};
+            const cart = JSON.parse(localStorage.getItem("cart")) || {};
 
-const products = Object.values(cart).map(item => ({
-    productId: item.id,
-    name: item.name,
-    price: item.price,
-    quantity: item.quantity
-}));
+            const products = Object.values(cart).map(item => ({
+                productId: item.id,
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity
+            }));
 
-const orderData = {
-    paypalOrderId: details.id,
-    payerName: details.payer.name.given_name,
-    payerEmail: details.payer.email_address,
-    products: products,
-    total: getCartTotalAmount(),
-    status: details.status,
-    date: new Date()
-};
+            const orderData = {
+                paypalOrderId: details.id,
+                payerName: details.payer.name.given_name,
+                payerEmail: details.payer.email_address,
+                products: products,
+                total: getCartTotalAmount(),
+                status: details.status,
+                date: new Date()
+            };
 
 
-    // 📦 Guardar orden en MongoDB
-    try {
-    await fetch("https://crownside-backend-2025-pxtp.vercel.app/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderData)
-    });
-} catch (err) {
-    console.error("Error guardando orden:", err);
-}
+            // 📦 Guardar orden en MongoDB
+            try {
+                await fetch("https://crownside-backend-2025-pxtp.vercel.app/api/orders", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(orderData)
+                });
+            } catch (err) {
+                console.error("Error guardando orden:", err);
+            }
 
-    // 📧 Enviar correo
-    emailjs.send(
-        "service_4a8n179",
-        "template_hpshzpj",
-        {
-            name: orderData.payerName,
-            email: orderData.payerEmail,
-            products: getCartProductsText(),
-            total: `$${orderData.total} MXN`,
-            date: new Date().toLocaleString()
-        }
-    );
+            // 📧 Enviar correo
+            emailjs.send(
+                "service_4a8n179",
+                "template_hpshzpj",
+                {
+                    name: orderData.payerName,
+                    email: orderData.payerEmail,
+                    products: getCartProductsText(),
+                    total: `$${orderData.total} MXN`,
+                    date: new Date().toLocaleString()
+                }
+            );
 
-    localStorage.removeItem("cart");
-    updateCartCounter();
-    renderCartPage();
+            localStorage.removeItem("cart");
+            updateCartCounter();
+            renderCartPage();
 
-    alert("✅ Pago realizado con éxito");
-});
+            alert("✅ Pago realizado con éxito");
+        });
 
     },
 

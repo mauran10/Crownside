@@ -234,18 +234,19 @@
 
   initializeGallery(mainImageUrl, additionalImages, p.nombre);
 
-  // ✅ BOTÓN DE PREVENTA — AQUÍ ES DONDE VA
-  document.getElementById("add-to-cart-btn").onclick = () => {
-    addToCart({
-      id: `preventa-${p.id_producto}`,
-      name: p.nombre,
-      price: Number(p.precio),
-      image: mainImageUrl,
-      type: "preventa"
-    });
+ document.getElementById("add-to-cart-btn").onclick = () => {
+  addToCart({
+    id: `preventa-${p.id_producto}`,
+    name: p.nombre,
+    price: Number(p.precio),
+    image: mainImageUrl,
+    type: "preventa",
+    releaseDate: p.fechaLanzamiento
+  });
 
-    showCustomAlert("Preventa agregada al carrito");
-  };
+  showCustomAlert("Preventa agregada al carrito");
+};
+
 }
 
         /**
@@ -460,12 +461,15 @@
                 cart[id].quantity += 1;
             } else {
                 cart[id] = {
-                    id: id,
-                    name: product.name,
-                    price: Number(product.price),
-                    image: product.image,
-                    quantity: 1
-                };
+  id: id,
+  name: product.name,
+  price: Number(product.price),
+  image: product.image,
+  quantity: 1,
+  type: product.type || "producto",
+  releaseDate: product.releaseDate || null
+};
+
             }
 
             saveCart(cart);
