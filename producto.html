@@ -330,7 +330,7 @@
             const type = getQueryParam("type");
             const container = document.getElementById("product-container");
 
-            const API_BASE_URL = "https://crownside-backend-2025-pxtp.vercel.app";
+            const API_BASE_URL = "https://crownside.vercel.app";
 
             if (!id) {
                 container.innerHTML = `<h2 class="error-title">Error</h2><p class="error-text">No se proporcionó un ID de producto.</p>`;
@@ -364,9 +364,10 @@
                 const fallbackImageUrl = "https://placehold.co/400x400/CCCCCC/333333?text=IMAGEN+PRINCIPAL";
 
                 const mainPath = cleanPath(p.imagenUrl);
-                const mainImageUrl = mainPath || fallbackImageUrl;
 
-
+                const mainImageUrl = mainPath
+                ? `${FRONTEND_BASE_URL}/${mainPath}`
+                : fallbackImageUrl;
 
                 const additionalImages = Array.isArray(p.imagenesAdicionales)
                     ? p.imagenesAdicionales.map(img => cleanPath(img))
