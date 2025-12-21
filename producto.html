@@ -226,9 +226,26 @@
       <p class="product-description">${p.descripcion}</p>
       <p class="product-price">$${p.precio} MXN</p>
 
-      
+      <button id="add-to-cart-btn" class="purchase-button">
+        Agregar al Carrito
+      </button>
     </div>
   `;
+
+            initializeGallery(mainImageUrl, additionalImages, p.nombre);
+
+            document.getElementById("add-to-cart-btn").onclick = () => {
+                addToCart({
+                    id: `preventa-${p.id_producto}`,
+                    name: p.nombre,
+                    price: Number(p.precio),
+                    image: mainImageUrl,
+                    type: "preventa",
+                    releaseDate: p.fechaLanzamiento
+                });
+
+                showCustomAlert("Preventa agregada al carrito");
+            };
 
         }
 
