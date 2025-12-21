@@ -224,14 +224,6 @@
 
       <h2 class="product-title">${p.nombre}</h2>
       <p class="product-description">${p.descripcion}</p>
-
-                    ${blocked
-                    ? `<p style="color:red;font-size:13px;">
-                                Disponible a partir del ${releaseDate.toLocaleDateString()}
-                              </p>`
-                    : ""
-                }
-
       <p class="product-price">$${p.precio} MXN</p>
 
       <button id="add-to-cart-btn" class="purchase-button">

@@ -7,11 +7,38 @@ const container = document.getElementById("catalog-container");
 
 // Cargar contador del carrito
 function updateCartCounter() {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const cart = JSON.parse(localStorage.getItem("cart")) || {};
+    const total = Object.values(cart).reduce((acc, p) => acc + p.quantity, 0);
+
     const counter = document.getElementById("cart-counter");
-    if (counter) counter.textContent = cart.length;
+    if (counter) counter.textContent = total > 0 ? total : "";
 }
+
 updateCartCounter();
+
+
+function showReleaseDate(presales) {
+    if (!presales || presales.length === 0) return;
+
+    // Tomamos la primera preventa
+    const presale = presales[0];
+
+    if (!presale.fechaLanzamiento) return;
+
+    const date = new Date(presale.fechaLanzamiento);
+
+    const formatted = date.toLocaleDateString("es-MX", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
+
+    const dateEl = document.getElementById("release-date");
+    if (dateEl) {
+        dateEl.textContent = `Lanzamiento: ${formatted}`;
+    }
+}
+
 
 // =======================================================
 // 🔌 FUNCIÓN PRINCIPAL: CARGAR PREVENTAS
@@ -39,6 +66,9 @@ async function loadPreSales() {
             `;
             return;
         }
+
+        showReleaseDate(data);
+
 
         // Pintar tarjetas
         container.innerHTML = data
