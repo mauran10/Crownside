@@ -203,17 +203,17 @@
             return cleaned;
         };
 
-      function renderPresale(p) {
-  const FRONTEND_BASE_URL = "https://crownside.vercel.app";
-  const container = document.getElementById("product-container");
+        function renderPresale(p) {
+            const FRONTEND_BASE_URL = "https://crownside.vercel.app";
+            const container = document.getElementById("product-container");
 
-  const mainImageUrl = `${FRONTEND_BASE_URL}/${cleanPath(p.imagenUrl)}`;
+            const mainImageUrl = `${FRONTEND_BASE_URL}/${cleanPath(p.imagenUrl)}`;
 
-  const additionalImages = Array.isArray(p.imagenesAdicionales)
-    ? p.imagenesAdicionales.map(img => `${FRONTEND_BASE_URL}/${cleanPath(img)}`)
-    : [];
+            const additionalImages = Array.isArray(p.imagenesAdicionales)
+                ? p.imagenesAdicionales.map(img => `${FRONTEND_BASE_URL}/${cleanPath(img)}`)
+                : [];
 
-  container.innerHTML = `
+            container.innerHTML = `
     <div class="product-card">
       <div class="image-gallery">
         <img id="main-product-image" src="${mainImageUrl}" class="main-product-image">
@@ -224,6 +224,14 @@
 
       <h2 class="product-title">${p.nombre}</h2>
       <p class="product-description">${p.descripcion}</p>
+
+                    ${blocked
+                    ? `<p style="color:red;font-size:13px;">
+                                Disponible a partir del ${releaseDate.toLocaleDateString()}
+                              </p>`
+                    : ""
+                }
+
       <p class="product-price">$${p.precio} MXN</p>
 
       <button id="add-to-cart-btn" class="purchase-button">
@@ -232,22 +240,22 @@
     </div>
   `;
 
-  initializeGallery(mainImageUrl, additionalImages, p.nombre);
+            initializeGallery(mainImageUrl, additionalImages, p.nombre);
 
- document.getElementById("add-to-cart-btn").onclick = () => {
-  addToCart({
-    id: `preventa-${p.id_producto}`,
-    name: p.nombre,
-    price: Number(p.precio),
-    image: mainImageUrl,
-    type: "preventa",
-    releaseDate: p.fechaLanzamiento
-  });
+            document.getElementById("add-to-cart-btn").onclick = () => {
+                addToCart({
+                    id: `preventa-${p.id_producto}`,
+                    name: p.nombre,
+                    price: Number(p.precio),
+                    image: mainImageUrl,
+                    type: "preventa",
+                    releaseDate: p.fechaLanzamiento
+                });
 
-  showCustomAlert("Preventa agregada al carrito");
-};
+                showCustomAlert("Preventa agregada al carrito");
+            };
 
-}
+        }
 
         /**
          * Inicializa la galería de imágenes: imagen principal y carrusel de miniaturas (táctil).
@@ -461,14 +469,14 @@
                 cart[id].quantity += 1;
             } else {
                 cart[id] = {
-  id: id,
-  name: product.name,
-  price: Number(product.price),
-  image: product.image,
-  quantity: 1,
-  type: product.type || "producto",
-  releaseDate: product.releaseDate || null
-};
+                    id: id,
+                    name: product.name,
+                    price: Number(product.price),
+                    image: product.image,
+                    quantity: 1,
+                    type: product.type || "producto",
+                    releaseDate: product.releaseDate || null
+                };
 
             }
 
