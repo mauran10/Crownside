@@ -68,8 +68,8 @@ async function loadCatalog() {
 
         productosGlobal = await response.json();
 
-        // MUESTRA FILTRO
-        renderCatalog("gorra");
+        // 👇 MUESTRA TODO SIN FILTRO
+        renderCatalog(productosGlobal);
 
     } catch (error) {
         container.innerHTML = `
@@ -128,6 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// =======================================================
 // MOSTRAR CARRITO (cart.html)
 // =======================================================
 
