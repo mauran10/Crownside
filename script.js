@@ -115,7 +115,7 @@ function filterCatalog(categoria) {
     }
 
     const filtrados = productosGlobal.filter(p => p.categoria === categoria);
-    renderCatalog(filtrados);
+    renderCatalog("gorra");
 }
 
 function goToProduct(id) {
@@ -128,8 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// =======================================================
-// 🛍️ MOSTRAR CARRITO (cart.html)
+// MOSTRAR CARRITO (cart.html)
 // =======================================================
 
 function renderCartPage() {
@@ -140,7 +139,7 @@ function renderCartPage() {
 
     const cart = getCart();
     const items = Object.values(cart);
-    const today = new Date(); // 🔥 AQUÍ FALTABA
+    const today = new Date(); 
 
     if (items.length === 0) {
         container.innerHTML = `<p class="empty-cart">Tu carrito está vacío.</p>`;

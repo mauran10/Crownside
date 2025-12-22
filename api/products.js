@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 // ===============================
-// 🔌 CONEXIÓN CACHEADA (Vercel)
+//  CONEXIÓN CACHEADA (Vercel)
 // ===============================
 let cached = global.mongoose || { conn: null };
 global.mongoose = cached;
@@ -13,7 +13,7 @@ async function connectDB() {
 }
 
 // ===============================
-// 📦 MODELO
+// MODELO
 // ===============================
 const ProductSchema = new mongoose.Schema({
     id_producto: String,
@@ -30,11 +30,10 @@ const Product =
     mongoose.models.Product ||
     mongoose.model("Product", ProductSchema, "products");
 
-// ===============================
-// 🚀 HANDLER SERVERLESS
+// HANDLER SERVERLESS
 // ===============================
 module.exports = async (req, res) => {
-    // 🔓 CORS
+    //  CORS
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET");
 
@@ -47,13 +46,13 @@ module.exports = async (req, res) => {
 
         const { id } = req.query;
 
-        // 🔹 TODOS LOS PRODUCTOS
+        // TODOS LOS PRODUCTOS
         if (!id) {
             const productos = await Product.find({});
             return res.status(200).json(productos);
         }
 
-        // 🔹 PRODUCTO POR ID
+        //  PRODUCTO POR ID
         const producto = await Product.findOne({ id_producto: id });
 
         if (!producto) {
