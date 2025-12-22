@@ -179,7 +179,9 @@
 
     </div>
     <script>
-        // ====================================================================
+
+        const FRONTEND_BASE_URL = "https://crownside.vercel.app";
+        
         // --- 1. FUNCIONES DE UTILIDAD (GALERÍA Y ALERTA) ---
         // ====================================================================
 
@@ -204,7 +206,6 @@
         };
 
         function renderPresale(p) {
-            const FRONTEND_BASE_URL = "https://crownside.vercel.app";
             const container = document.getElementById("product-container");
 
             const mainImageUrl = `${FRONTEND_BASE_URL}/${cleanPath(p.imagenUrl)}`;
@@ -316,11 +317,6 @@
             }, duration);
         }
 
-
-        // ====================================================================
-        // --- 2. FUNCIÓN DE CARGA DE PRODUCTO (CONECTA CON TU API/MONGO) ---
-        // ====================================================================
-
         // ====================================================================
         // --- 2. FUNCIÓN DE CARGA DE PRODUCTO (CONECTA CON TU API/MONGO) ---
         // ====================================================================
@@ -330,7 +326,7 @@
             const type = getQueryParam("type");
             const container = document.getElementById("product-container");
 
-            const API_BASE_URL = "https://crownside.vercel.app";
+            const API_BASE_URL = "https://crownside-backend-2025-pxtp.vercel.app";
 
             if (!id) {
                 container.innerHTML = `<h2 class="error-title">Error</h2><p class="error-text">No se proporcionó un ID de producto.</p>`;
