@@ -155,8 +155,9 @@ function renderCartPage() {
 
         return `
             <div class="cart-item">
+            <div class="cart-item-image">
                 <img src="${item.image || 'img/placeholder.png'}" class="cart-item-img">
-
+            </div>
                 <div class="cart-item-info">
                     <h3>
                         ${item.name}
