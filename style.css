@@ -558,11 +558,10 @@ img:active {
 
 /* IMAGEN RESPONSIVE */
 .cart-item-img {
-    width: 70%;
+    width: 100%;
     max-width: 200px;
     border-radius: 12px;
     object-fit: cover;
-    margin-bottom: 10px;
 }
 
 /* INFO ABAJO, CENTRADA */
@@ -570,7 +569,6 @@ img:active {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* gap: 5px; */
     text-align: center;
     width: 100%;
 }
