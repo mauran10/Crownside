@@ -22,7 +22,7 @@
 
 
 body {
-  font-family: "Vollkorn", serif;
+    font-family: "Roboto Condensed", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
@@ -562,6 +562,7 @@ img:active {
     max-width: 200px;
     border-radius: 12px;
     object-fit: cover;
+    margin-bottom: 10px;
 }
 
 /* INFO ABAJO, CENTRADA */
