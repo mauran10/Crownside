@@ -161,6 +161,9 @@ body {
     display: none;
 }
 
+
+
+
 /* --- ENCABEZADO Y PERFIL de servicios --- */
 
 .card-header {
@@ -309,7 +312,7 @@ body {
     }
 }
 
-/* --- ESTILOS DEL CARRUSEL DE GORRAS (SERVICES.HTML) --- */
+/* --- ESTILOS DEL CATALOGO DE GORRAS (SERVICES.HTML) --- */
 .hats-container {
     display: grid;
     /* Dos columnas de igual ancho */
@@ -319,6 +322,21 @@ body {
     padding: 10px 6px;
     /* Aseguramos que el carrusel desaparezca si se convierte en grid */
     overflow-x: hidden;
+     opacity: 0;
+    animation: deslizarArriba 1.2s ease-out forwards;
+    animation-delay: 1.8s;
+}
+
+@keyframes deslizarArriba {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .hat-item {

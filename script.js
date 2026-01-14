@@ -94,11 +94,9 @@ function renderCatalog(lista) {
             <div class="hat-image-container">
                 <img src="${p.imagenUrl}" alt="${p.nombre}">
             </div>
-
-            <div class="hat-info">
+            
             <h3 class="hat-title">${p.nombre}</h3>
             <p class="hat-price">$${p.precio} MXN</p>
-            </div>
         </div>
     `).join("");
 }
