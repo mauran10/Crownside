@@ -324,7 +324,7 @@ body {
     overflow-x: hidden;
      opacity: 0;
     animation: deslizarArriba 1.2s ease-out forwards;
-    animation-delay: 1.8s;
+    animation-delay: 0.8s;
 }
 
 @keyframes deslizarArriba {
