@@ -68,8 +68,13 @@ async function loadCatalog() {
 
         productosGlobal = await response.json();
 
-        // 👇 MUESTRA TODO SIN FILTRO
-        renderCatalog(productosGlobal);
+       // FILTRAR GORRAS PRIMERO
+        const gorras = productosGlobal.filter(
+            p => p.categoria === "gorra"
+        );
+
+        //  SOLO GORRAS AL ABRIR
+        renderCatalog(gorras);
 
     } catch (error) {
         container.innerHTML = `
