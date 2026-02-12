@@ -70,7 +70,7 @@ async function loadCatalog() {
 
        // FILTRAR GORRAS PRIMERO
         const gorras = productosGlobal.filter(
-            p => p.categoria === "tarjetero"
+            p => p.categoria === "gorra"
         );
 
         //  SOLO GORRAS AL ABRIR
